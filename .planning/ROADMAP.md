@@ -118,7 +118,10 @@
   4. 持倉票據 preview/confirm/submit 流程回歸案例通過（不允許跳過 confirm）
   5. sizing 政策變更可生效回歸案例通過（政策修改後新計算結果反映變更）
   6. 所有 commit hash 已記錄，push 到 https://github.com/tutumomo/etf_master 並有證據
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 04-01-PLAN.md — 核心交易邏輯回歸測試 (TEST-01, TEST-02, TEST-03)
+- [ ] 04-02-PLAN.md — UI 流程與策略變更回歸測試 (TEST-04, TEST-05)
+- [ ] 04-03-PLAN.md — 版本保全與發布 (GIT-01, GIT-02, GIT-03)
 
 **Mandatory Reporting Format:**
 1. 本階段做了什麼（3~6行）
@@ -180,4 +183,4 @@
 | 1. 真相層級治理 | 3/3 | Completed | 2026-04-15 |
 | 2. 交易保險絲收斂 | 3/3 | Completed | 2026-04-15 |
 | 3. 持倉交易票據 UI | 0/3 | Not started | - |
-| 4. 回歸測試與版本保全 | 0/N | Not started | - |
+| 4. 回歸測試與版本保全 | 0/3 | Not started | - |

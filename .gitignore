@@ -1,0 +1,1 @@
+.env\nauth.json\nauth.lock\n*.log\n*.pid\ngateway_state.json\nmodels_dev_cache.json\nprocesses.json\nstate.db*\nchannel_directory.json\n.hermes_history\n.skills_prompt_snapshot.json\n.update_check\nbin/\ncache/\ncron/\ngraphify-out/\nlogs/\nmemories/\nsessions/\nwebui_state/\nskills/
