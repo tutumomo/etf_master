@@ -17,6 +17,7 @@
 - [ ] **TRUTH-02**: 清除所有「state=唯一真相源」殘留說法（活文件，不含歷史 cron 輸出）
 - [ ] **TRUTH-03**: 對查單回應強制採保守措辭（list_trades 空值=本次查詢沒看到，不反推失敗或已成交）
 - [ ] **TRUTH-04**: submit 回應不等同委託落地，所有 submit 結果須標示「仍需後續驗證」
+- [ ] **TRUTH-05**: 決策控制台二條建議決策機制必須落地可用（audit AI decision bridge 現況，確認 request→response→consensus 全鏈通暢，dashboard 可正確顯示建議）
 
 ### 交易保險絲 (FUSE)
 
@@ -25,6 +26,7 @@
 - [ ] **FUSE-03**: submit 後必須進入落地驗證流程（list_trades + positions/其他佐證）
 - [ ] **FUSE-04**: 風控限制可準確擋單（單元測試證明：超限被擋、超庫存被擋、submit成功但未落地不被誤報成功）
 - [ ] **FUSE-05**: sizing_engine_v1 正式計算規則（輸入：現金、集中度上限、單筆上限、風險溫度；輸出：建議股數、限制原因、是否可下單）
+- [ ] **FUSE-06**: 交易閾值可設定（現金百分比或其他指標），閾值觸發時可在持倉快照區塊直接下單買入/賣出（仍受 pre-flight gate 把關）
 
 ### 持倉交易票據 (TICKET)
 
@@ -33,6 +35,8 @@
 - [ ] **TICKET-03**: preview → confirm → submit 三段式（預覽通過後才顯示確認字串 + 送出按鈕）
 - [ ] **TICKET-04**: 維持人工確認，不允許預覽即送單
 - [ ] **TICKET-05**: 送單仍受 pre-flight 與權限控制（不受 auto-preview 限制，但受 sizing + 風控限制）
+- [ ] **TICKET-06**: Dashboard 區塊可設定為可摺疊收起（使用者可依需求展開/收合，避免資訊過載）
+- [ ] **TICKET-07**: 初次使用者泡泡文字說明（tooltip/onboarding hints），讓不熟悉股市的新手能理解每個區塊的意義
 
 ### 回歸測試 (TEST)
 
@@ -55,6 +59,7 @@
 - **ADV-01**: AI 自主下單 Stage 3（需保險絲全部就位後才考慮）
 - **ADV-02**: Dashboard 美化/響應式設計
 - **ADV-03**: 路徑自動遷移工具（OpenClaw → Hermes）
+- **ADV-04**: K線圖時間週期切換（日線/月線/季線/年線），在盤感輔助層「詳情圖表」中提供選擇
 
 ## Out of Scope
 
@@ -77,16 +82,20 @@
 | TRUTH-02 | Phase 1 | Pending |
 | TRUTH-03 | Phase 1 | Pending |
 | TRUTH-04 | Phase 1 | Pending |
+| TRUTH-05 | Phase 1 | Pending |
 | FUSE-01 | Phase 2 | Pending |
 | FUSE-02 | Phase 2 | Pending |
 | FUSE-03 | Phase 2 | Pending |
 | FUSE-04 | Phase 2 | Pending |
 | FUSE-05 | Phase 2 | Pending |
+| FUSE-06 | Phase 2 | Pending |
 | TICKET-01 | Phase 3 | Pending |
 | TICKET-02 | Phase 3 | Pending |
 | TICKET-03 | Phase 3 | Pending |
 | TICKET-04 | Phase 3 | Pending |
 | TICKET-05 | Phase 3 | Pending |
+| TICKET-06 | Phase 3 | Pending |
+| TICKET-07 | Phase 3 | Pending |
 | TEST-01 | Phase 4 | Pending |
 | TEST-02 | Phase 4 | Pending |
 | TEST-03 | Phase 4 | Pending |
@@ -97,10 +106,10 @@
 | GIT-03 | Phase 4 | Pending |
 
 **Coverage:**
-- v1 requirements: 25 total
-- Mapped to phases: 25
+- v1 requirements: 30 total
+- Mapped to phases: 30
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-15*
-*Last updated: 2026-04-15 after roadmap creation*
+*Last updated: 2026-04-15 — added TRUTH-05, FUSE-06, TICKET-06, TICKET-07; ADV-04 to v2*
