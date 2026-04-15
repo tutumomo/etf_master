@@ -47,9 +47,9 @@
   4. submit 回應文字明確標示「仍需後續驗證」，不得暗示委託已落地
   5. 決策控制台二條建議決策全鏈通暢（AI decision bridge request→response→consensus），dashboard 正確顯示
 **Plans**: 3 plans
-- [ ] 01-01-PLAN.md — 真相層級定義與保守措辭 (TRUTH-02, TRUTH-03, TRUTH-04)
-- [ ] 01-02-PLAN.md — 三層分級標註實作 (TRUTH-01)
-- [ ] 01-03-PLAN.md — 決策控制台落地與驗證 (TRUTH-05)
+- [x] 01-01-PLAN.md — 真相層級定義與保守措辭 (TRUTH-02, TRUTH-03, TRUTH-04)
+- [x] 01-02-PLAN.md — 三層分級標註實作 (TRUTH-01)
+- [x] 01-03-PLAN.md — 決策控制台落地與驗證 (TRUTH-05)
 
 **Mandatory Reporting Format:**
 1. 本階段做了什麼（3~6行）
@@ -70,8 +70,10 @@
   4. 單元測試證明：超限被擋、超庫存被擋、submit 成功但未落地不被誤報為成功
   5. sizing_engine_v1 可接受輸入（現金、集中度上限、單筆上限、風險溫度）並輸出建議股數、限制原因、是否可下單
   6. 使用者可設定交易閾值（現金百分比等），閾值觸發時可在持倉快照區塊下單（仍受 pre-flight gate 把關）
-**Plans**: TBD
-**UI hint**: yes
+**Plans**: 3 plans
+- [x] 02-01-PLAN.md — 交易保險絲路徑收斂與驗證 (FUSE-01, FUSE-02, FUSE-03, FUSE-04)
+- [x] 02-02-PLAN.md — Sizing Engine 整合與建議輸出 (FUSE-05)
+- [x] 02-03-PLAN.md — 交易閾值設定與持倉下單入口 (FUSE-06)
 
 **Mandatory Reporting Format:**
 1. 本階段做了什麼（3~6行）
@@ -92,8 +94,10 @@
   4. 送單仍然受 pre-flight gate 與 sizing 限制，不受 auto-preview 開關影響
   5. Dashboard 區塊支援可摺疊收起，使用者可依需求展開/收合
   6. 初次使用者可透過泡泡文字提示理解各區塊意義（tooltip/onboarding hints）
-**Plans**: TBD
-**UI hint**: yes
+**Plans**: 3 plans
+- [x] 03-01-PLAN.md — 儀表板區塊收合與 Tooltip 基礎 (TICKET-06, TICKET-07)
+- [x] 03-02-PLAN.md — 持倉交易入口與票據展開層 (TICKET-01, TICKET-02)
+- [x] 03-03-PLAN.md — Preview/Confirm/Submit 三段式流程實作 (TICKET-03, TICKET-04, TICKET-05)
 
 **Mandatory Reporting Format:**
 1. 本階段做了什麼（3~6行）
@@ -130,24 +134,24 @@
 | PATH-01 | Phase 0 | Completed |
 | PATH-02 | Phase 0 | Completed |
 | PATH-03 | Phase 0 | Completed |
-| TRUTH-01 | Phase 1 | Pending |
-| TRUTH-02 | Phase 1 | Pending |
-| TRUTH-03 | Phase 1 | Pending |
-| TRUTH-04 | Phase 1 | Pending |
-| TRUTH-05 | Phase 1 | Pending |
-| FUSE-01 | Phase 2 | Pending |
-| FUSE-02 | Phase 2 | Pending |
-| FUSE-03 | Phase 2 | Pending |
-| FUSE-04 | Phase 2 | Pending |
-| FUSE-05 | Phase 2 | Pending |
-| FUSE-06 | Phase 2 | Pending |
+| TRUTH-01 | Phase 1 | Completed |
+| TRUTH-02 | Phase 1 | Completed |
+| TRUTH-03 | Phase 1 | Completed |
+| TRUTH-04 | Phase 1 | Completed |
+| TRUTH-05 | Phase 1 | Completed |
+| FUSE-01 | Phase 2 | Completed |
+| FUSE-02 | Phase 2 | Completed |
+| FUSE-03 | Phase 2 | Completed |
+| FUSE-04 | Phase 2 | Completed |
+| FUSE-05 | Phase 2 | Completed |
+| FUSE-06 | Phase 2 | Completed |
 | TICKET-01 | Phase 3 | Pending |
 | TICKET-02 | Phase 3 | Pending |
 | TICKET-03 | Phase 3 | Pending |
 | TICKET-04 | Phase 3 | Pending |
 | TICKET-05 | Phase 3 | Pending |
-| TICKET-06 | Phase 3 | Pending |
-| TICKET-07 | Phase 3 | Pending |
+| TICKET-06 | Phase 3 | Completed |
+| TICKET-07 | Phase 3 | Completed |
 | TEST-01 | Phase 4 | Pending |
 | TEST-02 | Phase 4 | Pending |
 | TEST-03 | Phase 4 | Pending |
@@ -173,7 +177,7 @@
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 0. 盤點與凍結 | 3/3 | Completed | 2026-04-15 |
-| 1. 真相層級治理 | 3/3 | In progress | - |
-| 2. 交易保險絲收斂 | 0/N | Not started | - |
-| 3. 持倉交易票據 UI | 0/N | Not started | - |
+| 1. 真相層級治理 | 3/3 | Completed | 2026-04-15 |
+| 2. 交易保險絲收斂 | 3/3 | Completed | 2026-04-15 |
+| 3. 持倉交易票據 UI | 0/3 | Not started | - |
 | 4. 回歸測試與版本保全 | 0/N | Not started | - |

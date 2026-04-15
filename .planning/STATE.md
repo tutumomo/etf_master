@@ -3,7 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-04-15T13:50:52.658Z"
+last_updated: "2026-04-15T16:58:21.011Z"
+progress:
+  total_phases: 5
+  completed_phases: 1
+  total_plans: 12
+  completed_plans: 6
+  percent: 50
 ---
 
 # STATE: ETF_TW 穩定化與保險絲收斂
@@ -13,15 +19,15 @@ last_updated: "2026-04-15T13:50:52.658Z"
 ## Project Reference
 
 **Core Value:** 交易安全優先於功能完備 -- 保險絲能擋住錯誤指令，比新增功能更重要
-**Current Focus:** Phase 0 -- 盤點與凍結（路徑釐清，建立 active/legacy 對照表）
+**Current Focus:** Phase 3 -- 持倉交易票據 UI
 
 ## Current Position
 
 | Field | Value |
 |-------|-------|
-| Phase | Phase 2: 交易保險絲收斂 |
-| Status | Phase 2 Complete |
-| Progress | [xxx] 3/5 phases complete |
+| Phase | Phase 3: 持倉交易票據 UI |
+| Status | Planning Phase 3 Complete |
+| Progress | [########] 3/5 phases complete |
 
 ```
 [##############################                    ] 60%
@@ -35,29 +41,28 @@ last_updated: "2026-04-15T13:50:52.658Z"
 | Requirements completed | 14/30 |
 | Phases completed | 3/5 |
 | Total commits | 10 (Phase 0-2) |
+| Phase 3 P03 | 1h | 8 tasks | 2 files |
 
 ## Accumulated Context
 
 ### Decisions
 
 - Phase 0: Path audit and freeze COMPLETE (PATH-01, PATH-02, PATH-03)
-- Phase structure: 5 phases (0-4), derived from requirement categories and dependency order
-- GIT-01 and GIT-02 apply to all phases (each phase must commit)
-- GIT-03 applies only to Phase 4 (final push + evidence)
-- Each phase must follow mandatory reporting format (5 items)
-- TRUTH-05: 決策控制台二條建議決策必須落地（audit AI decision bridge 現況）
-- FUSE-06: 交易閾值可設定（現金百分比等），閾值觸發時可在持倉快照區塊下單
-- TICKET-06: Dashboard 區塊可摺疊收起
-- TICKET-07: 新手泡泡文字說明（使用者無股市經驗，需提供易懂的解釋）
-- K線圖時間週期切換（日/月/季/年）→ 推至 v2 (ADV-04)，不稀釋 v1 交易安全焦點
-- 所有 UI 文字需讓無股市經驗的新手能理解
+- Phase 1: Truth level governance COMPLETE (TRUTH-01 to TRUTH-05)
+- Phase 2: Trading fuse convergence COMPLETE (FUSE-01 to FUSE-06)
+- Phase 3: Position ticketing UI planning COMPLETE.
+- TICKET-01 & TICKET-02: Trade button in main list, form in expanded drawer.
+- TICKET-03 & TICKET-04: Preview -> Confirm -> Submit flow, mandatory manual confirmation.
+- TICKET-05: Back-end re-validation with pre-flight gates.
+- TICKET-06: Collapsible dashboard cards.
+- TICKET-07: Onboarding hints for new users.
 
 ### Todos
 
 - [x] Phase 0: Path audit and freeze (COMPLETE)
-- [x] Phase 1: Truth level governance + decision bridge audit (COMPLETE)
-- [x] Phase 2: Trading fuse convergence + threshold config (COMPLETE)
-- [ ] Phase 3: Position ticketing UI + collapsible blocks + onboarding tooltips
+- [x] Phase 1: Truth level governance (COMPLETE)
+- [x] Phase 2: Trading fuse convergence (COMPLETE)
+- [ ] Phase 3: Position ticketing UI (In Progress)
 - [ ] Phase 4: Regression tests and version integrity
 
 ### Blockers
@@ -66,5 +71,5 @@ last_updated: "2026-04-15T13:50:52.658Z"
 
 ## Session Continuity
 
-**Session N goal:** Roadmap updated with user supplementary requirements (TRUTH-05, FUSE-06, TICKET-06, TICKET-07, ADV-04)
-**Next session carry-forward:** User approval of updated roadmap, then begin Phase 0 planning
+**Session N goal:** Phase 3 execution plans created and roadmap updated.
+**Next session carry-forward:** Begin execution of Phase 3, starting with Plan 01 (Collapsible Sections & Tooltips).

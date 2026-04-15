@@ -30,13 +30,13 @@
 
 ### 持倉交易票據 (TICKET)
 
-- [ ] **TICKET-01**: 持倉主列保持乾淨，只留「交易」入口按鈕
-- [ ] **TICKET-02**: 交易票據放在展開層（drawer/inline detail），不在主列塞表單
-- [ ] **TICKET-03**: preview → confirm → submit 三段式（預覽通過後才顯示確認字串 + 送出按鈕）
-- [ ] **TICKET-04**: 維持人工確認，不允許預覽即送單
-- [ ] **TICKET-05**: 送單仍受 pre-flight 與權限控制（不受 auto-preview 限制，但受 sizing + 風控限制）
-- [ ] **TICKET-06**: Dashboard 區塊可設定為可摺疊收起（使用者可依需求展開/收合，避免資訊過載）
-- [ ] **TICKET-07**: 初次使用者泡泡文字說明（tooltip/onboarding hints），讓不熟悉股市的新手能理解每個區塊的意義
+- [x] **TICKET-01**: 持倉主列保持乾淨，只留「交易」入口按鈕
+- [x] **TICKET-02**: 交易票據放在展開層（drawer/inline detail），不在主列塞表單
+- [x] **TICKET-03**: preview → confirm → submit 三段式（預覽通過後才顯示確認字串 + 送出按鈕）
+- [x] **TICKET-04**: 維持人工確認，不允許預覽即送單
+- [x] **TICKET-05**: 送單仍受 pre-flight 與權限控制（不受 auto-preview 限制，但受 sizing + 風控限制）
+- [x] **TICKET-06**: Dashboard 區塊可設定為可摺疊收起（使用者可依需求展開/收合，避免資訊過載）
+- [x] **TICKET-07**: 初次使用者泡泡文字說明（tooltip/onboarding hints），讓不熟悉股市的新手能理解每個區塊的意義
 
 ### 回歸測試 (TEST)
 
@@ -48,8 +48,8 @@
 
 ### 版本憑證 (GIT)
 
-- [ ] **GIT-01**: 每階段必須 commit，最終必須 push 到 https://github.com/tutumomo/etf_master
-- [ ] **GIT-02**: commit 訊息包含範圍與目的（fix/refactor/test/docs 類型）
+- [x] **GIT-01**: 每階段必須 commit，最終必須 push 到 https://github.com/tutumomo/etf_master
+- [x] **GIT-02**: commit 訊息包含範圍與目的（fix/refactor/test/docs 類型）
 - [ ] **GIT-03**: 最終報告包含所有 commit hash 與 push 證據
 
 ## v2 Requirements
@@ -89,20 +89,20 @@
 | FUSE-04 | Phase 2 | Pending |
 | FUSE-05 | Phase 2 | Pending |
 | FUSE-06 | Phase 2 | Pending |
-| TICKET-01 | Phase 3 | Pending |
-| TICKET-02 | Phase 3 | Pending |
-| TICKET-03 | Phase 3 | Pending |
-| TICKET-04 | Phase 3 | Pending |
-| TICKET-05 | Phase 3 | Pending |
-| TICKET-06 | Phase 3 | Pending |
-| TICKET-07 | Phase 3 | Pending |
+| TICKET-01 | Phase 3 | Complete |
+| TICKET-02 | Phase 3 | Complete |
+| TICKET-03 | Phase 3 | Complete |
+| TICKET-04 | Phase 3 | Complete |
+| TICKET-05 | Phase 3 | Complete |
+| TICKET-06 | Phase 3 | Complete |
+| TICKET-07 | Phase 3 | Complete |
 | TEST-01 | Phase 4 | Pending |
 | TEST-02 | Phase 4 | Pending |
 | TEST-03 | Phase 4 | Pending |
 | TEST-04 | Phase 4 | Pending |
 | TEST-05 | Phase 4 | Pending |
-| GIT-01 | All Phases | Pending |
-| GIT-02 | All Phases | Pending |
+| GIT-01 | All Phases | Complete |
+| GIT-02 | All Phases | Complete |
 | GIT-03 | Phase 4 | Pending |
 
 **Coverage:**
