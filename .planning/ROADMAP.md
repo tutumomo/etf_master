@@ -7,7 +7,7 @@
 ## Phases
 
 - [x] **Phase 0: 盤點與凍結** -- 釐理 active/legacy 路徑，建立只改 active 副本的明文規範 (COMPLETE)
-- [ ] **Phase 1: 真相層級治理** -- 文件與程式回應統一三層分級，消除 state 過度信任殘留，決策控制台建議決策落地
+- [x] **Phase 1: 真相層級治理** -- 文件與程式回應統一三層分級，消除 state 過度信任殘留，決策控制台建議決策落地 (COMPLETE)
 - [ ] **Phase 2: 交易保險絲收斂** -- sizing policy + pre-flight gate 單一路徑化，submit 後強制落地驗證，交易閾值設定
 - [ ] **Phase 3: 持倉交易票據 UI** -- drawer 展開票據、preview/confirm/submit 三段式、維持人工確認、可摺疊區塊、新手泡泡說明
 - [ ] **Phase 4: 回歸測試與版本保全** -- 五類回歸案例覆蓋、全流程 commit hash、push 到 GitHub
@@ -24,9 +24,9 @@
   2. active/legacy 檔案對照清單已建立，且明文聲明只修改 active 路徑下的檔案
   3. 程式碼 grep 確認無任何地方同時引用 ~/.openclaw 與 ~/.hermes/profiles/etf_master 路徑
 **Plans**: 3 plans
-- [ ] 00-01-PLAN.md — 建立路徑報告工具並紀錄目前生效路徑 (PATH-01)
-- [ ] 00-02-PLAN.md — 建立檔案對照清單與凍結政策聲明 (PATH-02)
-- [ ] 00-03-PLAN.md — 修正程式碼路徑混用問題並建立稽核工具 (PATH-03)
+- [x] 00-01-PLAN.md — 建立路徑報告工具並紀錄目前生效路徑 (PATH-01)
+- [x] 00-02-PLAN.md — 建立檔案對照清單與凍結政策聲明 (PATH-02)
+- [x] 00-03-PLAN.md — 修正程式碼路徑混用問題並建立稽核工具 (PATH-03)
 
 **Mandatory Reporting Format:**
 1. 本階段做了什麼（3~6行）
@@ -46,7 +46,10 @@
   3. list_trades 空值時的回應採保守措辭：「本次查詢沒看到」，不反推失敗或已成交
   4. submit 回應文字明確標示「仍需後續驗證」，不得暗示委託已落地
   5. 決策控制台二條建議決策全鏈通暢（AI decision bridge request→response→consensus），dashboard 正確顯示
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 01-01-PLAN.md — 真相層級定義與保守措辭 (TRUTH-02, TRUTH-03, TRUTH-04)
+- [ ] 01-02-PLAN.md — 三層分級標註實作 (TRUTH-01)
+- [ ] 01-03-PLAN.md — 決策控制台落地與驗證 (TRUTH-05)
 
 **Mandatory Reporting Format:**
 1. 本階段做了什麼（3~6行）
@@ -124,9 +127,9 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PATH-01 | Phase 0 | Pending |
-| PATH-02 | Phase 0 | Pending |
-| PATH-03 | Phase 0 | Pending |
+| PATH-01 | Phase 0 | Completed |
+| PATH-02 | Phase 0 | Completed |
+| PATH-03 | Phase 0 | Completed |
 | TRUTH-01 | Phase 1 | Pending |
 | TRUTH-02 | Phase 1 | Pending |
 | TRUTH-03 | Phase 1 | Pending |
@@ -169,8 +172,8 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 0. 盤點與凍結 | 3/3 | Not started | - |
-| 1. 真相層級治理 | 0/N | Not started | - |
+| 0. 盤點與凍結 | 3/3 | Completed | 2026-04-15 |
+| 1. 真相層級治理 | 3/3 | In progress | - |
 | 2. 交易保險絲收斂 | 0/N | Not started | - |
 | 3. 持倉交易票據 UI | 0/N | Not started | - |
 | 4. 回歸測試與版本保全 | 0/N | Not started | - |
