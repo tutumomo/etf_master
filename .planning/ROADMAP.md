@@ -9,8 +9,8 @@
 - [x] **Phase 0: 盤點與凍結** -- 釐理 active/legacy 路徑，建立只改 active 副本的明文規範 (COMPLETE)
 - [x] **Phase 1: 真相層級治理** -- 文件與程式回應統一三層分級，消除 state 過度信任殘留，決策控制台建議決策落地 (COMPLETE)
 - [x] **Phase 2: 交易保險絲收斂** -- sizing policy + pre-flight gate 單一路徑化，submit 後強制落地驗證，交易閾值設定 (COMPLETE)
-- [ ] **Phase 3: 持倉交易票據 UI** -- drawer 展開票據、preview/confirm/submit 三段式、維持人工確認、可摺疊區塊、新手泡泡說明
-- [ ] **Phase 4: 回歸測試與版本保全** -- 五類回歸案例覆蓋、全流程 commit hash、push 到 GitHub
+- [x] **Phase 3: 持倉交易票據 UI** -- drawer 展開票據、preview/confirm/submit 三段式、維持人工確認、可摺疊區塊、新手泡泡說明 (COMPLETE)
+- [x] **Phase 4: 回歸測試與版本保全** -- 五類回歸案例覆蓋、全流程 commit hash、push 到 GitHub (COMPLETE)
 
 ## Phase Details
 
@@ -182,5 +182,5 @@
 | 0. 盤點與凍結 | 3/3 | Completed | 2026-04-15 |
 | 1. 真相層級治理 | 3/3 | Completed | 2026-04-15 |
 | 2. 交易保險絲收斂 | 3/3 | Completed | 2026-04-15 |
-| 3. 持倉交易票據 UI | 0/3 | Not started | - |
-| 4. 回歸測試與版本保全 | 0/3 | Not started | - |
+| 3. 持倉交易票據 UI | 3/3 | Completed | 2026-04-16 |
+| 4. 回歸測試與版本保全 | 3/3 | Completed | 2026-04-16 |
