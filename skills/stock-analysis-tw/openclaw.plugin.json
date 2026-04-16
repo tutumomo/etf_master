@@ -1,0 +1,11 @@
+{
+  "id": "stock-analysis-tw",
+  "name": "Taiwan Stock Quant Analysis Suite",
+  "version": "1.0.0",
+  "description": "專業級台股個股量化分析工具，提供財報診斷、籌碼追蹤與多維度評價功能。",
+  "metadata": {
+    "openclaw": {
+      "skillKey": "stock-analysis-tw"
+    }
+  }
+}
