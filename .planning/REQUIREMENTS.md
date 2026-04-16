@@ -60,6 +60,7 @@
 - **ADV-02**: Dashboard 美化/響應式設計
 - **ADV-03**: 路徑自動遷移工具（OpenClaw → Hermes）
 - **ADV-04**: K線圖時間週期切換（日線/月線/季線/年線），在盤感輔助層「詳情圖表」中提供選擇
+- **UI-INTEGRATE**: Dashboard 持倉與關注區塊優化整合，包含合併盤感、預設 100 股、動態買賣邏輯
 
 ## Out of Scope
 
@@ -104,12 +105,14 @@
 | GIT-01 | All Phases | Complete |
 | GIT-02 | All Phases | Complete |
 | GIT-03 | Phase 4 | Pending |
+| UI-INTEGRATE | Phase 7 | Pending |
 
 **Coverage:**
 - v1 requirements: 30 total
-- Mapped to phases: 30
-- Unmapped: 0
+- v2 requirements: 5 total
+- Mapped to phases: 31
+- Unmapped: 4 (ADV-01...04)
 
 ---
 *Requirements defined: 2026-04-15*
-*Last updated: 2026-04-15 — added TRUTH-05, FUSE-06, TICKET-06, TICKET-07; ADV-04 to v2*
+*Last updated: 2026-04-16 — added UI-INTEGRATE*

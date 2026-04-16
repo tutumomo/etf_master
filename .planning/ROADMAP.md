@@ -13,23 +13,9 @@
 - [x] **Phase 4: 回歸測試與版本保全** -- 五類回歸案例覆蓋、全流程 commit hash、push 到 GitHub (COMPLETE)
 - [x] **Phase 5: 財經技能整合與 SOUL 升級** -- 深度檢視 3 個財經技能並建立意圖觸發映射表 (COMPLETE)
 - [ ] **Phase 6: 決策對齊與反應式引擎** -- 確保建議對齊策略與情境，並實作即時連動 (IN PROGRESS)
+- [ ] **Phase 7: Dashboard 持倉與關注區塊整合** -- 合併區塊、優化交易票據、動態買賣邏輯 (PLANNED)
 
 ## Phase Details
-
-### Phase 5: 財經技能整合與 SOUL 升級
-
-**Goal**: 確保三個財經技能 (stock-analysis-tw, stock-market-pro-tw, taiwan-finance) 腳本正確且已整合至 SOUL.md 的意圖映射表。
-**Depends on**: Phase 4
-**Requirements**: SKILL-01, SKILL-02, SKILL-03, SKILL-04, SKILL-05, GIT-01, GIT-02
-**Success Criteria** (what must be TRUE):
-  1. 三個技能的腳本可在當前環境執行，不報路徑引用或依賴錯誤。
-  2. 技能分析結果能正確參考或寫入 `instances/etf_master/state/` 目錄。
-  3. `SOUL.md` 新增「意圖觸發映射表」，定義買賣建議、診斷詢問、線圖請求、估值請求的對應技能。
-  4. 模擬提問驗證 Agent 能正確選擇技能執行。
-**Plans**: 3 plans
-- [x] 05-01-PLAN.md — 財經技能審計與路徑依賴修復 (SKILL-01, SKILL-02)
-- [x] 05-02-PLAN.md — 狀態整合與 SOUL 意圖映射表建立 (SKILL-03, SKILL-04)
-- [x] 05-03-PLAN.md — 整合驗證與情境模擬 (SKILL-05)
 
 ### Phase 6: 決策對齊與反應式引擎
 
@@ -45,6 +31,20 @@
 - [ ] 06-01-PLAN.md — Rule Engine 動態權重矩陣實作 (ALIGN-01)
 - [ ] 06-02-PLAN.md — AI Bridge 指令強化與仲裁優化 (ALIGN-02, ALIGN-04)
 - [ ] 06-03-PLAN.md — Dashboard 反應式連動與整合驗證 (ALIGN-03)
+
+### Phase 7: Dashboard 持倉與關注區塊整合
+
+**Goal**: 透過合併區塊與優化交易票據，提升 Dashboard 資訊密度與操作安全性，實作動態交易權限與預覽模式。
+**Depends on**: Phase 6
+**Requirements**: UI-INTEGRATE, GIT-01, GIT-02
+**Success Criteria** (what must be TRUE):
+  1. 「關注標的」與「盤感輔助層」成功合併，顯示完整指標。
+  2. 持倉區塊與關注區塊的交易票據預設值為 100 股。
+  3. 未持倉標的僅能執行「買入」，已持倉標的支援雙向交易。
+  4. 交易票據顯式標記「Preview Only」。
+**Plans**: 2 plans
+- [ ] 07-01-PLAN.md — 盤感與關注區塊合併 UI (UI-INTEGRATE)
+- [ ] 07-02-PLAN.md — 持倉優化與動態下單邏輯 (UI-INTEGRATE)
 
 **Mandatory Reporting Format:**
 1. 本階段做了什麼（3~6行）
@@ -92,11 +92,12 @@
 | ALIGN-02 | Phase 6 | In Progress |
 | ALIGN-03 | Phase 6 | In Progress |
 | ALIGN-04 | Phase 6 | In Progress |
+| UI-INTEGRATE | Phase 7 | Pending |
 | GIT-01 | All Phases | Completed |
 | GIT-02 | All Phases | Completed |
 | GIT-03 | Phase 4 | Completed |
 
-**Mapped: 39/39 requirements**
+**Mapped: 40/40 requirements**
 
 ## Hard Constraints
 
@@ -118,3 +119,4 @@
 | 4. 回歸測試與版本保全 | 3/3 | Completed | 2026-04-16 |
 | 5. 財經技能整合與 SOUL 升級 | 3/3 | Completed | 2026-04-16 |
 | 6. 決策對齊與反應式引擎 | 0/3 | In Progress | - |
+| 7. Dashboard 持倉與關注區塊整合 | 0/2 | Pending | - |
