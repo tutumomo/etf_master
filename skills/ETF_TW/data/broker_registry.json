@@ -1,0 +1,115 @@
+{
+  "version": "1.0",
+  "updated_at": "2026-03-16",
+  "brokers": {
+    "sinopac": {
+      "name": "永豐金證券",
+      "name_en": "SinoPac Securities",
+      "type": "broker",
+      "api_available": true,
+      "api_type": "shioaji",
+      "api_library": "shioaji",
+      "supports_paper": true,
+      "supports_sandbox": true,
+      "supports_live": true,
+      "fee_rate": 0.001425,
+      "tax_rate": 0.003,
+      "min_fee": 20,
+      "notes": "台灣大型券商，ETF 商品完整，提供 Shioaji API 交易接口",
+      "onboarding_url": "https://www.sinopac.com/",
+      "capabilities": [
+        "stock_trading",
+        "etf_trading",
+        "market_data",
+        "account_balance",
+        "position_query"
+      ],
+      "credential_fields": [
+        {"field": "account_id", "label": "帳號", "type": "string"},
+        {"field": "password", "label": "密碼", "type": "password"},
+        {"field": "trade_password", "label": "交易密碼", "type": "password"}
+      ]
+    },
+    "cathay": {
+      "name": "國泰綜合證券",
+      "name_en": "Cathay Securities",
+      "type": "broker",
+      "api_available": false,
+      "api_type": null,
+      "supports_paper": true,
+      "supports_sandbox": false,
+      "supports_live": false,
+      "fee_rate": 0.001425,
+      "tax_rate": 0.003,
+      "min_fee": 20,
+      "notes": "國泰金控旗下券商，通路據點多，尚未提供公開 API",
+      "onboarding_url": "https://www.cathaysec.com.tw/",
+      "capabilities": [
+        "stock_trading",
+        "etf_trading",
+        "market_data",
+        "account_balance"
+      ],
+      "credential_fields": [
+        {"field": "account_id", "label": "帳號", "type": "string"},
+        {"field": "password", "label": "密碼", "type": "password"},
+        {"field": "trade_password", "label": "交易密碼", "type": "password"}
+      ]
+    },
+    "yuanlin": {
+      "name": "元大證券",
+      "name_en": "Yuanta Securities",
+      "type": "broker",
+      "api_available": false,
+      "api_type": null,
+      "supports_paper": true,
+      "supports_sandbox": false,
+      "supports_live": false,
+      "fee_rate": 0.001425,
+      "tax_rate": 0.003,
+      "min_fee": 20,
+      "notes": "台灣經紀商龍頭，ETF 發行最多，尚未提供公開 API",
+      "onboarding_url": "https://www.yuanta.com.tw/",
+      "capabilities": [
+        "stock_trading",
+        "etf_trading",
+        "market_data",
+        "account_balance",
+        "position_query"
+      ],
+      "credential_fields": [
+        {"field": "account_id", "label": "帳號", "type": "string"},
+        {"field": "password", "label": "密碼", "type": "password"},
+        {"field": "trade_password", "label": "交易密碼", "type": "password"}
+      ]
+    },
+    "paper": {
+      "name": "模擬交易（Paper Trading）",
+      "name_en": "Paper Trading Simulator",
+      "type": "simulator",
+      "api_available": true,
+      "api_type": "internal",
+      "supports_paper": true,
+      "supports_sandbox": true,
+      "supports_live": false,
+      "fee_rate": 0.001425,
+      "tax_rate": 0.003,
+      "min_fee": 20,
+      "notes": "內建模擬交易系統，用於測試與學習",
+      "onboarding_url": null,
+      "capabilities": [
+        "stock_trading",
+        "etf_trading",
+        "market_data",
+        "account_balance",
+        "position_query",
+        "paper_trading"
+      ],
+      "credential_fields": [
+        {"field": "account_id", "label": "模擬帳號", "type": "string"}
+      ]
+    }
+  },
+  "default_broker": "paper",
+  "supported_modes": ["paper", "sandbox", "live"]
+}

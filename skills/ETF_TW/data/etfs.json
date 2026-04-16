@@ -1,0 +1,155 @@
+{
+  "meta": {
+    "version": "1.0",
+    "last_updated": "2026-03-23",
+    "source": "Yahoo Finance / 台灣證交所"
+  },
+  "etfs": {
+    "0050": {
+      "name": "元大台灣卓越 50",
+      "category": "大盤型",
+      "index": "台灣 50 指數",
+      "expense_ratio": 0.005,
+      "dividend_frequency": "年度",
+      "inception_date": "2003-01-02",
+      "aum": "約 3000 億 TWD",
+      "description": "追蹤台灣前 50 大企業，核心配置首選",
+      "risk_level": "中",
+      "suitable_for": [
+        "長期累積",
+        "退休規劃",
+        "核心配置"
+      ]
+    },
+    "006208": {
+      "name": "富邦台 50",
+      "category": "大盤型",
+      "index": "富時台灣卓越 50",
+      "expense_ratio": 0.0033,
+      "dividend_frequency": "年度",
+      "inception_date": "2014-02-17",
+      "aum": "約 1500 億 TWD",
+      "description": "類似 0050，費用率較低",
+      "risk_level": "中",
+      "suitable_for": [
+        "長期累積",
+        "退休規劃",
+        "核心配置",
+        "成本敏感"
+      ]
+    },
+    "0056": {
+      "name": "元大高股息",
+      "category": "高股息",
+      "index": "台灣高股息指數",
+      "expense_ratio": 0.0057,
+      "dividend_frequency": "季度",
+      "inception_date": "2007-11-01",
+      "aum": "約 2000 億 TWD",
+      "description": "高股息策略，定期現金流",
+      "risk_level": "中低",
+      "suitable_for": [
+        "現金流需求",
+        "退休現金流",
+        "穩健配置"
+      ]
+    },
+    "00878": {
+      "name": "國泰永續加權",
+      "category": "高股息",
+      "index": "國泰台灣加 50",
+      "expense_ratio": 0.0035,
+      "dividend_frequency": "年度",
+      "inception_date": "2019-09-18",
+      "aum": "約 800 億 TWD",
+      "description": "ESG 永續投資，高股息",
+      "risk_level": "中",
+      "suitable_for": [
+        "ESG 投資",
+        "現金流需求",
+        "長期配置"
+      ]
+    },
+    "00679B": {
+      "name": "元大美債20年",
+      "category": "債券型",
+      "index": "ICE 美國政府 20+ 年期債券指數",
+      "expense_ratio": 0.0035,
+      "dividend_frequency": "月配",
+      "inception_date": "2017-01-17",
+      "aum": "待確認",
+      "description": "長天期美債 ETF，偏防守配置與利率敏感部位",
+      "risk_level": "中低",
+      "suitable_for": [
+        "防守配置",
+        "債券配置",
+        "波動緩衝",
+        "收益需求"
+      ]
+    },
+    "00881": {
+      "name": "國泰半導體",
+      "category": "產業型",
+      "index": "國泰台灣半導體指數",
+      "expense_ratio": 0.005,
+      "dividend_frequency": "年度",
+      "inception_date": "2021-03-18",
+      "aum": "約 200 億 TWD",
+      "description": "半導體產業集中，高波動",
+      "risk_level": "高",
+      "suitable_for": [
+        "產業配置",
+        "衛星部位",
+        "風險承受度高"
+      ]
+    },
+    "00830": {
+      "name": "國泰費城半導體",
+      "category": "科技型",
+      "index": "費城半導體指數",
+      "expense_ratio": 0.005,
+      "dividend_frequency": "半年度",
+      "inception_date": "2019-05-03",
+      "aum": "約 200 億 TWD",
+      "description": "追蹤費城半導體指數，參與全球半導體產業成長",
+      "risk_level": "高",
+      "suitable_for": [
+        "衛星配置",
+        "波段操作",
+        "科技愛好者"
+      ]
+    }
+  },
+  "categories": {
+    "大盤型": {
+      "description": "追蹤整體市場指數，適合核心配置",
+      "risk_level": "中",
+      "examples": [
+        "0050",
+        "006208"
+      ]
+    },
+    "高股息": {
+      "description": "高配息策略，適合現金流需求",
+      "risk_level": "中低",
+      "examples": [
+        "0056",
+        "00878"
+      ]
+    },
+    "債券型": {
+      "description": "債券投資，波動較低",
+      "risk_level": "低",
+      "examples": [
+        "00679B"
+      ]
+    },
+    "產業型": {
+      "description": "產業或主題集中，波動較高",
+      "risk_level": "中高",
+      "examples": [
+        "00881"
+      ]
+    }
+  }
+}

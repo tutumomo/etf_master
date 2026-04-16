@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+
+<!-- Hero Section -->
+<section class="hero">
+  <div>
+    <div class="eyebrow">Portfolio Intelligence</div>
+    <h1 class="title">ETF_TW Dashboard</h1>
+    <div class="subtitle">自動化資產管理與決策中心 (v1.1.0)</div>
+  </div>
+  <div class="top-meta">
+    <button onclick="runFullPipelineSync()" style="padding:10px 14px; border-radius:999px; border:none; background:linear-gradient(90deg,#7cd6ff,#8b8fff); color:#07111f; font-weight:700; cursor:pointer;">一鍵同步與全量分析 (Full Sync)</button>
+    <div class="pill">更新：{{ account.get('updated_at', 'N/A') }}</div>
+  </div>
+</section>
+
+<!-- Decision Control -->
+<section class="grid">
+  <div class="card full" id="card_decision_control">
+    <div class="card-header" onclick="toggleCard('card_decision_control')">
+      <div class="label"><span>決策控制台</span><span class="tag">Decision Control</span></div>
+      <span class="collapse-icon">▼</span>
+    </div>
+    <div class="card-content">
+      <!-- 三聯式決策看板 -->
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px;">
+        <div style="padding: 14px; border-radius: 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+            <div style="font-size: 11px; color: var(--muted); text-transform: uppercase;">規則引擎</div>
+            <div style="font-size: 16px; font-weight: 700; color: #7cd6ff;">{{ auto_trade_state.get('last_preview_summary') or '無建議' }}</div>
+        </div>
+        <div style="padding: 14px; border-radius: 16px; background: rgba(139,143,255,0.05); border: 1px solid rgba(139,143,255,0.15);">
+            <div style="font-size: 11px; color: #8b8fff; text-transform: uppercase;">AI 決策橋接</div>
+            <div style="font-size: 16px; font-weight: 700; color: #8b8fff;">{{ ai_decision_response.get('decision', '尚無建議') }}</div>
+        </div>
+        <div style="padding: 14px; border-radius: 16px; background: rgba(53,212,154,0.05); border: 1px solid rgba(53,212,154,0.15);">
+            <div style="font-size: 11px; color: var(--good); text-transform: uppercase;">共識仲裁</div>
+            <div id="decision_consensus_result" style="font-size: 16px; font-weight: 700; color: var(--good);">載入中...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Main Grid -->
+<section class="grid">
+  <div class="card wide" id="card_positions">
+    <div class="card-header" onclick="toggleCard('card_positions')">
+        <div class="label"><span>既有持倉</span><span class="tag">Positions</span></div>
+        <span class="collapse-icon">▼</span>
+    </div>
+    <div class="card-content">
+        <!-- 這裡是原本的持倉表格 -->
+        <table>
+            <thead><tr><th>標的</th><th>數量</th><th>市值</th><th>損益</th></tr></thead>
+            <tbody>
+                {% for p in positions.get('positions', []) %}
+                <tr><td>{{ p.symbol }}</td><td>{{ p.quantity }}</td><td>{{ p.market_value }}</td><td>{{ p.unrealized_pnl }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+  </div>
+
+  <div class="card wide" id="card_watchlist">
+    <div class="card-header" onclick="toggleCard('card_watchlist')">
+        <div class="label"><span>關注標的與市場盤感</span><span class="tag">Watchlist & Tape</span></div>
+        <span class="collapse-icon">▼</span>
+    </div>
+    <div class="card-content">
+        <!-- 關注標的表格 -->
+    </div>
+  </div>
+</section>
+
+<!-- Chart Section -->
+<section class="grid">
+  <div class="card full" id="card_chart">
+    <div class="card-header" onclick="toggleCard('card_chart')">
+        <div class="label"><span>技術線圖</span><span class="tag">Chart</span></div>
+        <span class="collapse-icon">▼</span>
+    </div>
+    <div class="card-content">
+        <div id="main-chart" style="width: 100%; height: 400px;"></div>
+    </div>
+  </div>
+</section>
+{% endblock %}

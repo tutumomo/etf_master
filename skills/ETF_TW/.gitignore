@@ -1,0 +1,34 @@
+# Python 虛擬環境與快取
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# 交易狀態資料 (Sensitive - 依計畫排除)
+state/
+etf_tw.db
+etf_tw.db-journal
+logs/
+*.log
+
+# 環境變數與憑證 (Private)
+.env
+auth-profiles.json
+credentials.json
+token.json
+
+# 作業系統垃圾檔
+.DS_Store
+Thumbs.db
+# Local instances (contains sensitive state/logs; do not commit)
+instances/
+
+# 本地診斷 / 暫存
+*.tmp
+scripts/diag_probe.py
+# Private directory with certificates and secrets
+private/
+
+# Trade logs (may contain sensitive data)
+data/trade_logs.jsonl

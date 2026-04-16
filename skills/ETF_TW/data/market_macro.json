@@ -1,0 +1,13 @@
+{
+  "updated_at": "2026-04-13T22:24:52.577953",
+  "indices": {
+    "TAIEX": {
+      "price": 35457.29,
+      "change": 39.46,
+      "change_pct": 11.0,
+      "volume": 10680245
+    },
+    "VIX_PROXY": "Check Macro Indicators"
+  },
+  "fx": {}
+}

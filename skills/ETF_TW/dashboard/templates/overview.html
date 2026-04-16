@@ -1,0 +1,1557 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- lightweight-charts by TradingView — https://github.com/tradingview/lightweight-charts — Apache 2.0 License -->
+<script src="https://unpkg.com/lightweight-charts@5.1.0/dist/lightweight-charts.standalone.production.js" integrity="sha384-ExNwjbclSLY2LS3S2c6aDJDjpBHGZLct23WX65fLzj0ob1bRrCh9H90WThES5wQA" crossorigin="anonymous"></script>
+<section class="hero">
+  <div>
+    <div class="eyebrow">Portfolio Intelligence</div>
+    <h1 class="title">ETF_TW Dashboard</h1>
+    <div class="subtitle">本地資產儀表板已開始承接 agent 的高頻展示資訊。現在這裡更像真正的金融控制台，而不是冰冷、老派的管理頁。</div>
+  </div>
+  <div class="top-meta">
+    <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:flex-end;">
+      <select id="base_strategy" style="padding:10px 12px; border-radius:999px; background:rgba(124,214,255,0.08); color:#edf2ff; border:1px solid rgba(124,214,255,0.16);">
+        <option value="平衡配置" {% if strategy.get('base_strategy') == '平衡配置' %}selected{% endif %}>平衡配置</option>
+        <option value="核心累積" {% if strategy.get('base_strategy') == '核心累積' %}selected{% endif %}>核心累積</option>
+        <option value="收益優先" {% if strategy.get('base_strategy') == '收益優先' %}selected{% endif %}>收益優先</option>
+        <option value="防守保守" {% if strategy.get('base_strategy') == '防守保守' %}selected{% endif %}>防守保守</option>
+        <option value="觀察模式" {% if strategy.get('base_strategy') == '觀察模式' %}selected{% endif %}>觀察模式</option>
+      </select>
+      <select id="scenario_overlay" style="padding:10px 12px; border-radius:999px; background:rgba(124,214,255,0.08); color:#edf2ff; border:1px solid rgba(124,214,255,0.16);">
+        <option value="無" {% if strategy.get('scenario_overlay') == '無' %}selected{% endif %}>無</option>
+        <option value="逢低觀察" {% if strategy.get('scenario_overlay') == '逢低觀察' %}selected{% endif %}>逢低觀察</option>
+        <option value="高波動警戒" {% if strategy.get('scenario_overlay') == '高波動警戒' %}selected{% endif %}>高波動警戒</option>
+        <option value="減碼保守" {% if strategy.get('scenario_overlay') == '減碼保守' %}selected{% endif %}>減碼保守</option>
+        <option value="收益再投資" {% if strategy.get('scenario_overlay') == '收益再投資' %}selected{% endif %}>收益再投資</option>
+      </select>
+      <button type="button" onclick="submitStrategyUpdate()" style="padding:10px 14px; border-radius:999px; border:none; background:linear-gradient(90deg,#7cd6ff,#8b8fff); color:#07111f; font-weight:700; cursor:pointer;">套用策略</button>
+    </div>
+    <div class="pill">更新：{{ market_cache.get('updated_at', account.get('updated_at', 'N/A')) }}</div>
+  </div>
+</section>
+
+<div id="global_banner" class="inline-banner" style="margin: 0 16px 18px 16px; border-radius: 12px; background: rgba(124, 214, 255, 0.1); display: none;"></div>
+{% if intelligence_warning %}
+<div class="inline-banner show error" style="margin: 0 16px 18px 16px; border-radius: 12px;">
+  <strong>技術指標資料尚未建立：</strong>
+  {{ intelligence_warning }}
+</div>
+{% endif %}
+{% if filled_reconciliation and not filled_reconciliation.get('ok') and filled_reconciliation.get('unreconciled_symbols') %}
+<div class="inline-banner show error" style="margin: 0 16px 18px 16px; border-radius: 12px;">
+  <strong>未對齊成交提醒：</strong>
+  已有成交事實但尚未對齊 broker positions：{{ filled_reconciliation.get('unreconciled_symbols', []) }}
+</div>
+{% endif %}
+
+<section class="grid" style="margin-bottom:18px;">
+  <div class="card full" id="card_trading_mode">
+    <div class="card-header" onclick="toggleCard('card_trading_mode')">
+      <div class="label" style="margin-bottom:0;">
+        <span>交易模式</span>
+        <div class="tooltip">?
+          <span class="tooltiptext">
+            <strong>LIVE-READY</strong>: 正式交易模式，連線證券帳戶執行真實買賣。<br>
+            <strong>PAPER</strong>: 模擬模式，使用虛擬帳本進行策略預演，不涉及真實金錢。
+          </span>
+        </div>
+        <span class="tag">Trading Mode</span>
+      </div>
+      <span class="collapse-icon">▼</span>
+    </div>
+    <div class="card-content">
+      <div id="trading_mode_banner" class="inline-banner"></div>
+      <div class="status-list">
+        <div class="status-item"><span class="muted">目前模式</span><span class="{% if trading_mode_summary.get('mode_label') == 'LIVE-READY' %}good{% else %}warn{% endif %}">{{ trading_mode_summary.get('mode_label', 'UNKNOWN') }}</span></div>
+        <div class="status-item"><span class="muted">預設帳戶</span><span class="mono">{{ trading_mode_summary.get('default_account', 'N/A') }}</span></div>
+        <div class="status-item"><span class="muted">預設券商</span><span>{{ trading_mode_summary.get('default_broker', 'N/A') }}</span></div>
+        <div class="status-item"><span class="muted">資料來源</span><span>{{ trading_mode_summary.get('data_source', 'N/A') }}</span></div>
+        <div class="status-item"><span class="muted">health check</span><span class="{% if trading_mode_summary.get('health_check') == 'OK' %}good{% else %}warn{% endif %}">{{ trading_mode_summary.get('health_check', 'N/A') }}</span></div>
+        <div class="status-item"><span class="muted">最後更新</span><span class="mono">{{ trading_mode_summary.get('updated_at', 'N/A') }}</span></div>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:16px;">
+        <button onclick="setTradingMode('live')" 
+                title="切換至正式交易模式。系統將連線永豐金證券(SinoPac)帳戶，即時同步真實持倉與餘額，並準備執行正式交易指令。"
+                style="padding:10px 14px; border-radius:999px; border:none; background:linear-gradient(90deg,#7cd6ff,#8b8fff); color:#07111f; font-weight:700; cursor:pointer;">切到 LIVE</button>
+        <button onclick="setTradingMode('paper')" 
+                title="切換至模擬交易模式。系統將讀取本地模擬帳本，並在每次重新整理時更新模擬收益，適合策略實驗與預演。"
+                style="padding:10px 14px; border-radius:999px; border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.06); color:#edf2ff; font-weight:700; cursor:pointer;">切到 PAPER</button>
+        <button id="btn_full_pipeline" onclick="runFullPipelineSync()" 
+                title="執行全流程同步與分析：包含報價同步、資產核對、規則掃描與 AI 仲裁共識。這是一鍵更新整個 Dashboard 核心資料的最推薦方式。"
+                style="padding:10px 18px; border-radius:999px; border:none; background:linear-gradient(90deg,#ffd166,#ff9f43); color:#07111f; font-weight:800; cursor:pointer; box-shadow: 0 4px 15px rgba(255,209,102,0.3);">一鍵同步與全量分析 (Full Sync)</button>
+      </div>
+      {% if trading_mode_warnings %}
+      <div style="margin-top:12px;">
+        <div class="label" style="margin-bottom:6px;"><span>模式 / 資料警示</span><span class="tag">Warnings</span></div>
+        <div class="status-list" style="margin-top:0;">
+          {% for w in trading_mode_warnings %}
+          <div class="status-item"><span class="muted">警示</span><span class="warn">{{ w }}</span></div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<section class="grid" style="margin-bottom:18px;">
+  <div class="card full" id="card_safety_redlines">
+    <div class="card-header" onclick="toggleCard('card_safety_redlines')">
+      <div class="label" style="margin-bottom:0;">
+        <span>交易閾值與安全紅線</span>
+        <div class="tooltip">?
+          <span class="tooltiptext">
+            <strong>Safety Redlines</strong>: 系統的絕對執行邊界。任何超過這些閾值的訂單都將被 pre_flight_gate 強制阻斷，無論是 AI 還是用戶發出的指令。
+          </span>
+        </div>
+        <span class="tag">Safety Redlines</span>
+      </div>
+      <span class="collapse-icon">▼</span>
+    </div>
+    <div class="card-content">
+      <div id="safety_redlines_banner" class="inline-banner"></div>
+      
+      <div class="status-list" style="margin-bottom:16px;">
+        <div class="status-item">
+          <span class="muted">熔斷器狀態</span>
+          <span class="{% if daily_pnl.get('circuit_breaker_triggered') %}bad{% else %}good{% endif %}">
+            {{ '已觸發 (BLOCKED)' if daily_pnl.get('circuit_breaker_triggered') else '正常 (CLEAR)' }}
+          </span>
+        </div>
+        <div class="status-item">
+          <span class="muted">今日損益 (估)</span>
+          <span class="mono {{ 'good' if (daily_pnl.get('pnl_pct') or 0) >= 0 else 'bad' }}">
+            {{ '%.2f'|format(daily_pnl.get('pnl_pct') or 0) }}%
+          </span>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:20px;">
+        <div class="form-group">
+          <div class="label" style="font-size:12px; margin-bottom:4px;">
+            <span>單筆金額上限 (TWD)</span>
+            <div class="tooltip">? <span class="tooltiptext">單筆訂單的最大新台幣金額。</span></div>
+          </div>
+          <input type="number" id="redline_max_amount_twd" value="{{ safety_redlines.get('max_buy_amount_twd') }}" style="width:100%; padding:10px; border-radius:8px; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.1); color:#fff;">
+        </div>
+        
+        <div class="form-group">
+          <div class="label" style="font-size:12px; margin-bottom:4px;">
+            <span>單筆金額上限 (Cash %)</span>
+            <div class="tooltip">? <span class="tooltiptext">單筆訂單佔可用現金的最大百分比。</span></div>
+          </div>
+          <input type="number" id="redline_max_amount_pct" value="{{ safety_redlines.get('max_buy_amount_pct') }}" style="width:100%; padding:10px; border-radius:8px; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.1); color:#fff;">
+        </div>
+
+        <div class="form-group">
+          <div class="label" style="font-size:12px; margin-bottom:4px;">
+            <span>單筆股數上限 (Shares)</span>
+            <div class="tooltip">? <span class="tooltiptext">單筆訂單的最大股數。1000 股 = 1 張。</span></div>
+          </div>
+          <input type="number" id="redline_max_shares" value="{{ safety_redlines.get('max_buy_shares') }}" style="width:100%; padding:10px; border-radius:8px; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.1); color:#fff;">
+        </div>
+
+        <div class="form-group">
+          <div class="label" style="font-size:12px; margin-bottom:4px;">
+            <span>個股集中度上限 (%)</span>
+            <div class="tooltip">? <span class="tooltiptext">單一標的市值佔總資產的最大百分比。</span></div>
+          </div>
+          <input type="number" id="redline_max_concentration" value="{{ safety_redlines.get('max_concentration_pct') }}" style="width:100%; padding:10px; border-radius:8px; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.1); color:#fff;">
+        </div>
+
+        <div class="form-group">
+          <div class="label" style="font-size:12px; margin-bottom:4px;">
+            <span>日損益熔斷門檻 (%)</span>
+            <div class="tooltip">? <span class="tooltiptext">當日資產縮水超過此比例時，將阻斷所有買入指令。</span></div>
+          </div>
+          <input type="number" id="redline_daily_loss" value="{{ safety_redlines.get('daily_loss_limit_pct') }}" style="width:100%; padding:10px; border-radius:8px; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.1); color:#fff;">
+        </div>
+
+        <div class="form-group">
+          <div class="label" style="font-size:12px; margin-bottom:4px;">
+            <span>AI 信心最低門檻 (0~1)</span>
+            <div class="tooltip">? <span class="tooltiptext">AI 建議的信心度需高於此值，系統才允許執行。Low=0.5, Medium=0.7, High=0.9。</span></div>
+          </div>
+          <input type="number" id="redline_ai_confidence" step="0.1" min="0" max="1" value="{{ safety_redlines.get('ai_confidence_threshold') }}" style="width:100%; padding:10px; border-radius:8px; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.1); color:#fff;">
+        </div>
+      </div>
+
+      <div style="margin-top:20px; display:flex; gap:12px; align-items:center;">
+        <button onclick="saveSafetyRedlines()" style="padding:10px 20px; border-radius:999px; border:none; background:linear-gradient(90deg,#ff6b81,#ff9daf); color:#fff; font-weight:700; cursor:pointer;">儲存安全紅線設定</button>
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+          <input type="checkbox" id="redline_enabled" {% if safety_redlines.get('enabled') %}checked{% endif %}>
+          <span style="font-size:14px; color:#edf2ff;">啟用紅線檢查</span>
+        </label>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="grid">
+  <div class="card full" id="card_watchlist_intelligence">
+    <div class="card-header" onclick="toggleCard('card_watchlist_intelligence')">
+      <div class="label" style="display:flex; justify-content:space-between; align-items:center; width: 100%; margin-bottom: 0;">
+        <div style="display:flex; align-items:center;">
+          <span>關注標的與市場盤感 / Watchlist & Tape Context</span>
+          <div class="tooltip">?
+            <span class="tooltiptext">
+              <strong>關注標的與市場盤感</strong>：整合關注清單與技術分析。提供 30 日趨勢、RSI、MACD 與盤感標籤，幫助快速判斷交易時機。
+            </span>
+          </div>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <span class="tag">Watchlist & Intelligence</span>
+        </div>
+      </div>
+      <span class="collapse-icon">▼</span>
+    </div>
+    <div class="card-content">
+      <div id="watchlist_banner" class="inline-banner"></div>
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:16px;">
+        <input id="watchlist_symbol" placeholder="輸入 ETF 代號，例如 0050" style="padding:10px 12px; min-width:260px; border-radius:14px; border:1px solid rgba(255,255,255,0.10); background:rgba(255,255,255,0.04); color:#edf2ff;" />
+        <button onclick="addWatchlistSymbol()" style="padding:10px 14px; border-radius:999px; border:none; background:linear-gradient(90deg,#7cd6ff,#8b8fff); color:#07111f; font-weight:700; cursor:pointer;">新增關注標的</button>
+        <span class="muted" style="font-size:12px;">支援手動新增 / 刪除。系統會自動檢查代號格式。</span>
+      </div>
+
+      <div class="status-list" style="margin-bottom:12px;">
+        <div class="status-item"><span class="muted">市場偏向</span><span class="{% if intraday_tape_context.get('market_bias') == 'risk-off' %}bad{% elif intraday_tape_context.get('market_bias') == 'rebound-watch' %}good{% else %}warn{% endif %}">{{ intraday_tape_context.get('market_bias_label', 'unknown') }}</span></div>
+        <div class="status-item"><span class="muted">盤感摘要</span><span style="font-size:13px; line-height:1.4;">{{ intraday_tape_context.get('tape_summary', '尚無') }}</span></div>
+      </div>
+
+      <table style="margin-top:12px;">
+        <thead>
+          <tr>
+            <th>代號</th>
+            <th>名稱</th>
+            <th>趨勢 (30D)</th>
+            <th>RSI / MACD / 月線</th>
+            <th>盤感標籤</th>
+            <th>相對強弱</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in watchlist_rows %}
+          {% set clean_id = s.symbol.replace('.', '') %}
+          {% set tape = (intraday_tape_context.get('watchlist_signals_display', []) | selectattr('symbol', 'equalto', s.symbol) | list | first) or {} %}
+          <tr id="row-{{ clean_id }}">
+            <td class="mono" style="font-weight:700; color:#7cd6ff;">{{ s.symbol }}</td>
+            <td>{{ s.name }}</td>
+            <td><div id="sparkline-{{ clean_id }}" style="width: 100px; height: 30px;"></div></td>
+            <td><div id="intel-{{ clean_id }}" class="muted" style="font-size: 11px;">載入中...</div></td>
+            <td>
+              {% if tape.tape_label %}
+              <span class="tag" style="background:rgba(124,214,255,0.12); color: #7cd6ff; font-weight:700; border:1px solid rgba(124,214,255,0.2);">{{ tape.tape_label }}</span>
+              {% else %}
+              <span class="muted">-</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if tape.strength_label %}
+              <span class="{% if '弱' in tape.strength_label or 'weak' in tape.strength_label %}bad{% elif '強' in tape.strength_label or 'strong' in tape.strength_label or 'firm' in tape.strength_label %}good{% else %}muted{% endif %}" style="font-weight:600;">
+                  {{ tape.strength_label }}
+              </span>
+              {% else %}
+              <span class="muted">-</span>
+              {% endif %}
+            </td>
+            <td>
+              <div style="display:flex; gap:4px;">
+                <button onclick="toggleTradeTicket('{{ s.symbol }}')" class="btn-sm" style="padding:4px 8px; font-size:11px; border-radius:6px; border:1px solid rgba(124,214,255,0.3); background:rgba(124,214,255,0.1); color:#7cd6ff; cursor:pointer; font-weight:700;">交易</button>
+                <button onclick="toggleDetail('{{ s.symbol }}')" class="btn-sm" style="padding:4px 8px; font-size:11px; border-radius:6px; border:1px solid rgba(124,214,255,0.2); background:rgba(255,255,255,0.05); color:#edf2ff; cursor:pointer;">詳情</button>
+                <button onclick="removeWatchlistSymbol('{{ s.symbol }}')" class="btn-sm" style="padding:4px 8px; font-size:11px; border-radius:6px; border:1px solid rgba(255,107,129,0.3); background:rgba(255,107,129,0.05); color:#ff9daf; cursor:pointer;">移除</button>
+              </div>
+            </td>
+          </tr>
+          <tr id="detail-{{ clean_id }}" style="display:none;">
+            <td colspan="7">
+              <div style="padding:16px; background:rgba(0,0,0,0.2); border-radius:12px; margin:8px 0;">
+                <div id="large-chart-{{ clean_id }}" style="width: 100%; height: 300px;"></div>
+                <div style="display:flex; gap:20px; margin-top:12px; font-size:12px;">
+                  <div id="metrics-{{ clean_id }}"></div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr id="ticket-{{ clean_id }}" style="display:none;">
+            <td colspan="7">
+              <div style="padding:16px; background:rgba(124,214,255,0.05); border:1px solid rgba(124,214,255,0.15); border-radius:12px; margin:8px 0;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                  <div style="font-weight:700; color:#7cd6ff; font-size:16px;">快速交易票據：{{ s.symbol }} {{ s.name }} <span class="tag" style="background:rgba(255,107,129,0.15); color:#ff6b81; border:1px solid rgba(255,107,129,0.25);">Preview Only</span></div>
+                  <div class="tag">Watchlist Ticket</div>
+                </div>
+                
+                <div id="ticket-form-{{ clean_id }}" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:16px; align-items:end;">
+                  <div>
+                    <label class="muted" style="display:block; font-size:12px; margin-bottom:6px;">買賣方向</label>
+                    <div style="display:flex; gap:8px;">
+                      <label style="flex:1; cursor:pointer;">
+                        <input type="radio" name="side-{{ clean_id }}" value="buy" checked style="display:none;">
+                        <div class="side-btn buy-btn" onclick="selectSide('{{ clean_id }}', 'buy')" style="padding:8px; text-align:center; border-radius:8px; border:1px solid #35d49a; color:#35d49a; font-weight:700; background:rgba(53,212,154,0.1);">買進</div>
+                      </label>
+                      <label style="flex:1; cursor:pointer; {% if s.holding_quantity <= 0 %}display:none;{% endif %}">
+                        <input type="radio" name="side-{{ clean_id }}" value="sell" style="display:none;">
+                        <div class="side-btn sell-btn" onclick="selectSide('{{ clean_id }}', 'sell')" style="padding:8px; text-align:center; border-radius:8px; border:1px solid rgba(255,255,255,0.1); color:rgba(255,255,255,0.4); font-weight:700;">賣出</div>
+                      </label>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label class="muted" style="display:block; font-size:12px; margin-bottom:6px;">委託數量 (股)</label>
+                    <input type="number" data-ticket-id="{{ clean_id }}" data-field="qty" value="100" step="1" min="1" oninput="resetTicketState('{{ clean_id }}')" style="width:100%; padding:10px; border-radius:8px; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.1); color:#fff; font-family:var(--font-mono);">
+                    <div style="font-size:10px; color:var(--muted); margin-top:4px;">提示：1 張 = 1000 股</div>
+                  </div>
+                  
+                  <div>
+                    <label class="muted" style="display:block; font-size:12px; margin-bottom:6px;">委託價格 (NT$)</label>
+                    <input type="number" data-ticket-id="{{ clean_id }}" data-field="price" value="{{ s.current_price }}" step="0.01" oninput="resetTicketState('{{ clean_id }}')" style="width:100%; padding:10px; border-radius:8px; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.1); color:#fff; font-family:var(--font-mono);">
+                    <div style="font-size:10px; color:var(--muted); margin-top:4px;">現價參考：{{ s.current_price }}</div>
+                  </div>
+                  
+                  <div style="display:flex; gap:8px;">
+                    <button id="preview-btn-{{ clean_id }}" onclick="previewTrade('{{ s.symbol }}', '{{ clean_id }}')" style="flex:2; padding:10px; border-radius:8px; border:none; background:linear-gradient(90deg,#7cd6ff,#8b8fff); color:#07111f; font-weight:700; cursor:pointer;">預覽交易</button>
+                    <button onclick="toggleTradeTicket('{{ s.symbol }}')" style="flex:1; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.05); color:#fff; cursor:pointer;">取消</button>
+                  </div>
+                </div>
+                
+                <div data-preview-area="{{ clean_id }}" style="display:none; margin-top:16px; padding:16px; border-radius:12px; background:rgba(0,0,0,0.3); border:1px solid rgba(124,214,255,0.3);">
+                  <div style="font-weight:700; color:#ffd166; margin-bottom:8px;">交易預覽 (Preview)</div>
+                  <div data-preview-content="{{ clean_id }}" class="status-list" style="margin-top:0;"></div>
+                  <div style="display:flex; gap:10px; margin-top:16px;">
+                    <button onclick="cancelPreview('{{ clean_id }}')" style="padding:10px 20px; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:transparent; color:#fff; cursor:pointer;">重新修改</button>
+                    <span style="color:var(--muted); font-size:12px; align-self:center;">⚠️ 儀表板目前僅支援預覽，正式下單請使用 CLI 或 Agent。</span>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="7" class="muted">目前關注清單尚無標的。</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card full" id="card_decision_control">
+    <div class="card-header" onclick="toggleCard('card_decision_control')">
+      <div class="label" style="margin-bottom:0;">
+        <span>決策控制台</span>
+        <div class="tooltip">?
+          <span class="tooltiptext">
+            <strong>決策控制台</strong>：整合規則引擎與 AI 建議。系統會掃描市場狀況並給出買賣建議 (Preview)，但<strong>絕對不會自動下單</strong>，需由你點擊交易票據執行。
+          </span>
+        </div>
+        <span class="tag">Decision Control</span>
+      </div>
+      <span class="collapse-icon">▼</span>
+    </div>
+
+    <!-- 三聯式決策看板 (放在 content 之外，摺疊時依然可見) -->
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0 20px 20px 20px;">
+      <!-- 區塊 A: 規則引擎 -->
+      <div style="padding: 14px; border-radius: 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+        <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">系統規則引擎 (Rule)</div>
+        <div style="font-size: 16px; font-weight: 700; color: #7cd6ff; margin-bottom: 4px;">
+          {{ auto_trade_state.get('last_preview_summary') or '無建議' }}
+        </div>
+        <div style="font-size: 12px; color: var(--muted);">依據：技術指標 / Sizing 限制</div>
+      </div>
+      
+      <!-- 區塊 B: AI Bridge -->
+      <div style="padding: 14px; border-radius: 16px; background: rgba(139,143,255,0.05); border: 1px solid rgba(139,143,255,0.15);">
+        <div style="font-size: 11px; color: #8b8fff; text-transform: uppercase; margin-bottom: 8px;">AI 決策橋接 (Intelligence)</div>
+        <div style="font-size: 16px; font-weight: 700; color: #8b8fff; margin-bottom: 4px;">
+          {% set ai_dec = ai_decision_response.get('decision') %}
+          {% if ai_dec is mapping %}
+            {{ ai_dec.get('summary') or ai_dec.get('decision') or '尚無建議' }}
+          {% else %}
+            {{ ai_dec or '尚無建議' }}
+          {% endif %}
+        </div>
+        <div style="font-size: 12px; color: var(--muted);">依據：Wiki 背景 / 全球環境</div>
+      </div>
+
+      <!-- 區塊 C: 共識仲裁 -->
+      <div style="padding: 14px; border-radius: 16px; background: rgba(53,212,154,0.05); border: 1px solid rgba(53,212,154,0.15);">
+        <div style="font-size: 11px; color: var(--good); text-transform: uppercase; margin-bottom: 8px;">共識與行動指引 (Consensus)</div>
+        <div id="decision_consensus_result" style="font-size: 16px; font-weight: 700; color: var(--good); margin-bottom: 4px;">
+          載入中...
+        </div>
+        <div id="decision_consensus_hint" style="font-size: 12px; color: var(--muted);">正在對齊雙鏈建議...</div>
+      </div>
+    </div>
+
+    <div class="card-content">
+
+      <div class="muted" style="margin-bottom:12px;">此區塊同時包含 <span class="good">規則引擎</span> 與 <span class="good">AI Bridge</span> 兩條決策鏈...</div>
+    <div id="auto_trade_banner" class="inline-banner"></div>
+
+    <div class="rule-engine-panel" style="margin-bottom:16px; padding:14px; border-radius:16px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.10); box-shadow:0 0 0 1px rgba(255,255,255,0.03) inset;">
+      <div style="margin-bottom:10px; font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em;">規則引擎操作</div>
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:16px;">
+        <select id="auto_trade_enabled" style="padding:10px 12px; border-radius:14px; background:rgba(255,255,255,0.04); color:#edf2ff; border:1px solid rgba(255,255,255,0.10);">
+          <option value="false" {% if not auto_trade_config.get('enabled') %}selected{% endif %}>停用</option>
+          <option value="true" {% if auto_trade_config.get('enabled') %}selected{% endif %}>啟用</option>
+        </select>
+        <select id="auto_trade_frequency" style="padding:10px 12px; border-radius:14px; background:rgba(255,255,255,0.04); color:#edf2ff; border:1px solid rgba(255,255,255,0.10);">
+          <option value="15" {% if auto_trade_config.get('frequency_minutes') == 15 %}selected{% endif %}>每 15 分鐘</option>
+          <option value="30" {% if auto_trade_config.get('frequency_minutes') == 30 %}selected{% endif %}>每 30 分鐘</option>
+          <option value="60" {% if auto_trade_config.get('frequency_minutes') == 60 %}selected{% endif %}>每 60 分鐘</option>
+        </select>
+        <button onclick="saveAutoTradeConfig()" style="padding:10px 14px; border-radius:999px; border:none; background:linear-gradient(90deg,#7cd6ff,#8b8fff); color:#07111f; font-weight:700; cursor:pointer;">套用規則引擎設定</button>
+      </div>
+      <div class="status-list">
+        <div class="status-item"><span class="muted">交易時段狀態</span><span class="{% if (market_session_status | default({})).get('market_session_open') %}good{% else %}warn{% endif %}">{{ (market_session_status | default({})).get('market_session_label', '已閉盤 / 鎖定') }}</span></div>
+        <div class="status-item"><span class="muted">最近掃描</span><span class="mono">{{ auto_trade_state.get('last_scan_at') or '尚無' }}</span></div>
+      </div>
+
+      <div style="margin-top:16px; padding:16px; border-radius:18px; background:rgba(255,255,255,0.03); border:1px dashed rgba(255,255,255,0.12);">
+         <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:8px; flex-wrap:wrap;">
+           <div style="font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em;">決策建議摘要</div>
+           <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+             <span class="tag">來源：Rule Engine</span>
+             <span class="tag">更新：{{ auto_trade_state.get('updated_at') or auto_trade_state.get('last_scan_at') or '尚無' }}</span>
+           </div>
+         </div>
+         <div style="font-size:15px; font-weight:600; line-height:1.6; color:#7cd6ff;">
+           {{ auto_trade_state.get('last_decision_summary') or '等待初始掃描…' }}
+         </div>
+         {% if '異常' in (auto_trade_state.get('last_decision_summary') or '') %}
+           <div class="tag bad" style="margin-top:8px;">偵測到數據異常</div>
+         {% endif %}
+      </div>
+
+      <div class="status-list" style="margin-top:12px;">
+        <div class="status-item"><span class="muted">最近 Preview</span><span>{{ auto_trade_state.get('last_preview_summary') or '無建議' }}</span></div>
+        <div class="status-item"><span class="muted">鎖定原因</span><span>{{ auto_trade_state.get('lock_reason') or '無' }}</span></div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px; padding:14px; border-radius:16px; background:rgba(53,212,154,0.08); border:1px solid rgba(53,212,154,0.22); box-shadow:0 0 0 1px rgba(53,212,154,0.06) inset;">
+      <div class="label" style="margin-bottom:8px;"><span>Layered Review</span><span class="tag">Post-Review</span></div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:10px;">
+        <span class="tag">request_id：{{ layered_review_status.get('request_id') or '尚無' }}</span>
+        <span class="tag">更新：{{ layered_review_status.get('updated_at') or '尚無' }}</span>
+      </div>
+      <div class="status-list" style="margin-top:0;">
+        {% set wins = layered_review_status.get('windows', {}) %}
+        {% for w in ['early_review','short_review','mid_review'] %}
+          {% set row = wins.get(w, {}) %}
+          <div class="status-item">
+            <span class="muted">{{ w }}</span>
+            <span class="mono">{{ row.get('outcome_status') or 'N/A' }}</span>
+            <span style="font-size:12px; color:var(--muted);">{{ row.get('outcome_note') or '' }}</span>
+            <span class="mono">{{ row.get('updated_at') or '' }}</span>
+          </div>
+        {% endfor %}
+      </div>
+      {% if not layered_review_status.get('windows') %}
+        <div class="muted" style="margin-top:8px; font-size:12px;">尚無復盤產物（等 cron runner 跑過一次就會出現）。</div>
+      {% endif %}
+    </div>
+
+    <div class="ai-bridge-panel" style="margin-top:16px; padding:14px; border-radius:16px; background:rgba(124,214,255,0.08); border:1px solid rgba(124,214,255,0.22); box-shadow:0 0 0 1px rgba(124,214,255,0.06) inset;">
+      <div style="margin-bottom:10px; font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em;">AI Bridge 操作</div>
+      <div class="label" style="margin-bottom:8px;"><span>AI Decision Bridge</span><span class="tag">AI Bridge</span></div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:10px;">
+        <span class="tag">來源：AI Bridge</span>
+        <span class="tag">生成：{{ ai_bridge.get('generated_at') or '尚無' }}</span>
+        <span class="tag">狀態：{{ ai_bridge.get('status_label') or '尚無' }}</span>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
+        <button title="代表你已人工看過這筆 AI 建議，並認為目前方向可接受。" onclick="markAIDecisionReviewed()" style="padding:8px 12px; border-radius:999px; border:1px solid rgba(53,212,154,0.25); background:rgba(53,212,154,0.10); color:#dff6ff; font-weight:700; cursor:pointer;">標記 Reviewed</button>
+        <button title="代表這筆 AI 建議已被新版建議或新資訊取代，不應再作為當前主建議。" onclick="markAIDecisionSuperseded()" style="padding:8px 12px; border-radius:999px; border:1px solid rgba(255,107,129,0.25); background:rgba(255,107,129,0.10); color:#dff6ff; font-weight:700; cursor:pointer;">標記 Superseded</button>
+        <button title="代表你先把這筆建議列入後續追蹤，結果尚未定案。" onclick="recordAIOutcomeTracked()" style="padding:8px 12px; border-radius:999px; border:1px solid rgba(255,215,0,0.25); background:rgba(255,215,0,0.10); color:#dff6ff; font-weight:700; cursor:pointer;">記錄 Outcome: Tracked</button>
+        <button title="代表你已經對這筆建議的後續結果做完一次人工評價。" onclick="recordAIOutcomeReviewed()" style="padding:8px 12px; border-radius:999px; border:1px solid rgba(147,112,219,0.25); background:rgba(147,112,219,0.10); color:#dff6ff; font-weight:700; cursor:pointer;">記錄 Outcome: Reviewed</button>
+      </div>
+      <div class="status-list" style="margin-top:0;">
+        <div class="status-item"><span class="muted">Request ID</span><span class="mono">{{ ai_decision_request.get('request_id') or '尚無' }}</span></div>
+        <div class="status-item"><span class="muted">觸發來源</span><span>{{ ai_decision_request.get('requested_by') or '尚無' }}</span></div>
+        <div class="status-item"><span class="muted">模式</span><span>{{ ai_decision_request.get('mode') or '尚無' }}</span></div>
+        <div class="status-item"><span class="muted">Response 來源</span><span>{{ ai_decision_response.get('source') or '尚無' }}</span></div>
+        <div class="status-item"><span class="muted">Agent</span><span>{{ ai_decision_response.get('agent', {}).get('name') or '尚無' }}</span></div>
+        <div class="status-item"><span class="muted">Review 狀態</span><span>{{ ai_decision_response.get('review', {}).get('status') or '尚無' }}</span></div>
+        <div class="status-item"><span class="muted">AI 狀態</span><span class="{% if ai_bridge.get('status_label') == 'Fresh' %}good{% elif ai_bridge.get('status_label') == 'Stale' %}warn{% else %}muted{% endif %}">{{ ai_bridge.get('status_label') or '尚無' }}</span></div>
+        <div class="status-item"><span class="muted">Stale</span><span>{{ ai_decision_response.get('stale') or 'False' }}</span></div>
+        <div class="status-item"><span class="muted">生成時間</span><span class="mono">{{ ai_decision_response.get('generated_at') or '尚無' }}</span></div>
+        <div class="status-item"><span class="muted">摘要</span><span>{{ ai_decision_response.get('decision', {}).get('summary') or '尚無 AI 建議' }}</span></div>
+        <div class="status-item"><span class="muted">AI 候選</span><span>{{ ai_decision_response.get('candidate', {}).get('symbol') or '無' }}</span></div>
+        <div class="status-item"><span class="muted">策略對齊</span><span>{{ ai_decision_response.get('decision', {}).get('strategy_alignment') or '尚無' }}</span></div>
+      </div>
+      <div style="margin-top:12px; padding:12px; border-radius:14px; background:rgba(255,255,255,0.04); border:1px dashed rgba(255,255,255,0.10);">
+        <div style="font-size:12px; color:var(--muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">最近記憶回饋</div>
+        <div class="status-list" style="margin-top:0;">
+          <div class="status-item"><span class="muted">recent_review_count</span><span>{{ ai_decision_request.get('inputs', {}).get('decision_memory_context', {}).get('recent_review_count', 0) }}</span></div>
+          <div class="status-item"><span class="muted">recent_outcome_count</span><span>{{ ai_decision_request.get('inputs', {}).get('decision_memory_context', {}).get('recent_outcome_count', 0) }}</span></div>
+          <div class="status-item"><span class="muted">recent_reflection_count</span><span>{{ ai_decision_request.get('inputs', {}).get('decision_memory_context', {}).get('recent_reflection_count', 0) }}</span></div>
+          <div class="status-item"><span class="muted">confidence_bias</span><span>{{ ai_decision_request.get('inputs', {}).get('decision_memory_context', {}).get('quality_hooks', {}).get('confidence_bias', 'neutral') }}</span></div>
+          <div class="status-item"><span class="muted">quality_summary</span><span>{{ ai_decision_request.get('inputs', {}).get('decision_memory_context', {}).get('quality_hooks', {}).get('quality_summary', '尚無') }}</span></div>
+          <div class="status-item"><span class="muted">最近 note</span><span>{% set notes = ai_decision_request.get('inputs', {}).get('decision_memory_context', {}).get('memory_notes', []) %}{% if notes %}{{ notes[-1].get('reflection_note', '無') }}{% else %}尚無{% endif %}</span></div>
+          <div class="status-item"><span class="muted">記憶修正 reasoning</span><span>{{ ai_decision_response.get('reasoning', {}).get('risk_context_summary') or '尚無' }}</span></div>
+        </div>
+      </div>
+      <div style="margin-top:12px; padding:12px; border-radius:14px; background:rgba(124,214,255,0.06); border:1px dashed rgba(124,214,255,0.14);">
+        <div style="font-size:12px; color:var(--muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">AI Quality State</div>
+        <div class="status-list" style="margin-top:0;">
+          <div class="status-item"><span class="muted">confidence_bias</span><span>{{ ai_decision_quality.get('confidence_bias') or 'neutral' }}</span></div>
+          <div class="status-item"><span class="muted">quality_summary</span><span>{{ ai_decision_quality.get('quality_summary') or '尚無' }}</span></div>
+          <div class="status-item"><span class="muted">reviewed_preview_buy</span><span>{{ ai_decision_quality.get('reviewed_preview_buy_count', 0) }}</span></div>
+          <div class="status-item"><span class="muted">superseded_preview_buy</span><span>{{ ai_decision_quality.get('superseded_preview_buy_count', 0) }}</span></div>
+          <div class="status-item"><span class="muted">updated_at</span><span class="mono">{{ ai_decision_quality.get('updated_at') or '尚無' }}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px; padding:14px; border-radius:16px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);">
+      <div class="label" style="margin-bottom:8px;"><span>最新 preview 候選</span><span class="tag">Preview Candidate</span></div>
+      {% if auto_preview_candidate and auto_preview_candidate.get('symbol') %}
+      <div class="status-list" style="margin-top:0;">
+        <div class="status-item"><span class="muted">標的 / 方向</span><span>{{ auto_preview_candidate.get('symbol') }} / {{ auto_preview_candidate.get('side') }}</span></div>
+        <div class="status-item"><span class="muted">參考價格</span><span class="mono">{{ auto_preview_candidate.get('reference_price') }}</span></div>
+        <div class="status-item"><span class="muted">數量</span><span>{{ auto_preview_candidate.get('quantity') }}</span></div>
+        <div class="status-item"><span class="muted">模式</span><span>{{ auto_preview_candidate.get('mode') }}</span></div>
+        <div class="status-item"><span class="muted">說明</span><span>{{ auto_preview_candidate.get('reason') }}</span></div>
+        <div class="status-item"><span class="muted">風險提示</span><span>{{ auto_preview_candidate.get('risk_note', '無') }}</span></div>
+        <div class="status-item"><span class="muted">策略對齊</span><span>{{ auto_preview_candidate.get('strategy_alignment', '無') }}</span></div>
+      </div>
+      {% else %}
+      <div class="muted">目前尚未產生 preview 候選。</div>
+      {% endif %}
+    </div>
+
+    <!-- 決策溯源 Provenance -->
+    <div style="margin-top:16px; padding:14px; border-radius:16px; background:rgba(147,112,219,0.08); border:1px solid rgba(147,112,219,0.18);">
+      <div class="label" style="margin-bottom:8px;"><span>決策溯源</span><span class="tag">Provenance</span></div>
+      {% if provenance_summary and provenance_summary.get('total_records', 0) > 0 %}
+      <div class="status-list" style="margin-top:0;">
+        <div class="status-item"><span class="muted">溯源記錄數</span><span>{{ provenance_summary.get('total_records', 0) }}</span></div>
+        <div class="status-item"><span class="muted">待審核</span><span>{{ provenance_summary.get('pending_reviews', 0) }}</span></div>
+        <div class="status-item"><span class="muted">已審核</span><span>{{ provenance_summary.get('completed_reviews', 0) }}</span></div>
+      </div>
+      {% if provenance_summary.get('recent') %}
+      <div style="margin-top:10px; font-size:0.82em; max-height:180px; overflow-y:auto;">
+        <table style="width:100%; border-collapse:collapse;">
+          <thead>
+            <tr style="border-bottom:1px solid rgba(147,112,219,0.25);">
+              <th style="text-align:left; padding:4px 6px; color:rgba(147,112,219,0.9);">時間</th>
+              <th style="text-align:left; padding:4px 6px; color:rgba(147,112,219,0.9);">標的</th>
+              <th style="text-align:left; padding:4px 6px; color:rgba(147,112,219,0.9);">動作</th>
+              <th style="text-align:left; padding:4px 6px; color:rgba(147,112,219,0.9);">信心</th>
+              <th style="text-align:left; padding:4px 6px; color:rgba(147,112,219,0.9);">分數</th>
+              <th style="text-align:left; padding:4px 6px; color:rgba(147,112,219,0.9);">T1審核</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for r in provenance_summary.get('recent', []) %}
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+              <td style="padding:3px 6px; color:rgba(255,255,255,0.6);">{{ (r.get('created_at') or '')[:16] }}</td>
+              <td style="padding:3px 6px;">{{ r.get('symbol', '—') }}</td>
+              <td style="padding:3px 6px;">{{ r.get('action', '—') }}</td>
+              <td style="padding:3px 6px;" class="mono">{{ r.get('confidence', '—') }}</td>
+              <td style="padding:3px 6px;" class="mono">{{ r.get('score', '—') }}</td>
+              <td style="padding:3px 6px;">{{ '✅' if r.get('review_T1') else '⏳' }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+      {% else %}
+      <div class="muted">尚無決策溯源記錄。</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+  <div class="card card-strong kpi" id="card_total_equity">
+    <div class="card-header" onclick="toggleCard('card_total_equity')">
+      <div class="label" style="margin-bottom:0;"><span>總資產</span><span class="tag">Equity</span></div>
+      <span class="collapse-icon">▼</span>
+    </div>
+    <div class="card-content">
+      <div class="value mono">NT$ {{ '%.2f'|format(account.get('total_equity', 0)) }}</div>
+      <div class="subvalue">現金與持倉市值合計</div>
+    </div>
+  </div>
+
+  <div class="card kpi" id="card_market_value">
+    <div class="card-header" onclick="toggleCard('card_market_value')">
+      <div class="label" style="margin-bottom:0;"><span>持倉市值</span><span class="tag">Market Value</span></div>
+      <span class="collapse-icon">▼</span>
+    </div>
+    <div class="card-content">
+      <div class="value mono">NT$ {{ '%.2f'|format(account.get('market_value', 0)) }}</div>
+      <div class="subvalue">依目前快取價格估算</div>
+    </div>
+  </div>
+
+  <div class="card kpi" id="card_unrealized_pnl">
+    <div class="card-header" onclick="toggleCard('card_unrealized_pnl')">
+      <div class="label" style="margin-bottom:0;"><span>未實現損益</span><span class="tag">PnL</span></div>
+      <span class="collapse-icon">▼</span>
+    </div>
+    <div class="card-content">
+      <div class="value mono" style="color: {{ '#35d49a' if account.get('total_unrealized_pnl', 0) >= 0 else '#ff6b81' }}">NT$ {{ '%.2f'|format(account.get('total_unrealized_pnl', 0)) }}</div>
+      <div class="subvalue">僅作本地儀表估算，非正式結算</div>
+    </div>
+  </div>
+
+  <div class="card kpi" id="card_cash">
+    <div class="card-header" onclick="toggleCard('card_cash')">
+      <div class="label" style="margin-bottom:0;"><span>現金 / 追蹤數</span><span class="tag">Liquidity</span></div>
+      <span class="collapse-icon">▼</span>
+    </div>
+    <div class="card-content">
+      <div class="value mono">NT$ {{ '%.2f'|format(account.get('cash', 0)) }}</div>
+      <div class="subvalue">追蹤標的 {{ account.get('tracked_count', 0) }} 檔</div>
+    </div>
+  </div>
+
+  <div class="card wide" id="card_positions">
+    <div class="card-header" onclick="toggleCard('card_positions')">
+      <div class="label" style="margin-bottom:0;">
+        <span>持倉快照</span>
+        <div class="tooltip">?
+          <span class="tooltiptext">
+            <strong>持倉快照</strong>：列出目前帳戶持有的標的數量、均價與現價。點擊標代號可觸發交易票據（即將實作）。報酬率以「現價 vs 均價」計算。
+          </span>
+        </div>
+        <span class="tag">Positions</span>
+      </div>
+      <span class="collapse-icon">▼</span>
+    </div>
+    <div class="card-content">
+      {% if account.get('trigger_suggestions') %}
+    <div class="inline-banner show warn" style="margin: 0 0 18px 0; border-radius: 12px; background: rgba(255, 193, 7, 0.1); border: 1px solid rgba(255, 193, 7, 0.2);">
+      <div style="font-weight: 700; color: #ffd166; margin-bottom: 8px;">⚠️ 交易閾值建議觸發 (Trading Fuse Suggestion):</div>
+      <ul style="margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.6;">
+        {% for sug in account.get('trigger_suggestions') %}
+        <li>
+          <span style="color: #7cd6ff; font-weight: 600;">[{{ sug.symbol or '系統' }}]</span> 
+          {{ sug.reason }} &rarr; 
+          <span style="color: #35d49a; font-weight: 700;">建議 {{ sug.action }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+      <div style="margin-top: 12px; font-size: 12px; color: var(--muted);">
+        提示：建議僅供參考，實際下單仍會經過 <code>pre_flight_gate</code> 檢查。
+      </div>
+    </div>
+    {% endif %}
+
+    <table>
+      <thead>
+        <tr>
+          <th>代號</th>
+          <th>名稱</th>
+          <th>狀態</th>
+          <th>數量</th>
+          <th>均價</th>
+          <th>現價</th>
+          <th>市值</th>
+          <th>未實現損益</th>
+          <th>報酬率</th>
+          <th>來源</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in position_rows %}
+        {% set clean_id = p.symbol.replace('.', '') %}
+        <tr>
+          <td class="mono">{{ p.symbol }}</td>
+          <td>{{ p.name }}</td>
+          <td><span class="tag {% if p.needs_review %}warn{% endif %}">{{ p.holding_status }}</span></td>
+          <td class="mono">{{ p.quantity }}</td>
+          <td class="mono">{{ '%.4f'|format(p.average_cost) }}</td>
+          <td class="mono">{{ '%.4f'|format(p.current_price) }}</td>
+          <td class="mono">{{ '%.2f'|format(p.market_value) }}</td>
+          <td class="mono" style="color: {{ '#35d49a' if p.unrealized_pnl >= 0 else '#ff6b81' }}">{{ '%.2f'|format(p.unrealized_pnl) }}</td>
+          <td class="mono" style="color: {{ '#35d49a' if p.return_pct >= 0 else '#ff6b81' }}">{{ '%.2f'|format(p.return_pct) }}%</td>
+          <td><span class="tag">{{ p.source }}</span></td>
+          <td>
+            <button onclick="toggleTradeTicket('{{ p.symbol }}')" class="btn-sm" style="padding:4px 8px; font-size:11px; border-radius:6px; border:1px solid rgba(124,214,255,0.3); background:rgba(124,214,255,0.1); color:#7cd6ff; cursor:pointer; font-weight:700;">交易</button>
+          </td>
+        </tr>
+        <tr id="ticket-{{ clean_id }}" style="display:none;">
+          <td colspan="11">
+            <div style="padding:16px; background:rgba(124,214,255,0.05); border:1px solid rgba(124,214,255,0.15); border-radius:12px; margin:8px 0;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <div style="font-weight:700; color:#7cd6ff; font-size:16px;">快速交易票據：{{ p.symbol }} {{ p.name }} <span class="tag" style="background:rgba(255,107,129,0.15); color:#ff6b81; border:1px solid rgba(255,107,129,0.25);">Preview Only</span></div>
+                <div class="tag">Inline Ticket</div>
+              </div>
+              
+              <div id="ticket-form-{{ clean_id }}" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:16px; align-items:end;">
+                <div>
+                  <label class="muted" style="display:block; font-size:12px; margin-bottom:6px;">買賣方向</label>
+                  <div style="display:flex; gap:8px;">
+                    <label style="flex:1; cursor:pointer;">
+                      <input type="radio" name="side-{{ clean_id }}" value="buy" checked style="display:none;">
+                      <div class="side-btn buy-btn" onclick="selectSide('{{ clean_id }}', 'buy')" style="padding:8px; text-align:center; border-radius:8px; border:1px solid #35d49a; color:#35d49a; font-weight:700; background:rgba(53,212,154,0.1);">買進</div>
+                    </label>
+                    <label style="flex:1; cursor:pointer;">
+                      <input type="radio" name="side-{{ clean_id }}" value="sell" style="display:none;">
+                      <div class="side-btn sell-btn" onclick="selectSide('{{ clean_id }}', 'sell')" style="padding:8px; text-align:center; border-radius:8px; border:1px solid rgba(255,255,255,0.1); color:rgba(255,255,255,0.4); font-weight:700;">賣出</div>
+                    </label>
+                  </div>
+                </div>
+                
+                <div>
+                  <label class="muted" style="display:block; font-size:12px; margin-bottom:6px;">委託數量 (股)</label>
+                  <input type="number" id="qty-{{ clean_id }}" value="100" step="1" min="1" oninput="resetTicketState('{{ clean_id }}')" style="width:100%; padding:10px; border-radius:8px; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.1); color:#fff; font-family:var(--font-mono);">
+                  <div style="font-size:10px; color:var(--muted); margin-top:4px;">提示：1 張 = 1000 股</div>
+                </div>
+                
+                <div>
+                  <label class="muted" style="display:block; font-size:12px; margin-bottom:6px;">委託價格 (NT$)</label>
+                  <input type="number" id="price-{{ clean_id }}" value="{{ p.current_price }}" step="0.01" oninput="resetTicketState('{{ clean_id }}')" style="width:100%; padding:10px; border-radius:8px; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.1); color:#fff; font-family:var(--font-mono);">
+                  <div style="font-size:10px; color:var(--muted); margin-top:4px;">現價參考：{{ p.current_price }}</div>
+                </div>
+                
+                <div style="display:flex; gap:8px;">
+                  <button id="preview-btn-{{ clean_id }}" onclick="previewTrade('{{ p.symbol }}', '{{ clean_id }}')" style="flex:2; padding:10px; border-radius:8px; border:none; background:linear-gradient(90deg,#7cd6ff,#8b8fff); color:#07111f; font-weight:700; cursor:pointer;">預覽交易</button>
+                  <button onclick="toggleTradeTicket('{{ p.symbol }}')" style="flex:1; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.05); color:#fff; cursor:pointer;">取消</button>
+                </div>
+              </div>
+              
+              <!-- Preview Area (Hidden initially) -->
+              <div id="preview-area-{{ clean_id }}" style="display:none; margin-top:16px; padding:16px; border-radius:12px; background:rgba(0,0,0,0.3); border:1px solid rgba(124,214,255,0.3);">
+                <div style="font-weight:700; color:#ffd166; margin-bottom:8px;">交易預覽 (Preview)</div>
+                <div id="preview-content-{{ clean_id }}" class="status-list" style="margin-top:0;">
+                  <!-- Dynamic content -->
+                </div>
+                
+                <div style="display:flex; gap:10px; margin-top:16px;">
+                  <button onclick="cancelPreview('{{ clean_id }}')" style="padding:10px 20px; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:transparent; color:#fff; cursor:pointer;">重新修改</button>
+                  <span style="color:var(--muted); font-size:12px; align-self:center;">⚠️ 儀表板目前僅支援預覽 (Preview Only)，正式下單請使用 CLI 指令或透過 Agent 執行。</span>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="11" class="muted">目前沒有可顯示的持倉資料</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+  <div class="card side" id="card_status">
+    <div class="card-header" onclick="toggleCard('card_status')">
+      <div class="label" style="margin-bottom:0;"><span>狀態中心</span><span class="tag">Status</span></div>
+      <span class="collapse-icon">▼</span>
+    </div>
+    <div class="card-content">
+      <div class="status-list">
+        <div class="status-item">
+          <span class="muted">資料來源</span>
+          <span>{{ account.get('source', 'N/A') }}</span>
+        </div>
+        <div class="status-item">
+          <span class="muted">策略同步</span>
+          <span class="good">{{ strategy.get('source', 'N/A') }}</span>
+        </div>
+        <div class="status-item">
+          <span class="muted">價格快取</span>
+          <span>{{ market_cache.get('source', 'N/A') }}</span>
+        </div>
+        <div class="status-item">
+          <span class="muted">最後更新</span>
+          <span class="mono">{{ market_cache.get('updated_at', account.get('updated_at', 'N/A')) }}</span>
+        </div>
+        <div class="status-item">
+          <span class="muted">目前階段</span>
+          <span class="warn">保守增量改造</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card full" id="card_diagnostics">
+
+    <div class="card-header" onclick="toggleCard('card_diagnostics')">
+      <div class="label" style="margin-bottom:0;"><span>⚙️ 進階診斷與導引</span><span class="tag">Advanced Diagnostics</span></div>
+      <span class="collapse-icon">▼</span>
+    </div>
+    <div class="card-content">
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <details style="background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
+          <summary style="padding: 12px; color: #7cd6ff; font-weight: 600; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+            <span>使用提示 / 新手導引</span>
+            <span class="tag">Open</span>
+          </summary>
+          <div class="status-list" style="padding: 0 16px 16px 16px; margin-top: 0;">
+            <div class="status-item"><span class="muted">這個 dashboard 是做什麼的？</span><span>用來看持倉、關注標的、資料新鮮度與風險提示。</span></div>
+            <div class="status-item"><span class="muted">資料是即時抓取嗎？</span><span>目前以 <span class="mono">instances/&lt;agent&gt;/state/</span> 為真相源（state-driven）。開頁面不會直接去券商/網路即時查價；需要更新時請按「立即同步資料」讓系統生成最新 state。</span></div>
+            <div class="status-item"><span class="muted">什麼時候該按「立即更新資料」？</span><span>當你剛改完 watchlist、剛開頁面、懷疑資料偏舊，或想手動強制同步時。<br/>若你剛更新過 dashboard 程式（版面/卡片有改），需要先重啟 dashboard，再按一次同步。</span></div>
+            <div class="status-item"><span class="muted">可以做哪些操作？</span><span>可手動新增 / 移除關注標的，也可查看核心 / 收益 / 防守三區塊；另外會顯示 <b>Layered Review（復盤）</b>：early/short/mid 三個窗口的狀態與摘要（首次跑完 cron 才會出現）。</span></div>
+            <div class="status-item"><span class="muted">這頁會自動下單嗎？</span><span class="warn">不會。這是監控與摘要頁，不是自動交易頁；Layered Review / AI Bridge 只做復盤與記錄，不會送出委託。</span></div>
+          </div>
+        </details>
+        <!-- (Other details unchanged) -->
+        <details style="background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
+          <summary style="padding: 12px; color: #7cd6ff; font-weight: 600; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+            <span>決策引擎健康度</span>
+            <span class="tag">Open</span>
+          </summary>
+          <div class="status-list" style="padding: 0 16px 16px 16px; margin-top: 0;">
+            <div class="status-item"><span class="muted">整體狀態</span><span class="{% if decision_engine_health.get('health_summary') == '正常' %}good{% else %}warn{% endif %}">{{ decision_engine_health.get('health_summary') }}</span></div>
+            <div class="status-item"><span class="muted">外部事件更新</span><span class="mono">{{ decision_engine_health.get('last_market_event_refresh', '尚無') }}</span></div>
+            <div class="status-item"><span class="muted">台灣市場情勢更新</span><span class="mono">{{ decision_engine_health.get('last_taiwan_context_refresh', '尚無') }}</span></div>
+            <div class="status-item"><span class="muted">事件檢查時間</span><span class="mono">{{ decision_engine_health.get('last_event_check', '尚無') }}</span></div>
+            <div class="status-item"><span class="muted">品質校正時間</span><span class="mono">{{ decision_engine_health.get('last_quality_scoring', '尚無') }}</span></div>
+            <div class="status-item"><span class="muted">最近掃描時間</span><span class="mono">{{ decision_engine_health.get('last_scan', '尚無') }}</span></div>
+            {% if decision_engine_health.get('warnings') %}
+            {% for w in decision_engine_health.get('warnings', []) %}
+            <div class="status-item"><span class="muted">系統警示</span><span class="warn">{{ w }}</span></div>
+            {% endfor %}
+            {% endif %}
+          </div>
+        </details>
+
+        <details style="background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
+          <summary style="padding: 12px; color: #7cd6ff; font-weight: 600; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+            <span>決策品質校正</span>
+            <span class="tag">Open</span>
+          </summary>
+          <div class="status-list" style="padding: 0 16px 16px 16px; margin-top: 0;">
+            {% if decision_quality and decision_quality.get('quality_summary') %}
+            <div class="status-item"><span class="muted">最近評估</span><span class="mono">{{ decision_quality.get('evaluated_at', '尚無') }}</span></div>
+            <div class="status-item"><span class="muted">品質摘要</span><span>{{ decision_quality.get('quality_summary') }}</span></div>
+            <div class="status-item"><span class="muted">得分 (方向/風險)</span><span>{{ decision_quality.get('direction_score') }} / {{ decision_quality.get('risk_score') }}</span></div>
+            <div class="status-item"><span class="muted">機會 / 策略一致性</span><span>{{ decision_quality.get('opportunity_score') }} / {{ decision_quality.get('strategy_alignment_score') }}</span></div>
+            {% else %}
+            <div class="muted">目前尚無品質校正摘要。</div>
+            {% endif %}
+          </div>
+        </details>
+
+        <details style="background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
+          <summary style="padding: 12px; color: #7cd6ff; font-weight: 600; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+            <span>State 對齊巡檢</span>
+            <span class="tag">Recon</span>
+          </summary>
+          <div class="status-list" style="padding: 0 16px 16px 16px; margin-top: 0;">
+            <div class="status-item"><span class="muted">持倉 / 快照一致性</span><span class="{% if state_reconciliation.get('positions_vs_snapshot_match') %}good{% else %}bad{% endif %}">{{ 'MATCH' if state_reconciliation.get('positions_vs_snapshot_match') else 'DRIFT' }}</span></div>
+            <div class="status-item"><span class="muted">Open Orders 未進持倉</span><span>{{ state_reconciliation.get('open_orders_not_in_positions', []) }}</span></div>
+            <div class="status-item"><span class="muted">Snapshot Lag (sec)</span><span class="mono">{{ state_reconciliation.get('snapshot_lag_sec') }}</span></div>
+            {% if state_reconciliation_warnings %}
+            {% for w in state_reconciliation_warnings %}
+            <div class="status-item"><span class="muted">巡檢提示</span><span class="warn">{{ w }}</span></div>
+            {% endfor %}
+            {% endif %}
+          </div>
+        </details>
+
+        <details style="background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
+          <summary style="padding: 12px; color: #7cd6ff; font-weight: 600; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+            <span>成交對齊 / Filled Reconciliation</span>
+            <div style="display:flex; gap:8px; align-items:center;">
+              {% if filled_reconciliation.get('ok') %}
+              <span class="tag" style="background:rgba(53,212,154,0.12); color:#35d49a; border:1px solid rgba(53,212,154,0.25);">OK</span>
+              {% else %}
+              <span class="tag" style="background:rgba(255,193,7,0.12); color:#ffd166; border:1px solid rgba(255,193,7,0.25);">PENDING</span>
+              {% endif %}
+              <span class="tag">Filled</span>
+            </div>
+          </summary>
+          <div class="status-list" style="padding: 0 16px 16px 16px; margin-top: 0;">
+            <div class="status-item"><span class="muted">對齊狀態</span><span class="{% if filled_reconciliation.get('ok') %}good{% else %}warn{% endif %}">{{ 'OK' if filled_reconciliation.get('ok') else 'PENDING' }}</span></div>
+            <div class="status-item"><span class="muted">未對齊標的數</span><span class="mono">{{ filled_reconciliation.get('unreconciled_count', 0) }}</span></div>
+            <div class="status-item"><span class="muted">未對齊標的</span><span>{{ filled_reconciliation.get('unreconciled_symbols', []) }}</span></div>
+            {% if not filled_reconciliation.get('ok') and filled_reconciliation.get('unreconciled_symbols') %}
+            <div class="status-item"><span class="muted">提示</span><span class="warn">已有成交事實，但 broker positions 尚未完全對齊，請先以持倉真相源為準。</span></div>
+            {% endif %}
+          </div>
+        </details>
+
+        <details style="background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
+          <summary style="padding: 12px; color: #7cd6ff; font-weight: 600; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+            <span>事件回顧 L2</span>
+            <span class="tag">Open</span>
+          </summary>
+          <div style="padding: 0 16px 16px 16px;">
+            {% if major_event_flag and major_event_flag.get('checked_at') %}
+            <div class="status-list" style="margin-top:0;">
+              <div class="status-item"><span class="muted">風險等級</span><span class="{% if major_event_flag.get('level') == 'none' %}good{% else %}bad{% endif %}" style="font-weight:800;">{{ major_event_flag.get('level', 'none') | upper }}</span></div>
+              <div class="status-item"><span class="muted">判斷原因</span><span>{{ major_event_flag.get('reason', '無') }}</span></div>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:12px;">
+              <div style="padding:12px; border-radius:12px; background:rgba(124,214,255,0.04); border:1px solid rgba(124,214,255,0.1); font-size:12px;">
+                 <div style="color:#7cd6ff; margin-bottom:4px;">台股脈絡</div>
+                 {{ market_context_taiwan.get('context_summary', '尚無數據') }}
+              </div>
+              <div style="padding:12px; border-radius:12px; background:rgba(139,143,255,0.04); border:1px solid rgba(139,143,255,0.1); font-size:12px;">
+                 <div style="color:#8b8fff; margin-bottom:4px;">外部宏觀</div>
+                 {{ market_event_context.get('summary', '尚無數據') }}
+              </div>
+            </div>
+            {% else %}
+            <div class="muted">目前尚無事件回顧資料。</div>
+            {% endif %}
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <div class="card full" id="card_signals">
+    <div class="card-header" onclick="toggleCard('card_signals')">
+      <div class="label" style="margin-bottom:0;"><span>資料新鮮度與風險提示</span><span class="tag">Signals</span></div>
+      <span class="collapse-icon">▼</span>
+    </div>
+    <div class="card-content">
+      <div class="status-list">
+        {% for s in risk_signals %}
+        <div class="status-item">
+          <span class="muted">{{ s.title }}</span>
+          <span class="{{ s.level }}">{{ s.detail }}</span>
+        </div>
+        {% else %}
+        <div class="status-item">
+          <span class="muted">目前沒有風險訊號</span>
+          <span class="good">OK</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+function showWatchlistBanner(message, type='success') {
+  const el = document.getElementById('watchlist_banner');
+  el.textContent = message;
+  el.className = `inline-banner show ${type}`;
+}
+
+function showAutoTradeBanner(message, type='success') {
+  const el = document.getElementById('auto_trade_banner');
+  el.textContent = message;
+  el.className = `inline-banner show ${type}`;
+}
+
+function showGlobalBanner(message, type) {
+  const el = document.getElementById('global_banner');
+  el.textContent = message;
+  el.className = `inline-banner show ${type}`;
+  // Also sync to other specific banners if needed
+  const w = document.getElementById('watchlist_banner');
+  if (w) { w.textContent = message; w.className = `inline-banner show ${type}`; }
+}
+
+async function setTradingMode(mode) {
+  showGlobalBanner(`正在切換模式至 ${mode.toUpperCase()} 並同步狀態…`, 'success');
+  const res = await fetch('/api/trading-mode/set', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({mode})
+  });
+  const data = await res.json();
+  if (res.ok) {
+    const summary = data.trading_mode_summary || {};
+    showGlobalBanner(`交易模式已切換為：${summary.mode_label || mode}`, 'success');
+    setTimeout(() => window.location.reload(), 600);
+  } else {
+    showGlobalBanner(`交易模式切換失敗：${data.detail || '系統未提供詳細原因'}`, 'error');
+  }
+}
+
+async function submitStrategyUpdate() {
+  const base = document.getElementById('base_strategy').value;
+  const overlay = document.getElementById('scenario_overlay').value;
+  const res = await fetch('/api/strategy/update', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({base_strategy: base, scenario_overlay: overlay})
+  });
+  const data = await res.json();
+  if (res.ok) {
+    showWatchlistBanner(`策略已更新為：${base} / ${overlay}`, 'success');
+    setTimeout(() => window.location.reload(), 500);
+  } else {
+    showWatchlistBanner(`策略更新失敗：${data.detail || '系統未提供詳細原因'}`, 'error');
+  }
+}
+
+async function saveAutoTradeConfig() {
+  const enabled = document.getElementById('auto_trade_enabled').value === 'true';
+  const frequency_minutes = Number(document.getElementById('auto_trade_frequency').value);
+  const res = await fetch('/api/auto-trade/config', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({enabled, frequency_minutes})
+  });
+  const data = await res.json();
+  if (res.ok) {
+    const rescanMsg = data.rescan?.ok ? '，兩條決策鏈已重新檢討' : (data.rescan ? `（共識重檢：${data.rescan.message}）` : '');
+    showAutoTradeBanner(`設定已更新${rescanMsg}，頁面即將刷新…`, 'success');
+    setTimeout(() => window.location.reload(), 1200);
+  } else {
+    showAutoTradeBanner(`設定更新失敗：${data.detail || '系統未提供詳細原因'}`, 'error');
+  }
+}
+
+async function runFullPipelineSync() {
+  const btn = document.getElementById('btn_full_pipeline');
+  if (btn) {
+    btn.disabled = true;
+    btn.style.opacity = '0.5';
+    btn.innerText = '同步中...';
+  }
+  showGlobalBanner('正在啟動一鍵同步與全量分析 (Full Sync & Analysis)，請稍候…', 'success');
+  
+  try {
+    const res = await fetch('/api/decision/full-pipeline', { method: 'POST' });
+    const data = await res.json();
+    if (res.ok) {
+      showGlobalBanner('全鏈路管線已啟動，系統正在背景同步與對齊中，預計 10-30 秒完成。', 'success');
+      // 5 秒後自動刷新頁面看進度
+      setTimeout(() => window.location.reload(), 5000);
+    } else {
+      if (res.status === 429) {
+        showGlobalBanner('同步管線正在執行中，請勿重複點擊。', 'warn');
+      } else {
+        showGlobalBanner(`啟動失敗：${data.detail || '未知錯誤'}`, 'error');
+      }
+    }
+  } catch (err) {
+    showGlobalBanner(`網路或系統錯誤：${err.message}`, 'error');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      btn.innerText = '一鍵同步與全量分析 (Full Sync)';
+    }
+  }
+}
+
+async function addWatchlistSymbol() {
+  const input = document.getElementById('watchlist_symbol');
+  const symbol = input.value.trim().toUpperCase();
+  if (!symbol) {
+    showWatchlistBanner('請先輸入 ETF 代號，例如 0050', 'error');
+    return;
+  }
+  const form = new FormData();
+  form.append('symbol', symbol);
+  const res = await fetch('/api/watchlist/add', { method: 'POST', body: form });
+  const data = await res.json();
+  if (res.ok) {
+    showWatchlistBanner(`已加入關注標的：${symbol}`, 'success');
+    setTimeout(() => window.location.reload(), 500);
+  } else {
+    showWatchlistBanner(`新增失敗：${data.detail || '系統未提供詳細原因'}`, 'error');
+  }
+}
+
+async function removeWatchlistSymbol(symbol) {
+  if (!confirm(`確定要從關注清單移除 ${symbol}？`)) {
+    return;
+  }
+  const form = new FormData();
+  form.append('symbol', symbol);
+  const res = await fetch('/api/watchlist/remove', { method: 'POST', body: form });
+  const data = await res.json();
+  if (res.ok) {
+    showWatchlistBanner(`已移除關注標的：${symbol}`, 'success');
+    setTimeout(() => window.location.reload(), 500);
+  } else {
+  showWatchlistBanner(`移除失敗：${data.detail || '系統未提供詳細原因'}`, 'error');
+  }
+  }
+
+  async function saveSafetyRedlines() {
+  const payload = {
+  max_buy_amount_twd: Number(document.getElementById('redline_max_amount_twd').value),
+  max_buy_amount_pct: Number(document.getElementById('redline_max_amount_pct').value),
+  max_buy_shares: parseInt(document.getElementById('redline_max_shares').value),
+  max_concentration_pct: Number(document.getElementById('redline_max_concentration').value),
+  daily_loss_limit_pct: Number(document.getElementById('redline_daily_loss').value),
+  ai_confidence_threshold: Number(document.getElementById('redline_ai_confidence').value),
+  enabled: document.getElementById('redline_enabled').checked
+  };
+
+  const banner = document.getElementById('safety_redlines_banner');
+  if (banner) {
+  banner.textContent = "正在儲存安全紅線...";
+  banner.className = "inline-banner show success";
+  }
+
+  try {
+  const res = await fetch('/api/safety-redlines/update', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(payload)
+  });
+  const data = await res.json();
+  if (res.ok) {
+    if (banner) banner.textContent = "安全紅線已成功更新。";
+    setTimeout(() => window.location.reload(), 1000);
+  } else {
+    if (banner) {
+      banner.textContent = `儲存失敗：${data.detail || '未知錯誤'}`;
+      banner.className = "inline-banner show error";
+    }
+  }
+  } catch (err) {
+  if (banner) {
+    banner.textContent = `網路錯誤：${err.message}`;
+    banner.className = "inline-banner show error";
+  }
+  }
+  }
+
+  async function initIntelligence() {
+
+    console.log("Initializing Dashboard Intelligence Suite [v3]...");
+    if (typeof LightweightCharts === 'undefined') {
+        console.warn("LightweightCharts library not loaded, retrying...");
+        setTimeout(initIntelligence, 500);
+        return;
+    }
+
+    try {
+        const res = await fetch('/api/intelligence');
+        if (!res.ok) throw new Error("Intelligence fetch failed");
+        const data = await res.json();
+        const intelMap = data.intelligence || {};
+        const loadedSymbols = new Set(Object.keys(intelMap));
+        console.log("Loaded intelligence keys:", Object.keys(intelMap));
+
+        for (const [rawSymbol, intel] of Object.entries(intelMap)) {
+            const cleanId = rawSymbol.replace('.', '');
+
+            try {
+                const intelEl = document.getElementById(`intel-${cleanId}`);
+                if (intelEl) {
+                    const rsi = intel.rsi || 0;
+                    const macd = intel.macd || 0;
+                    const macd_signal = intel.macd_signal || 0;
+                    const price = intel.last_price || 0;
+                    const sma20 = intel.sma20 || 0;
+                    const rsiColor = rsi > 70 ? '#ff6b81' : rsi < 30 ? '#35d49a' : '#edf2ff';
+                    const macdColor = macd > macd_signal ? '#35d49a' : '#ff6b81';
+
+                    intelEl.innerHTML = rsi > 0 ? `
+                        RSI: <span style="color:${rsiColor}">${rsi.toFixed(1)}</span> | 
+                        MACD: <span style="color:${macdColor}">${macd.toFixed(2)}</span><br/>
+                        MA: ${price > sma20 ? '<span class="good">站上月線</span>' : '<span class="warn">月線之下</span>'}
+                    ` : '<span class="muted">數據不足</span>';
+                    intelEl.classList.remove('muted');
+                }
+
+                const sparkContainer = document.getElementById(`sparkline-${cleanId}`);
+                if (sparkContainer && intel.history_30d && intel.history_30d.length > 0) {
+                    if (sparkContainer.querySelector('div.tv-lightweight-charts')) continue;
+                    sparkContainer.innerHTML = '';
+
+                    const chart = LightweightCharts.createChart(sparkContainer, {
+                        width: 100, height: 35,
+                        layout: { background: { type: 'solid', color: 'transparent' }, textColor: '#94a3b8' },
+                        grid: { vertLines: { visible: false }, horzLines: { visible: false } },
+                        rightPriceScale: { visible: false },
+                        timeScale: { visible: false },
+                        handleScroll: false, handleScale: false,
+                    });
+
+                    const prices = intel.history_30d.map(p => ({
+                        time: p.t.split('T')[0],
+                        value: p.c
+                    })).filter(p => p.time && p.value !== null && !isNaN(p.value));
+
+                    if (prices.length > 0) {
+                        const lineSeries = chart.addSeries(LightweightCharts.LineSeries, {
+                            color: prices[0].value < prices[prices.length-1].value ? '#35d49a' : '#ff6b81',
+                            lineWidth: 2,
+                            crosshairMarkerVisible: false
+                        });
+                        lineSeries.setData(prices);
+                    }
+                }
+            } catch (innerErr) {
+                console.error(`Error rendering ${rawSymbol}:`, innerErr);
+            }
+        }
+
+        document.querySelectorAll('[id^="intel-"]').forEach((el) => {
+            const symbol = el.id.replace('intel-', '').replace(/__/g, '.');
+            if (!loadedSymbols.has(symbol)) {
+                el.innerHTML = '<span class="muted">資料尚未建立</span>';
+                el.classList.remove('muted');
+            }
+        });
+    } catch (err) {
+        console.error("Dashboard Intelligence Global Error:", err);
+        document.querySelectorAll('[id^="intel-"]').forEach((el) => {
+            el.innerHTML = '<span class="warn">指標載入失敗</span>';
+            el.classList.remove('muted');
+        });
+    }
+}
+
+async function toggleDetail(symbol) {
+    const cleanId = symbol.replace('.', '');
+    const row = document.getElementById(`detail-${cleanId}`);
+    if (!row) return;
+    
+    const isVisible = row.style.display !== 'none';
+    row.style.display = isVisible ? 'none' : 'table-row';
+    
+    if (!isVisible) {
+        renderLargeChart(symbol);
+    }
+}
+
+function toggleTradeTicket(symbol) {
+    const cleanId = symbol.replace('.', '');
+    const row = document.getElementById(`ticket-${cleanId}`);
+    if (!row) return;
+    
+    const isVisible = row.style.display !== 'none';
+    row.style.display = isVisible ? 'none' : 'table-row';
+    
+    // Ensure preview is hidden when toggling
+    if (!isVisible) {
+        cancelPreview(cleanId);
+    }
+}
+
+function selectSide(cleanId, side) {
+    const form = document.getElementById(`ticket-form-${cleanId}`);
+    const sideBtns = form.querySelectorAll('.side-btn');
+    const radioInputs = form.querySelectorAll(`input[name="side-${cleanId}"]`);
+    
+    sideBtns.forEach(btn => {
+        btn.style.border = '1px solid rgba(255,255,255,0.1)';
+        btn.style.color = 'rgba(255,255,255,0.4)';
+        btn.style.background = 'transparent';
+    });
+    
+    const selectedBtn = side === 'buy' ? form.querySelector('.buy-btn') : form.querySelector('.sell-btn');
+    const selectedColor = side === 'buy' ? '#35d49a' : '#ff6b81';
+    const selectedBg = side === 'buy' ? 'rgba(53,212,154,0.1)' : 'rgba(255,107,129,0.1)';
+    
+    selectedBtn.style.border = `1px solid ${selectedColor}`;
+    selectedBtn.style.color = selectedColor;
+    selectedBtn.style.background = selectedBg;
+    
+    radioInputs.forEach(input => {
+        if (input.value === side) input.checked = true;
+    });
+}
+
+async function previewTrade(symbol, cleanId) {
+    const side = document.querySelector(`input[name="side-${cleanId}"]:checked`).value;
+    const qty = document.querySelector(`input[data-ticket-id="${cleanId}"][data-field="qty"]`).value;
+    const price = document.querySelector(`input[data-ticket-id="${cleanId}"][data-field="price"]`).value;
+    
+    const previewArea = document.querySelector(`div[data-preview-area="${cleanId}"]`);
+    const previewContent = document.querySelector(`div[data-preview-content="${cleanId}"]`);
+    
+    previewContent.innerHTML = '<div class="muted">正在計算預覽資訊...</div>';
+    previewArea.style.display = 'block';
+    
+    try {
+        const res = await fetch('/api/trade/preview', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({symbol, side, quantity: Number(qty), price: Number(price)})
+        });
+        
+        if (!res.ok) {
+            throw new Error(`API returned ${res.status}: ${res.statusText}`);
+        }
+        
+        const data = await res.json();
+        
+        let html = `
+            <div class="status-item"><span class="muted">委託方向</span><span class="${side === 'buy' ? 'good' : 'bad'}" style="font-weight:700;">${side === 'buy' ? '買進 (BUY)' : '賣出 (SELL)'}</span></div>
+            <div class="status-item"><span class="muted">委託標的</span><span class="mono">${symbol}</span></div>
+            <div class="status-item"><span class="muted">委託數量</span><span class="mono">${data.quantity} 股 (${(data.quantity/1000).toFixed(1)} 張)</span></div>
+            <div class="status-item"><span class="muted">委託價格</span><span class="mono">NT$ ${data.price}</span></div>
+            <div class="status-item"><span class="muted">估計總額</span><span class="mono">NT$ ${data.estimated_total.toLocaleString()}</span></div>
+            <div class="status-item"><span class="muted">風險檢查</span><span class="${data.pre_flight.ok ? 'good' : 'bad'}" style="font-weight:700; padding:2px 6px; border-radius:4px; background:rgba(${data.pre_flight.ok ? '53,212,154' : '255,107,129'}, 0.1);">${data.pre_flight.ok ? '通過 (PASSED)' : '攔截 (BLOCKED)'}</span></div>
+        `;
+        if (data.pre_flight.reason) {
+            html += `<div style="margin-top:12px; padding:10px; border-radius:8px; background:rgba(255,193,7,0.1); border:1px solid rgba(255,193,7,0.2); color:#ffd166; font-size:13px;">
+                <strong>攔截原因：</strong>${data.pre_flight.reason}
+            </div>`;
+        }
+        previewContent.innerHTML = html;
+
+    } catch (err) {
+        console.error("Preview Trade Error:", err);
+        previewContent.innerHTML = `<div class="bad" style="padding:10px; border-radius:8px; background:rgba(255,107,129,0.1); border:1px solid rgba(255,107,129,0.2);">
+            <strong>發生錯誤：</strong><br/>${err.message}
+        </div>`;
+    }
+}
+
+function resetTicketState(cleanId) {
+    const previewArea = document.getElementById(`preview-area-${cleanId}`);
+    const formArea = document.getElementById(`ticket-form-${cleanId}`);
+    const previewBtn = document.getElementById(`preview-btn-${cleanId}`);
+    
+    if (previewArea.style.display !== 'none') {
+        previewArea.style.display = 'none';
+        formArea.style.opacity = '1';
+        formArea.style.pointerEvents = 'auto';
+        previewBtn.style.display = 'block';
+    }
+}
+
+function toggleSubmitBtn(cleanId) {
+    const isChecked = document.getElementById(`confirm-check-${cleanId}`).checked;
+    const submitBtn = document.getElementById(`submit-btn-${cleanId}`);
+    submitBtn.style.display = isChecked ? 'block' : 'none';
+}
+
+function cancelPreview(cleanId) {
+    const previewArea = document.getElementById(`preview-area-${cleanId}`);
+    const formArea = document.getElementById(`ticket-form-${cleanId}`);
+    const previewBtn = document.getElementById(`preview-btn-${cleanId}`);
+    
+    previewArea.style.display = 'none';
+    formArea.style.opacity = '1';
+    formArea.style.pointerEvents = 'auto';
+    previewBtn.style.display = 'block';
+    document.getElementById(`confirm-check-${cleanId}`).checked = false;
+}
+
+async function executeTrade(symbol) {
+    const cleanId = symbol.replace('.', '');
+    const side = document.querySelector(`input[name="side-${cleanId}"]:checked`).value;
+    const qty = document.getElementById(`qty-${cleanId}`).value;
+    const price = document.getElementById(`price-${cleanId}`).value;
+    const isChecked = document.getElementById(`confirm-check-${cleanId}`).checked;
+    
+    if (!isChecked) {
+        alert('請先勾選確認方塊');
+        return;
+    }
+    
+    if (!confirm(`最後確認：送出 ${side.toUpperCase()} ${symbol} ${qty} 股 @ ${price}？`)) {
+        return;
+    }
+    
+    const submitBtn = document.getElementById(`submit-btn-${cleanId}`);
+    submitBtn.disabled = true;
+    submitBtn.textContent = '送出中...';
+
+    try {
+        const res = await fetch('/api/trade/submit', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({symbol, side, quantity: Number(qty), price: Number(price)})
+        });
+        const data = await res.json();
+        
+        if (res.ok) {
+            alert(`交易成功！\n${data.message}`);
+            window.location.reload();
+        } else {
+            alert(`交易失敗：${data.detail || '未知錯誤'}`);
+            submitBtn.disabled = false;
+            submitBtn.textContent = '正式下單 (Submit)';
+        }
+    } catch (err) {
+        alert(`系統錯誤：${err.message}`);
+        submitBtn.disabled = false;
+        submitBtn.textContent = '正式下單 (Submit)';
+    }
+}
+
+async function renderLargeChart(rawSymbol) {
+    const cleanId = rawSymbol.replace('.', '');
+    const container = document.getElementById(`large-chart-${cleanId}`);
+    if (!container || container.querySelector('div.tv-lightweight-charts')) return;
+
+    try {
+        container.innerHTML = '<div class="muted" style="padding:40px; text-align:center;">載入歷史圖表中...</div>';
+        const res = await fetch(`/api/history/${rawSymbol}`);
+        if (!res.ok) {
+            const errBody = await res.json().catch(() => ({}));
+            throw new Error(errBody.detail || `HTTP ${res.status}`);
+        }
+
+        const data = await res.json();
+        const history = data.history || [];
+        const indicators = data.indicators || {};
+        if (history.length === 0) {
+            container.innerHTML = '<div class="muted" style="padding:40px; text-align:center;">目前無此標的歷史資料</div>';
+            return;
+        }
+
+        container.innerHTML = '';
+
+        // --- Determine if we have OHLCV data (new format) ---
+        const hasOHLCV = history[0] && history[0].o !== undefined;
+
+        const chart = LightweightCharts.createChart(container, {
+            height: 420,
+            layout: {
+                background: { color: '#0f172a' },
+                textColor: '#94a3b8',
+                fontSize: 12,
+            },
+            grid: { vertLines: { color: '#1e293b' }, horzLines: { color: '#1e293b' } },
+            rightPriceScale: { borderVisible: false },
+            timeScale: { borderVisible: false, timeVisible: true },
+            crosshair: { mode: 0 },
+        });
+
+        if (hasOHLCV) {
+            // --- Candlestick Series ---
+            const candleSeries = chart.addSeries(LightweightCharts.CandlestickSeries, {
+                upColor: '#35d49a',
+                downColor: '#ff6b81',
+                borderUpColor: '#35d49a',
+                borderDownColor: '#ff6b81',
+                wickUpColor: '#35d49a',
+                wickDownColor: '#ff6b81',
+            });
+
+            const candleData = history.map(p => ({
+                time: p.t.split('T')[0],
+                open: p.o,
+                high: p.h,
+                low: p.l,
+                close: p.c,
+            })).filter(p => p.time && p.open != null && p.close != null);
+
+            candleSeries.setData(candleData);
+
+            // --- Volume Histogram ---
+            const volumeSeries = chart.addSeries(LightweightCharts.HistogramSeries, {
+                priceFormat: { type: 'volume' },
+                priceScaleId: 'volume',
+            });
+            chart.priceScale('volume').applyOptions({
+                scaleMargins: { top: 0.8, bottom: 0 },
+            });
+
+            const volumeData = history.map(p => {
+                const isUp = p.c >= p.o;
+                return {
+                    time: p.t.split('T')[0],
+                    value: p.v || 0,
+                    color: isUp ? 'rgba(53,212,154,0.4)' : 'rgba(255,107,129,0.4)',
+                };
+            }).filter(p => p.time);
+
+            volumeSeries.setData(volumeData);
+
+            // --- MA Overlay Lines ---
+            const smaConfigs = [
+                { key: 'sma5',  color: '#facc15', label: 'MA5' },
+                { key: 'sma20', color: '#60a5fa', label: 'MA20' },
+                { key: 'sma60', color: '#c084fc', label: 'MA60' },
+            ];
+
+            for (const sma of smaConfigs) {
+                const smaData = history
+                    .filter(p => p[sma.key] != null)
+                    .map(p => ({ time: p.t.split('T')[0], value: p[sma.key] }));
+                if (smaData.length > 1) {
+                    const smaSeries = chart.addSeries(LightweightCharts.LineSeries, {
+                        color: sma.color,
+                        lineWidth: 1,
+                        priceLineVisible: false,
+                        lastValueVisible: false,
+                        title: sma.label,
+                    });
+                    smaSeries.setData(smaData);
+                }
+            }
+        } else {
+            // --- Fallback: old format {t, c} only, render as Area chart ---
+            const areaSeries = chart.addSeries(LightweightCharts.AreaSeries, {
+                topColor: 'rgba(124, 214, 255, 0.4)',
+                bottomColor: 'rgba(124, 214, 255, 0.0)',
+                lineColor: '#7cd6ff',
+                lineWidth: 2,
+            });
+            const chartData = history.map(p => ({
+                time: p.t.split('T')[0],
+                value: p.c
+            })).filter(p => p.time && p.value !== null && !isNaN(p.value));
+            areaSeries.setData(chartData);
+        }
+
+        chart.timeScale().fitContent();
+    } catch (err) {
+        console.error(`Render chart failed for ${rawSymbol}:`, err);
+        container.innerHTML = `<div class="warn" style="padding:40px; text-align:center;">圖表更新失敗: ${err.message}</div>`;
+    }
+}
+
+async function markAIDecisionReviewed() {
+    const res = await fetch('/api/ai-decision/review', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'reviewed', human_feedback: 'dashboard-reviewed' })
+    });
+    const data = await res.json();
+    alert(data.message || '已標記為 reviewed');
+    location.reload();
+}
+
+async function markAIDecisionSuperseded() {
+    const res = await fetch('/api/ai-decision/review', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'superseded', human_feedback: 'dashboard-superseded' })
+    });
+    const data = await res.json();
+    alert(data.message || '已標記為 superseded');
+    location.reload();
+}
+
+async function recordAIOutcomeTracked() {
+    const res = await fetch('/api/ai-decision/outcome', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ outcome_status: 'tracked', outcome_note: 'dashboard-tracked' })
+    });
+    const data = await res.json();
+    alert(data.message || '已記錄 outcome tracked');
+    location.reload();
+}
+
+async function recordAIOutcomeReviewed() {
+    const res = await fetch('/api/ai-decision/outcome', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ outcome_status: 'reviewed', outcome_note: 'dashboard-reviewed-outcome', human_feedback: 'dashboard-reviewed-outcome' })
+    });
+    const data = await res.json();
+    alert(data.message || '已記錄 outcome reviewed');
+    location.reload();
+}
+
+async function fetchConsensus() {
+    try {
+        const res = await fetch('/api/decision/consensus');
+        const data = await res.json();
+        const resultEl = document.getElementById('decision_consensus_result');
+        const hintEl = document.getElementById('decision_consensus_hint');
+        if (resultEl && hintEl) {
+            resultEl.innerText = data.consensus;
+            resultEl.style.color = data.color;
+            hintEl.innerText = data.hint;
+        }
+    } catch (err) { console.error(err); }
+}
+
+window.addEventListener('load', () => {
+    // Force a small delay to ensure script availability
+    setTimeout(() => {
+        initIntelligence();
+        fetchConsensus();
+    }, 1000);
+});
+</script>
+{% endblock %}

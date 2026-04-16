@@ -1,0 +1,27 @@
+# ETF_TW Pro - 投資助理專案依賴套件
+
+# 核心框架
+fastapi>=0.109.0
+uvicorn>=0.27.0
+
+# 資料處理
+pandas>=2.2.0
+numpy>=1.26.0
+
+# 報價 API
+yfinance>=0.2.36
+
+# 網頁爬蟲
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+feedparser>=6.0.0
+
+# 資料庫
+# SQLite (Python 內建)
+
+# 測試
+pytest>=8.0.0
+
+# 可選：進階功能
+# plotly>=5.18.0
+# scikit-learn>=1.4.0

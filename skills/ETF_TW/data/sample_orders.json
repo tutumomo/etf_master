@@ -1,0 +1,28 @@
+{
+  "orders": [
+    {
+      "broker": "example-tw-broker",
+      "account": "demo-account",
+      "symbol": "0050",
+      "side": "buy",
+      "order_type": "limit",
+      "price": 185.5,
+      "quantity": 1000,
+      "lot_type": "board",
+      "time_in_force": "day",
+      "mode": "paper"
+    },
+    {
+      "broker": "example-tw-broker",
+      "account": "demo-account",
+      "symbol": "00878",
+      "side": "buy",
+      "order_type": "market",
+      "price": null,
+      "quantity": 100,
+      "lot_type": "odd",
+      "time_in_force": "day",
+      "mode": "paper"
+    }
+  ]
+}

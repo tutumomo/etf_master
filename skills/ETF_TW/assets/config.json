@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "description": "ETF_TW 配置檔案",
+    "note": "已配置永豐金證券 API (ETF_master Key)",
+    "updated_at": "2026-03-26",
+    "api_key_updated": "2026-03-26T11:15"
+  },
+  "trading": {
+    "default_mode": "live",
+    "allowed_modes": [
+      "paper",
+      "sandbox",
+      "live"
+    ],
+    "default_broker": "sinopac",
+    "default_account": "sinopac_01"
+  },
+  "risk_controls": {
+    "max_single_etf_percent": 60,
+    "max_single_trade_percent": 50,
+    "max_single_trade_value": 1000000,
+    "max_single_trade_quantity": 50000,
+    "unit_mismatch_threshold": 10,
+    "require_large_order_confirm": true
+  },
+  "trading_thresholds": {
+    "cash_percentage_min": 10.0,
+    "symbol_weight_max": 30.0,
+    "portfolio_rebalance_gap": 5.0
+  },
+  "brokers": {
+    "paper": {
+      "enabled": true,
+      "initial_cash": 1000000
+    },
+    "sinopac": {
+      "enabled": true,
+      "api_key": "9NTj2vBsfbbGA4kBRH83Bi9KVq7bqVAJAHg8PqvVkuL5",
+      "secret_key": "51xgnv3dC4iQcPUrgn2Dc9vX1r8QP2H18HiwNrJ35ZVM",
+      "simulation_mode": false,
+      "description": "永豐金證券 Shioaji API - 正式環境 (ETF_master Key)"
+    },
+    "cathay": {
+      "enabled": false,
+      "api_key": "",
+      "secret_key": "",
+      "account_id": "",
+      "simulation_mode": true
+    }
+  },
+  "data_sources": {
+    "quote_provider": "yahoo_finance",
+    "cache_duration_seconds": 300,
+    "update_schedule": "manual"
+  },
+  "accounts": {
+    "paper_01": {
+      "alias": "paper_01",
+      "broker_id": "paper",
+      "account_id": "PVER-0001",
+      "mode": "paper",
+      "initial_balance": 1000000,
+      "description": "主要預設模擬帳戶"
+    },
+    "sinopac_01": {
+      "alias": "sinopac_01",
+      "broker_id": "sinopac",
+      "account_id": "0737121",
+      "mode": "live",
+      "credentials": {
+        "api_key": "9NTj2vBsfbbGA4kBRH83Bi9KVq7bqVAJAHg8PqvVkuL5",
+        "api_secret": "51xgnv3dC4iQcPUrgn2Dc9vX1r8QP2H18HiwNrJ35ZVM"
+      },
+      "settlement_bank": "永豐銀行",
+      "description": "永豐金證券 - 正式交易帳戶 (ETF_master Key)"
+    }
+  },
+  "default_account": "sinopac_01",
+  "notifications": {
+    "enabled": true,
+    "channels": [
+      "telegram"
+    ],
+    "alerts": {
+      "price_change_percent": 5,
+      "portfolio_drift_percent": 10
+    }
+  }
+}

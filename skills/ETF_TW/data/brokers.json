@@ -1,0 +1,72 @@
+{
+  "meta": {
+    "version": "1.0",
+    "last_updated": "2026-03-23",
+    "status": "placeholder - 真實 API 尚未整合"
+  },
+  "brokers": {
+    "paper": {
+      "name": "模擬帳戶",
+      "type": "simulator",
+      "status": "active",
+      "features": ["paper_trade", "validate", "preview"],
+      "limits": {
+        "max_daily_trades": 999,
+        "max_position_percent": 100
+      },
+      "fees": {
+        "commission_rate": 0.001425,
+        "tax_rate_sell": 0.003,
+        "min_commission": 30
+      }
+    },
+    "sinopac": {
+      "name": "元大證券",
+      "type": "sinopac",
+      "status": "placeholder",
+      "features": ["pending"],
+      "api_status": "not_integrated",
+      "notes": "真實 API 整合需額外授權與安全審計",
+      "fees": {
+        "commission_rate": 0.001425,
+        "tax_rate_sell": 0.003,
+        "min_commission": 30,
+        "discount_available": true
+      }
+    },
+    "cathay": {
+      "name": "國泰證券",
+      "type": "cathay",
+      "status": "placeholder",
+      "features": ["pending"],
+      "api_status": "not_integrated",
+      "notes": "真實 API 整合需額外授權與安全審計",
+      "fees": {
+        "commission_rate": 0.001425,
+        "tax_rate_sell": 0.003,
+        "min_commission": 30,
+        "discount_available": true
+      }
+    }
+  },
+  "accounts": {
+    "paper_lab": {
+      "alias": "模擬實驗室",
+      "broker": "paper",
+      "purpose": "策略測試",
+      "status": "active"
+    },
+    "sinopac_main": {
+      "alias": "元大主帳戶",
+      "broker": "sinopac",
+      "purpose": "真實交易（未來）",
+      "status": "pending_integration"
+    },
+    "cathay_dca": {
+      "alias": "國泰定投",
+      "broker": "cathay",
+      "purpose": "定期定額（未來）",
+      "status": "pending_integration"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "version": "1.0",
+  "trades": [
+    {
+      "symbol": "0050",
+      "side": "buy",
+      "quantity": 1000,
+      "price": 180.0,
+      "estimated_total_cost": 180000.0,
+      "timestamp": "2024-04-12T10:00:00"
+    }
+  ]
+}

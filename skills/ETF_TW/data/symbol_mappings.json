@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "version": "1.1",
+    "updated_at": "2026-04-16"
+  },
+  "defaults": {
+    "yfinance_candidates": [
+      "{symbol}.TW",
+      "{symbol}.TWO"
+    ]
+  },
+  "symbols": {
+    "00687B": {
+      "yfinance_candidates": [
+        "00687B.TWO"
+      ]
+    },
+    "00720B": {
+      "yfinance_candidates": [
+        "00720B.TWO"
+      ]
+    },
+    "00694B": {
+      "yfinance_candidates": [
+        "00694B.TWO"
+      ]
+    }
+  }
+}

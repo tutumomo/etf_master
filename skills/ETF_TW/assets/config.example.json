@@ -1,0 +1,83 @@
+{
+  "meta": {
+    "description": "ETF_TW 配置範例檔案",
+    "note": "複製此檔案並修改為 config.json 使用"
+  },
+  "trading": {
+    "default_mode": "paper",
+    "allowed_modes": ["paper", "sandbox", "live"],
+    "default_broker": "paper",
+    "default_account": "paper_lab"
+  },
+  "risk_controls": {
+    "max_single_etf_percent": 60,
+    "max_single_trade_percent": 50,
+    "max_single_trade_value": 1000000,
+    "max_single_trade_quantity": 50000,
+    "unit_mismatch_threshold": 10,
+    "require_large_order_confirm": true
+  },
+  "brokers": {
+    "paper": {
+      "enabled": true,
+      "initial_cash": 1000000
+    },
+    "sinopac": {
+      "enabled": false,
+      "api_key": "",
+      "secret_key": "",
+      "account_id": "",
+      "simulation_mode": true
+    },
+    "cathay": {
+      "enabled": false,
+      "api_key": "",
+      "secret_key": "",
+      "account_id": "",
+      "simulation_mode": true
+    }
+  },
+  "data_sources": {
+    "quote_provider": "yahoo_finance",
+    "cache_duration_seconds": 300,
+    "update_schedule": "manual"
+  },
+  "accounts": {
+    "paper_01": {
+      "alias": "paper_01",
+      "broker_id": "paper",
+      "account_id": "PVER-0001",
+      "mode": "paper",
+      "initial_balance": 1000000,
+      "description": "主要預設模擬帳戶"
+    },
+    "sinopac_01": {
+      "alias": "sinopac_01",
+      "broker_id": "sinopac",
+      "account_id": "S123456789",
+      "mode": "live",
+      "credentials": {
+        "api_key": "YOUR_API_KEY",
+        "api_secret": "YOUR_API_SECRET",
+        "password": "YOUR_PASSWORD"
+      },
+      "description": "永豐金證券-實盤帳戶"
+    },
+    "cathay_01": {
+      "alias": "cathay_01",
+      "broker_id": "cathay",
+      "account_id": "C987654321",
+      "mode": "sandbox",
+      "description": "國泰證券-測試沙箱"
+    }
+  },
+  "default_account": "paper_01",
+  "notifications": {
+    "enabled": true,
+    "channels": ["telegram"],
+    "alerts": {
+      "price_change_percent": 5,
+      "portfolio_drift_percent": 10
+    }
+  }
+}
