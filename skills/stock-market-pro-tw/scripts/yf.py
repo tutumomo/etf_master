@@ -288,16 +288,18 @@ def main():
     if len(sys.argv) < 2: sys.exit(1)
     
     import argparse
-    parser = argparse.ArgumentParser(description="Stock Info Explorer")
-    parser.add_argument("cmd", choices=["price", "fundamentals", "history", "pro", "chart", "report", "option"], nargs='?', default="price")
-    parser.add_argument("symbol", help="Stock ticker symbol")
-    parser.add_argument("period", nargs='?', default="3mo")
-    parser.add_argument("chart_type", nargs='?', default="candle")
-    parser.add_argument("--rsi", action="store_true")
-    parser.add_argument("--macd", action="store_true")
-    parser.add_argument("--bb", action="store_true")
-    parser.add_argument("--vwap", action="store_true")
-    parser.add_argument("--atr", action="store_true")
+    parser = argparse.ArgumentParser(description="台股專業行情與圖表分析工具 - 提供即時報價與技術指標線圖")
+    parser.add_argument("cmd", choices=["price", "fundamentals", "history", "pro", "chart", "report", "option"], 
+                        nargs='?', default="price", 
+                        help="子指令：price(報價), fundamentals(基本面), history(ASCII圖), pro(專業圖), report(診斷報告)")
+    parser.add_argument("symbol", help="股票或 ETF 代碼 (例如: 2330.TW, 0050.TW)")
+    parser.add_argument("period", nargs='?', default="3mo", help="分析時間區間 (例如: 1mo, 3mo, 1y, 5y; 預設 3mo)")
+    parser.add_argument("chart_type", nargs='?', default="candle", help="圖表類型 (candle 或 line; 預設 candle)")
+    parser.add_argument("--rsi", action="store_true", help="在圖表中顯示 RSI 指標")
+    parser.add_argument("--macd", action="store_true", help="在圖表中顯示 MACD 指標")
+    parser.add_argument("--bb", action="store_true", help="在圖表中顯示布林通道 (BB)")
+    parser.add_argument("--vwap", action="store_true", help="在圖表中顯示成交量加權平均價 (VWAP)")
+    parser.add_argument("--atr", action="store_true", help="在圖表中顯示平均真實波幅 (ATR)")
     
     # Backward compatibility for positional args or simple 'yf.py TSLA'
     args_list = sys.argv[1:]

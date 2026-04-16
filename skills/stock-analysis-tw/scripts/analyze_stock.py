@@ -2115,48 +2115,48 @@ def format_output_json(signal: Signal) -> str:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Analyze stocks using Yahoo Finance data"
+        description="台股/ETF 量化診斷器 - 基於 Yahoo Finance 數據進行深度分析"
     )
     parser.add_argument(
         "tickers",
         nargs="*",
-        help="Stock/crypto ticker(s) to analyze"
+        help="欲分析的股票或 ETF 代碼 (例如: 2330.TW, 0050.TW)"
     )
     parser.add_argument(
         "--output",
         choices=["text", "json"],
         default="text",
-        help="Output format (default: text)"
+        help="輸出格式 (預設: text)"
     )
     parser.add_argument(
         "--verbose",
         action="store_true",
-        help="Verbose output to stderr"
+        help="顯示詳細執行進度與偵錯資訊"
     )
     parser.add_argument(
         "--portfolio", "-p",
         type=str,
-        help="Analyze all assets in a portfolio"
+        help="分析指定投資組合中的所有資產"
     )
     parser.add_argument(
         "--period",
         choices=["daily", "weekly", "monthly", "quarterly", "yearly"],
-        help="Period for portfolio performance analysis"
+        help="投資組合績效分析的時間區間"
     )
     parser.add_argument(
         "--no-insider",
         action="store_true",
-        help="Skip insider trading analysis (faster, SEC EDGAR is slow)"
+        help="跳過內部人交易分析 (可加速執行，避開 SEC EDGAR 延遲)"
     )
     parser.add_argument(
         "--fast",
         action="store_true",
-        help="Fast mode: skip slow analyses (insider, breaking news)"
+        help="快速模式：跳過耗時分析項目 (內部人交易、重大新聞掃描)"
     )
     parser.add_argument(
         "--state-dir",
         type=str,
-        help="Directory to save analysis results for ETF_master state"
+        help="指定儲存分析結果的狀態目錄 (對接 ETF_master 系統)"
     )
 
     args = parser.parse_args()

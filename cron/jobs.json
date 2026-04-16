@@ -1,0 +1,194 @@
+{
+  "jobs": [
+    {
+      "id": "caae249735e9",
+      "name": "ETF 健康巡檢",
+      "prompt": "ETF_TW 健康巡檢：檢查 dashboard (port 5055) 是否正常回應，檢查 instance state 檔案是否最新鮮，檢查 venv 是否完好。若有異常請給出簡要原因和建議，以繁體中文回報。",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "display": "0 8 * * *"
+      },
+      "schedule_display": "0 8 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 6
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-04-10T18:57:47.274308+08:00",
+      "next_run_at": "2026-04-17T08:00:00+08:00",
+      "last_run_at": "2026-04-16T08:01:51.432603+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "deliver": "telegram",
+      "origin": {
+        "platform": "telegram",
+        "chat_id": "5782791568",
+        "chat_name": "Tu CS",
+        "thread_id": null
+      },
+      "last_delivery_error": null
+    },
+    {
+      "id": "9b8156126bbd",
+      "name": "ETF 早班準備",
+      "prompt": "ETF_TW 早班準備：盤前感知 + 復盤。這是「知識→行動決策鏈」的第一步。\n\n## 決策鏈位置：感知 → 判讀\n\n## 執行步驟\n\n### 1. 資料同步（感知）\n執行以下腳本，依序：\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_market_cache.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_portfolio_snapshot.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_orders_open_state.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/generate_watchlist_summary.py\n```\n\n### 2. 早期復盤（T+1 / T+3 / T+10）\n執行分層復盤：\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && OPENCLAW_AGENT_NAME=etf_master .venv/bin/python scripts/layered_review_cron_registry_live.py\n```\n\n### 3. 產出格式（判讀）\n分析同步後的數據，輸出以下內容：\n\n**📊 早班報告**\n\n**一、持倉與帳戶**\n- 現金餘額、總資產、各部位比重\n- 昨日收盤至今的有意義變化\n\n**二、市場體制判讀**\n- 讀取 ETF_TW state 的 market_context_taiwan.json 和 market_event_context.json\n- 對照 ~/wiki/concepts/market-view.md 的體制定義，判定當前體制\n- 更新 ~/wiki/concepts/market-view.md 的「當前體制判定」和「當前驅動因子」\n\n**三、風險訊號更新**\n- 讀取 market_event_context.json 的風險數據\n- 更新 ~/wiki/concepts/risk-signal.md 的核心訊號表和活躍風險事件\n- 在風險訊號變動歷史表加入今日紀錄\n\n**四、今日觀察重點**\n- 列出 3 個今日盤中需關注的點\n- 對應到決策鏈的哪個步驟\n\n全部以繁體中文輸出。",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "45 8 * * 1-5",
+        "display": "45 8 * * 1-5"
+      },
+      "schedule_display": "45 8 * * 1-5",
+      "repeat": {
+        "times": null,
+        "completed": 4
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-04-11T17:55:09.601824+08:00",
+      "next_run_at": "2026-04-17T08:45:00+08:00",
+      "last_run_at": "2026-04-16T08:53:29.912724+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "deliver": "telegram",
+      "origin": {
+        "platform": "telegram",
+        "chat_id": "5782791568",
+        "chat_name": "Tu CS",
+        "thread_id": null
+      },
+      "last_delivery_error": null
+    },
+    {
+      "id": "1090aafd4264",
+      "name": "ETF 盤中智慧掃描",
+      "prompt": "ETF_TW 盤中智慧掃描：合併原「盤勢掃描 + 重大事件偵測 + 外部事件情境更新 + 決策引擎刷新」。這是「知識→行動決策鏈」的即時感知與判讀環節。\n\n## 決策鏈位置：感知 → 判讀（盤中即時）\n\n## 執行步驟\n\n### 1. 資料同步與情境更新\n依序執行：\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_market_cache.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/generate_intraday_tape_context.py\n# 整合量化診斷：針對持倉與關注標的執行快速掃描\nuv run skills/stock-analysis-tw/scripts/analyze_stock.py --portfolio active --fast --state-dir skills/ETF_TW/instances/etf_master/state/\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/generate_market_event_context.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/generate_taiwan_market_context.py\n```\n\n### 2. 重大事件偵測\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/check_major_event_trigger.py\n```\n\n### 3. 決策引擎刷新\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/refresh_decision_engine_state.py\n```\n\n### 4. Wiki 知識更新（判讀層）\n... (其餘內容保持一致)\n",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "*/30 9-13 * * 1-5",
+        "display": "*/30 9-13 * * 1-5"
+      },
+      "schedule_display": "*/30 9-13 * * 1-5",
+      "repeat": {
+        "times": null,
+        "completed": 38
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-04-11T17:55:45.329827+08:00",
+      "next_run_at": "2026-04-16T13:00:00+08:00",
+      "last_run_at": "2026-04-16T12:33:38.106170+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "deliver": "telegram",
+      "origin": {
+        "platform": "telegram",
+        "chat_id": "5782791568",
+        "chat_name": "Tu CS",
+        "thread_id": null
+      },
+      "last_delivery_error": null
+    },
+    {
+      "id": "efd0904b9cc7",
+      "name": "ETF 盤後收工",
+      "prompt": "ETF_TW 盤後收工：合併原「盤後摘要 + 每日復盤 + 決策品質評分」。決策鏈進入「判讀 → 預判」階段。\n\n## 決策鏈位置：感知 → 判讀 → 預判\n\n## 執行步驟\n\n### 1. 盤後資料同步與深度診斷\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_market_cache.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_portfolio_snapshot.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_positions.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/generate_watchlist_summary.py\n# 生成今日全維度量化診斷與專業報告\nuv run skills/stock-analysis-tw/scripts/analyze_stock.py --portfolio active --state-dir skills/ETF_TW/instances/etf_master/state/\n# 產生今日收盤專業線圖 (以 0050 為例)\nuv run skills/stock-market-pro-tw/scripts/yf.py report 0050.TW 3mo\n```\n\n### 2. 決策品質評分\n... (其餘內容保持一致)\n",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 15 * * 1-5",
+        "display": "0 15 * * 1-5"
+      },
+      "schedule_display": "0 15 * * 1-5",
+      "repeat": {
+        "times": null,
+        "completed": 3
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-04-11T17:57:03.961144+08:00",
+      "next_run_at": "2026-04-16T15:00:00+08:00",
+      "last_run_at": "2026-04-15T15:07:01.470842+08:00",
+      "last_status": "ok",
+      "last_error": null,
+      "deliver": "telegram",
+      "origin": {
+        "platform": "telegram",
+        "chat_id": "5782791568",
+        "chat_name": "Tu CS",
+        "thread_id": null
+      },
+      "last_delivery_error": null
+    },
+    {
+      "id": "7a408f20e7ab",
+      "name": "ETF 每週深度復盤",
+      "prompt": "ETF_TW 每週深度復盤 + Wiki 知識維護。合併原「每週復盤 + Wiki 知識庫維護」。決策鏈進入「預判 → 建議」階段。\n\n## 決策鏈位置：判讀 → 預判 → 建議\n\n## 執行步驟\n\n### 1. 每週復盤\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && OPENCLAW_AGENT_NAME=etf_master .venv/bin/python scripts/review_auto_decisions.py --mode weekly\n```\n\n### 2. Wiki 知識庫維護\n讀取 ~/wiki/SCHEMA.md 和 ~/wiki/index.md，確認知識庫現況。讀取 ~/wiki/log.md 最近 20 行，了解近期更動。\n\n### 3. Wiki 深度更新（建議層）\n\n**3a. market-view.md 週級更新**\n- 回顧本週體制走勢，修正體制定義（如需調整觸發條件）\n- 更新驅動因子為本週總結版\n- 加入「本週回顧」區段：體制是否轉換、關鍵轉折時間點\n- 修正預判為下週展望版（情境機率依本週數據重新評估）\n\n**3b. risk-signal.md 週級更新**\n- 彙整本週風險訊號變動歷史\n- 標記本週已消退的風險事件（從活躍清單移出，加入歷史區段）\n- 標記本週新出現的風險事件\n- 如有風險等級跳級（如 elevated→high），加入「風險等級對應行動」的驗證紀錄\n\n**3c. 產出每週簡報**\n- 建立或更新 ~/wiki/queries/weekly-brief.md（本週市場簡報）\n- 格式：本週回顧 → 體制判讀 → 下週預判 → 家族配置建議\n- 家族建議必須對應到 [[家族投資需求]] 的四位成員需求\n\n**3d. Wiki lint**\n- 確認所有頁面都有 YAML frontmatter\n- 確認每頁至少 2 個 wikilinks\n- 如有新 ETF 出現在 watchlist 但 wiki 未建頁面，建立新實體頁面\n\n### 4. 產出格式\n\n**📊 每週深度復盤 WWXX**\n\n**一、本週市場回顧**\n- 加權指數週漲跌幅、外資本週累計買賣超\n- 體制狀態本週變化（穩定/轉換/異常）\n\n**二、體制判讀修正**\n- 本週驅動因子變動（新增/移除/調整）\n- 觸發條件是否需要微調（如閾值調整）\n\n**三、下週預判**\n- 樂觀情境（xx%）：[描述] → 配置建議\n- 中性情境（xx%）：[描述] → 配置建議\n- 悲觀情境（xx%）：[描述] → 配置建議\n\n**四、家族配置建議**\n- 主人（成長/市值型）：[建議]\n- 妻子（現金流/收益型）：[建議]\n- 兒子（成長/積極）：[建議]\n- 女兒（CP值/費用率）：[建議]\n\n**五、Wiki 維護狀態**\n- 更新了哪些頁面\n- 發現了哪些缺失\n- 新增了哪些內容\n\n全部以繁體中文輸出。",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 9 * * 6",
+        "display": "0 9 * * 6"
+      },
+      "schedule_display": "0 9 * * 6",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-04-11T17:57:56.354764+08:00",
+      "next_run_at": "2026-04-18T09:00:00+08:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "deliver": "telegram",
+      "origin": {
+        "platform": "telegram",
+        "chat_id": "5782791568",
+        "chat_name": "Tu CS",
+        "thread_id": null
+      }
+    }
+  ],
+  "updated_at": "2026-04-16T12:33:38.107895+08:00"
+}

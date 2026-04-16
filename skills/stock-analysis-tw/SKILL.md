@@ -19,8 +19,14 @@ version: 6.2.0
 # 基礎 8 維度診斷
 uv run skills/stock-analysis-tw/scripts/analyze_stock.py 0050.TW
 
-# 快速模式 (跳過新聞與內部人數據)
+# 快速模式 (跳過內部人交易分析與重大新聞掃描，適合盤中頻繁執行)
 uv run skills/stock-analysis-tw/scripts/analyze_stock.py 2330.TW --fast
+
+# 跳過內部人分析 (SEC EDGAR 資料庫連線較慢時使用)
+uv run skills/stock-analysis-tw/scripts/analyze_stock.py 2330.TW --no-insider
+
+# 指定狀態目錄 (用於對接 ETF_master 系統之 state/ 結構)
+uv run skills/stock-analysis-tw/scripts/analyze_stock.py 0050.TW --state-dir state/analysis/
 
 # 複數標對比
 uv run skills/stock-analysis-tw/scripts/analyze_stock.py 0050.TW 006208.TW 0056.TW

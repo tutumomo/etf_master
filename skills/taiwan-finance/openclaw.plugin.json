@@ -1,0 +1,13 @@
+{
+  "id": "taiwan-finance",
+  "name": "Taiwan Financial Analysis Suite",
+  "version": "1.0.0",
+  "description": "全方位的台灣在地化財經分析套件，整合投行、個股研究、私募與財富管理功能。",
+  "metadata": {
+    "source": "https://github.com/anthropics/financial-services-plugins",
+    "modifications": "由 Antigravity 進行全功能移植與台灣在地化重構。",
+    "openclaw": {
+      "skillKey": "taiwan-finance"
+    }
+  }
+}
