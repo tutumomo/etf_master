@@ -1,15 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0.0
-milestone_name: official-release
+milestone: v1.0
+milestone_name: milestone
 status: in_progress
-stopped_at: Prepared Phase 6 structure and requirements.
-last_updated: "2026-04-16T06:03:31.852Z"
+stopped_at: Prepared Phase 8 (UI-STREAMLINE) structure and requirements.
+last_updated: "2026-04-16T10:30:00.000Z"
 progress:
-  total_phases: 2
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_phases: 8
+  completed_phases: 7
+  total_plans: 8
+  completed_plans: 7
+  percent: 87.5
 ---
 
 # STATE: ETF_TW 穩定化與技能整合
@@ -19,36 +20,37 @@ progress:
 ## Project Reference
 
 **Core Value:** 交易安全優先於功能完備 -- 保險絲能擋住錯誤指令，比新增功能更重要
-**Current Focus:** Phase 6: 決策對齊與反應式引擎 (In Progress)
+**Current Focus:** Phase 8: Dashboard UI 優化與一鍵同步 (UI-STREAMLINE)
 
 ## Current Position
 
 | Field | Value |
 |-------|-------|
-| Phase | Phase 6: 決策對齊與反應式引擎 |
+| Phase | Phase 8: Dashboard UI 優化與一鍵同步 |
 | Status | In Progress |
-| Progress | [##########] 6/7 phases complete |
+| Progress | [#######---] 7/8 phases complete |
 
 ```
-[###########################################-------] 85%
+[############################################------] 87.5%
 ```
 
 ## Performance Metrics
 
 | Metric | Value |
 |--------|-------|
-| Requirements mapped | 39/39 |
-| Requirements completed | 35/39 |
-| Phases completed | 6/7 |
-| Total commits | >25 |
+| Requirements mapped | 41/41 |
+| Requirements completed | 40/41 |
+| Phases completed | 7/8 |
+| Total commits | >30 |
 
 ## Accumulated Context
 
 ### Decisions
 
-- Phase 5: Skill integration completed. Audited & fixed path errors and dependencies for 3 finance skills.
-- Decision: Add `Intent-Skill Mapping` to `SOUL.md` to clarify which skill to trigger for different user intents.
-- Decision: Phase 6 starts to optimize decision alignment with strategy and real-time dashboard responsiveness.
+- Phase 5: Skill integration completed.
+- Phase 6: Decision alignment and reactive engine completed.
+- Phase 7: Dashboard UI integration completed.
+- Phase 8 (UI-STREAMLINE): Created full-pipeline API and simplified Dashboard UI buttons.
 
 ### Todos
 
@@ -58,7 +60,9 @@ progress:
 - [x] Phase 3: 持倉交易票據 UI (COMPLETE)
 - [x] Phase 4: 回歸測試與版本保全 (COMPLETE)
 - [x] Phase 5: 財經技能整合與 SOUL 升級 (COMPLETE)
-- [ ] Phase 6: 決策對齊與反應式引擎 (IN PROGRESS)
+- [x] Phase 6: 決策對齊與反應式引擎 (COMPLETE)
+- [x] Phase 7: Dashboard 持倉與關注區塊整合 (COMPLETE)
+- [ ] Phase 8: Dashboard UI 優化與一鍵同步 (IN PROGRESS)
 
 ### Blockers
 
@@ -66,5 +70,5 @@ progress:
 
 ## Session Continuity
 
-**Session Goal:** Create Phase 6 plans for Decision Alignment & Reactive Engine.
-**Stopped At:** Prepared Phase 6 structure and requirements.
+**Session Goal:** Create Phase 8 plans for Dashboard UI Streamline.
+**Stopped At:** Prepared Phase 8 structure and requirements.
