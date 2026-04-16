@@ -3,31 +3,30 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: complete
-last_updated: "2026-04-16T00:00:00.000Z"
+last_updated: "2026-04-16T09:30:00.000Z"
 progress:
-  total_phases: 5
-  completed_phases: 5
-  total_plans: 15
-  completed_plans: 15
-  percent: 100
+  total_phases: 6
+  completed_phases: 6
+  total_plans: 18
+  completed_plans: 18
 ---
 
-# STATE: ETF_TW 穩定化與保險絲收斂
+# STATE: ETF_TW 穩定化與技能整合
 
 **Last updated:** 2026-04-16
 
 ## Project Reference
 
 **Core Value:** 交易安全優先於功能完備 -- 保險絲能擋住錯誤指令，比新增功能更重要
-**Current Focus:** Project Complete (Phase 4 completed)
+**Current Focus:** Phase 5: 財經技能整合與 SOUL 升級 (Completed)
 
 ## Current Position
 
 | Field | Value |
 |-------|-------|
-| Phase | Phase 4: 回歸測試與版本保全 |
+| Phase | Phase 5: 財經技能整合與 SOUL 升級 |
 | Status | Complete |
-| Progress | [########] 5/5 phases complete |
+| Progress | [##########] 6/6 phases complete |
 
 ```
 [##################################################] 100%
@@ -37,39 +36,33 @@ progress:
 
 | Metric | Value |
 |--------|-------|
-| Requirements mapped | 30/30 |
-| Requirements completed | 30/30 |
-| Phases completed | 5/5 |
-| Total commits | >15 (Phase 0-4) |
-| Phase 4 P03 | 1h | 2 tasks | 0 files |
+| Requirements mapped | 35/35 |
+| Requirements completed | 35/35 |
+| Phases completed | 6/6 |
+| Total commits | >20 |
 
 ## Accumulated Context
 
 ### Decisions
 
-- Phase 0: Path audit and freeze COMPLETE (PATH-01, PATH-02, PATH-03)
-- Phase 1: Truth level governance COMPLETE (TRUTH-01 to TRUTH-05)
-- Phase 2: Trading fuse convergence COMPLETE (FUSE-01 to FUSE-06)
-- Phase 3: Position ticketing UI planning COMPLETE.
-- TICKET-01 to TICKET-07 logic completely mapped and completed.
-- Phase 4: Regression Testing & Version Integrity COMPLETE.
-- Regression tests passed (TEST-01 to TEST-05).
-- Git repository completely synced with GitHub (GIT-01 to GIT-03).
-- Added `.gitignore` to prevent sensitive credentials leakage in ETF master repository.
+- Phase 5: Skill integration completed. Audited & fixed path errors and dependencies for 3 finance skills.
+- Decision: Add `Intent-Skill Mapping` to `SOUL.md` to clarify which skill to trigger for different user intents.
+- Decision: Taiwan-finance categorized as a knowledge-based framework skill.
 
 ### Todos
 
-- [x] Phase 0: Path audit and freeze (COMPLETE)
-- [x] Phase 1: Truth level governance (COMPLETE)
-- [x] Phase 2: Trading fuse convergence (COMPLETE)
+- [x] Phase 0: 盤點與凍結 (COMPLETE)
+- [x] Phase 1: 真相層級治理 (COMPLETE)
+- [x] Phase 2: 交易保險絲收斂 (COMPLETE)
 - [x] Phase 3: 持倉交易票據 UI (COMPLETE)
 - [x] Phase 4: 回歸測試與版本保全 (COMPLETE)
+- [x] Phase 5: 財經技能整合與 SOUL 升級 (COMPLETE)
 
 ### Blockers
 
-- None currently
+- None
 
 ## Session Continuity
 
-**Session N goal:** Project 100% Complete. Final push achieved.
-**Next session carry-forward:** None.
+**Session Goal:** Complete Phase 5 final verification and project wrap-up.
+**Stopped At:** Completed all tasks in Phase 5 and project documentation.
