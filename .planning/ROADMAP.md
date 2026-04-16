@@ -7,13 +7,15 @@
 ## Phases
 
 - [x] **Phase 0: 盤點與凍結** -- 釐理 active/legacy 路徑，建立只改 active 副本的明文規範 (COMPLETE)
-- [x] **Phase 1: 真相層級治理** -- 文件與程式回應統一三層分級，消除 state 過度信任殘留，決策控制台建議決策落地 (COMPLETE)
+- [x] **Phase 1: 真真真相層級治理** -- 文件與程式回應統一三層分級，消除 state 過度信任殘留，決策控制台建議決策落地 (COMPLETE)
 - [x] **Phase 2: 交易保險絲收斂** -- sizing policy + pre-flight gate 單一路徑化，submit 後強制落地驗證，交易閾值設定 (COMPLETE)
 - [x] **Phase 3: 持倉交易票據 UI** -- drawer 展開票據、preview/confirm/submit 三段式、維持人工確認、可摺疊區塊、新手泡泡說明 (COMPLETE)
 - [x] **Phase 4: 回歸測試與版本保全** -- 五類回歸案例覆蓋、全流程 commit hash、push 到 GitHub (COMPLETE)
 - [x] **Phase 5: 財經技能整合與 SOUL 升級** -- 深度檢視 3 個財經技能並建立意圖觸發映射表 (COMPLETE)
 - [ ] **Phase 6: 決策對齊與反應式引擎** -- 確保建議對齊策略與情境，並實作即時連動 (IN PROGRESS)
-- [ ] **Phase 7: Dashboard 持倉與關注區塊整合** -- 合併區塊、優化交易票據、動態買賣邏輯 (PLANNED)
+- [x] **Phase 7: Dashboard 持倉與關注區塊整合** -- 合併區塊、優化交易票據、動態買賣邏輯 (PLANNED) (completed 2026-04-16)
+- [ ] **Phase 8: Dashboard UI 優化與一鍵同步** -- 實作「一鍵全同步」並精簡冗餘按鈕 (PLANNED)
+- [ ] **Phase 9: 交易閾值與 AI 絕對紅線系統 (Safety Redlines)** -- 實作硬性閾值管理與交易攔截 (PLANNED)
 
 ## Phase Details
 
@@ -33,6 +35,7 @@
 - [ ] 06-03-PLAN.md — Dashboard 反應式連動與整合驗證 (ALIGN-03)
 
 ### Phase 7: Dashboard 持倉與關注區塊整合
+- [ ] **Phase 8: Dashboard UI 優化與一鍵同步** -- 實作「一鍵全同步」並精簡冗餘按鈕 (PLANNED)
 
 **Goal**: 透過合併區塊與優化交易票據，提升 Dashboard 資訊密度與操作安全性，實作動態交易權限與預覽模式。
 **Depends on**: Phase 6
@@ -43,8 +46,40 @@
   3. 未持倉標的僅能執行「買入」，已持倉標的支援雙向交易。
   4. 交易票據顯式標記「Preview Only」。
 **Plans**: 2 plans
-- [ ] 07-01-PLAN.md — 盤感與關注區塊合併 UI (UI-INTEGRATE)
-- [ ] 07-02-PLAN.md — 持倉優化與動態下單邏輯 (UI-INTEGRATE)
+- [x] 07-01-PLAN.md — 盤感與關注區塊合併 UI (UI-INTEGRATE)
+- [x] 07-02-PLAN.md — 持倉優化與動態下單邏輯 (UI-INTEGRATE)
+
+### Phase 8: Dashboard UI 優化與一鍵同步
+
+**Goal**: 優化 Dashboard UI 指令集，實作「一鍵全同步」整合端點，並移除冗餘按鈕，優化 UI 佈局。
+**Depends on**: Phase 7
+**Requirements**: UI-STREAMLINE, GIT-01, GIT-02
+**Success Criteria** (what must be TRUE):
+  1. 建立 /api/decision/full-pipeline 整合管線執行腳本。
+  2. Dashboard 頂部新增醒目的「一鍵同步與全量分析」按鈕。
+  3. 移除 Dashboard 中至少 5 個獨立的手動刷新按鈕。
+  4. 策略更新後自動啟動全量同步流程。
+**Plans**: 3 plans
+- [ ] 08-01-PLAN.md — [Backend] /api/decision/full-pipeline 整合實作 (UI-STREAMLINE)
+- [ ] 08-02-PLAN.md — [Frontend] UI 整合與按鈕精簡 (UI-STREAMLINE)
+- [ ] 08-03-PLAN.md — [Integration] 策略變動連動與驗證 (UI-STREAMLINE)
+
+### Phase 9: 交易閾值與 AI 絕對紅線系統 (Safety Redlines)
+
+**Goal**: 在 Dashboard 建立交易閾值管理 UI，並將參數硬性整合進 `pre_flight_gate.py` 作為絕對紅線阻斷機制。
+**Depends on**: Phase 2, Phase 7, Phase 8
+**Requirements**: FUSE-V3-REDLINE
+**Success Criteria** (what must be TRUE):
+  1. Dashboard 新增「交易閾值 / Safety Redlines」區塊且支援保存設定。
+  2. 所有閾值參數 (金額、股數、集中度、日虧損、AI 信心) 成功持久化。
+  3. `pre_flight_gate.py` 能正確攔截超限訂單 (金額/股數/集中度)。
+  4. 日虧損熔斷機制在 `daily_pnl` 超標時阻斷所有買入指令。
+  5. 低於 AI 信心門檻的 AI 建議下單被攔截。
+  6. 回歸測試模擬各類超限情境並確認攔截成功。
+**Plans**: 3 plans
+- [ ] 09-01-PLAN.md — [Backend] 閾值儲存與 pre_flight_gate 絕對紅線整合 (FUSE-V3-REDLINE)
+- [ ] 09-02-PLAN.md — [Frontend] Dashboard 閾值管理區塊與 Tooltips (FUSE-V3-REDLINE)
+- [ ] 09-03-PLAN.md — [Testing] 超限阻斷回歸測試撰寫 (FUSE-V3-REDLINE)
 
 **Mandatory Reporting Format:**
 1. 本階段做了什麼（3~6行）
@@ -92,12 +127,14 @@
 | ALIGN-02 | Phase 6 | In Progress |
 | ALIGN-03 | Phase 6 | In Progress |
 | ALIGN-04 | Phase 6 | In Progress |
-| UI-INTEGRATE | Phase 7 | Pending |
+| UI-INTEGRATE | Phase 7 | Completed |
+| UI-STREAMLINE | Phase 8 | Pending |
+| FUSE-V3-REDLINE | Phase 9 | Pending |
 | GIT-01 | All Phases | Completed |
 | GIT-02 | All Phases | Completed |
 | GIT-03 | Phase 4 | Completed |
 
-**Mapped: 40/40 requirements**
+**Mapped: 41/41 requirements**
 
 ## Hard Constraints
 
@@ -119,4 +156,6 @@
 | 4. 回歸測試與版本保全 | 3/3 | Completed | 2026-04-16 |
 | 5. 財經技能整合與 SOUL 升級 | 3/3 | Completed | 2026-04-16 |
 | 6. 決策對齊與反應式引擎 | 0/3 | In Progress | - |
-| 7. Dashboard 持倉與關注區塊整合 | 0/2 | Pending | - |
+| 7. Dashboard 持倉與關注區塊整合 | 2/2 | Complete   | 2026-04-16 |
+| 8. Dashboard UI 優化與一鍵同步 | 0/3 | Pending | - |
+| 9. 交易閾值與 AI 絕對紅線系統 | 0/3 | Planned | - |
