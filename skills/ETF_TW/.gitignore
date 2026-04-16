@@ -32,3 +32,12 @@ private/
 
 # Trade logs (may contain sensitive data)
 data/trade_logs.jsonl
+
+# 路徑錯誤的 openclaw 資料庫（不應出現在此目錄）
+~/.openclaw/
+*.db
+*.db-shm
+*.db-wal
+
+# dashboard 備份檔
+*.html.bak
