@@ -6,7 +6,7 @@ try: from scripts.dns_fix import patch as _dp; _dp()
 except Exception: pass
 
 import argparse
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from uuid import uuid4
 from zoneinfo import ZoneInfo
@@ -405,7 +405,19 @@ def decide_action(strategy: dict, watchlist: dict, market_cache: dict, portfolio
         quote = quotes.get(symbol) or {}
         price = float(quote.get('current_price') or 0)
         if price <= 0:
-            anomalies.append(f'{symbol} 無有效報價')
+            # 區分「尚未更新」與「真正無報價」
+            updated_at_str = quote.get('updated_at', '')
+            if updated_at_str:
+                try:
+                    updated_at = datetime.fromisoformat(updated_at_str)
+                    if datetime.now(updated_at.tzinfo) - updated_at < timedelta(hours=2):
+                        anomalies.append(f'{symbol} 報價更新中（最後更新 {updated_at_str[:16]}）')
+                    else:
+                        anomalies.append(f'{symbol} 報價過期（最後更新 {updated_at_str[:16]}）')
+                except Exception:
+                    anomalies.append(f'{symbol} 無有效報價')
+            else:
+                anomalies.append(f'{symbol} 尚無報價資料')
             continue
 
         holding_qty = float((holdings.get(symbol) or {}).get('quantity') or 0)
