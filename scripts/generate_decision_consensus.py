@@ -4,8 +4,10 @@ import re
 from pathlib import Path
 
 # Paths
-STATE_DIR = Path("skills/ETF_TW/instances/etf_master/state")
-DATA_DIR = Path("skills/ETF_TW/data")
+SCRIPT_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = SCRIPT_DIR.parent
+STATE_DIR = PROJECT_ROOT / "skills" / "ETF_TW" / "instances" / "etf_master" / "state"
+DATA_DIR = PROJECT_ROOT / "skills" / "ETF_TW" / "data"
 RULE_STATE_PATH = STATE_DIR / "auto_trade_state.json"
 AI_STATE_PATH = STATE_DIR / "ai_decision_response.json"
 CONSENSUS_PATH = STATE_DIR / "decision_consensus.json"
