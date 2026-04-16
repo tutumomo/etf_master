@@ -2386,37 +2386,87 @@ def main():
     # Save to state-dir if provided (for ETF_master integration)
     if args.state_dir:
         import os
+        import tempfile
+        from datetime import datetime
+        
         os.makedirs(args.state_dir, exist_ok=True)
         intelligence_file = os.path.join(args.state_dir, "stock_intelligence.json")
+        lock_file = intelligence_file + ".lock"
         
-        # Load existing if available to preserve other tickers?
-        # For simplicity, we overwrite the results for analyzed tickers.
-        intelligence_data = {}
-        if os.path.exists(intelligence_file):
-            try:
-                with open(intelligence_file, "r") as f:
-                    intelligence_data = json.load(f)
-            except Exception:
-                pass
-        
-        if "tickers" not in intelligence_data:
-            intelligence_data["tickers"] = {}
-        
-        for signal in results:
-            intelligence_data["tickers"][signal.ticker] = {
-                "score": round(signal.final_score, 2),
-                "recommendation": signal.recommendation,
-                "confidence": round(signal.confidence, 2),
-                "supporting_points": signal.supporting_points[:3],
-                "caveats": signal.caveats[:3],
-                "timestamp": signal.timestamp
-            }
-        
-        intelligence_data["last_update"] = datetime.now().isoformat()
-        
+        # 修正 WR-06 & IN-03: 併發控制與原子寫入
         try:
-            with open(intelligence_file, "w") as f:
-                json.dump(intelligence_data, f, indent=2, ensure_ascii=False)
+            # 獲取檔案鎖的輔助函式 (兼容 Unix)
+            def save_with_lock():
+                import fcntl
+                with open(lock_file, "w") as lf:
+                    fcntl.flock(lf, fcntl.LOCK_EX) # 阻塞直到取得鎖
+                    
+                    intelligence_data = {}
+                    if os.path.exists(intelligence_file):
+                        try:
+                            with open(intelligence_file, "r", encoding="utf-8") as f:
+                                intelligence_data = json.load(f)
+                        except Exception: pass
+                    
+                    if "tickers" not in intelligence_data:
+                        intelligence_data["tickers"] = {}
+                    
+                    for signal in results:
+                        intelligence_data["tickers"][signal.ticker] = {
+                            "score": round(signal.final_score, 2),
+                            "recommendation": signal.recommendation,
+                            "confidence": round(signal.confidence, 2),
+                            "supporting_points": signal.supporting_points[:3],
+                            "caveats": signal.caveats[:3],
+                            "timestamp": signal.timestamp
+                        }
+                    
+                    intelligence_data["last_update"] = datetime.now().isoformat()
+                    
+                    # 原子寫入：先寫入臨時檔再覆蓋
+                    fd, temp_path = tempfile.mkstemp(dir=args.state_dir, prefix="intel_", suffix=".json")
+                    try:
+                        with os.fdopen(fd, 'w', encoding="utf-8") as f:
+                            json.dump(intelligence_data, f, indent=2, ensure_ascii=False)
+                        os.replace(temp_path, intelligence_file)
+                    except Exception:
+                        if os.path.exists(temp_path): os.remove(temp_path)
+                        raise
+
+            try:
+                save_with_lock()
+            except (ImportError, AttributeError):
+                # 如果 fcntl 不可用 (例如 Windows)，則僅執行原子寫入
+                intelligence_data = {}
+                if os.path.exists(intelligence_file):
+                    try:
+                        with open(intelligence_file, "r", encoding="utf-8") as f:
+                            intelligence_data = json.load(f)
+                    except Exception: pass
+                
+                if "tickers" not in intelligence_data:
+                    intelligence_data["tickers"] = {}
+                
+                for signal in results:
+                    intelligence_data["tickers"][signal.ticker] = {
+                        "score": round(signal.final_score, 2),
+                        "recommendation": signal.recommendation,
+                        "confidence": round(signal.confidence, 2),
+                        "supporting_points": signal.supporting_points[:3],
+                        "caveats": signal.caveats[:3],
+                        "timestamp": signal.timestamp
+                    }
+                
+                intelligence_data["last_update"] = datetime.now().isoformat()
+                fd, temp_path = tempfile.mkstemp(dir=args.state_dir, prefix="intel_", suffix=".json")
+                try:
+                    with os.fdopen(fd, 'w', encoding="utf-8") as f:
+                        json.dump(intelligence_data, f, indent=2, ensure_ascii=False)
+                    os.replace(temp_path, intelligence_file)
+                except Exception:
+                    if os.path.exists(temp_path): os.remove(temp_path)
+                    raise
+
             if args.verbose:
                 print(f"Intelligence saved to {intelligence_file}", file=sys.stderr)
         except Exception as e:

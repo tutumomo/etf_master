@@ -2,8 +2,8 @@
   "jobs": [
     {
       "id": "caae249735e9",
-      "name": "ETF 健康巡檢",
-      "prompt": "ETF_TW 健康巡檢：檢查 dashboard (port 5055) 是否正常回應，檢查 instance state 檔案是否最新鮮，檢查 venv 是否完好。若有異常請給出簡要原因和建議，以繁體中文回報。",
+      "name": "ETF \u5065\u5eb7\u5de1\u6aa2",
+      "prompt": "ETF_TW \u5065\u5eb7\u5de1\u6aa2\uff1a\u6aa2\u67e5 dashboard (port 5055) \u662f\u5426\u6b63\u5e38\u56de\u61c9\uff0c\u6aa2\u67e5 instance state \u6a94\u6848\u662f\u5426\u6700\u65b0\u9bae\uff0c\u6aa2\u67e5 venv \u662f\u5426\u5b8c\u597d\u3002\u82e5\u6709\u7570\u5e38\u8acb\u7d66\u51fa\u7c21\u8981\u539f\u56e0\u548c\u5efa\u8b70\uff0c\u4ee5\u7e41\u9ad4\u4e2d\u6587\u56de\u5831\u3002",
       "skills": [],
       "skill": null,
       "model": null,
@@ -40,8 +40,8 @@
     },
     {
       "id": "9b8156126bbd",
-      "name": "ETF 早班準備",
-      "prompt": "ETF_TW 早班準備：盤前感知 + 復盤。這是「知識→行動決策鏈」的第一步。\n\n## 決策鏈位置：感知 → 判讀\n\n## 執行步驟\n\n### 1. 資料同步（感知）\n執行以下腳本，依序：\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_market_cache.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_portfolio_snapshot.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_orders_open_state.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/generate_watchlist_summary.py\n```\n\n### 2. 早期復盤（T+1 / T+3 / T+10）\n執行分層復盤：\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && OPENCLAW_AGENT_NAME=etf_master .venv/bin/python scripts/layered_review_cron_registry_live.py\n```\n\n### 3. 產出格式（判讀）\n分析同步後的數據，輸出以下內容：\n\n**📊 早班報告**\n\n**一、持倉與帳戶**\n- 現金餘額、總資產、各部位比重\n- 昨日收盤至今的有意義變化\n\n**二、市場體制判讀**\n- 讀取 ETF_TW state 的 market_context_taiwan.json 和 market_event_context.json\n- 對照 ~/wiki/concepts/market-view.md 的體制定義，判定當前體制\n- 更新 ~/wiki/concepts/market-view.md 的「當前體制判定」和「當前驅動因子」\n\n**三、風險訊號更新**\n- 讀取 market_event_context.json 的風險數據\n- 更新 ~/wiki/concepts/risk-signal.md 的核心訊號表和活躍風險事件\n- 在風險訊號變動歷史表加入今日紀錄\n\n**四、今日觀察重點**\n- 列出 3 個今日盤中需關注的點\n- 對應到決策鏈的哪個步驟\n\n全部以繁體中文輸出。",
+      "name": "ETF \u65e9\u73ed\u6e96\u5099",
+      "prompt": "ETF_TW \u65e9\u73ed\u6e96\u5099\uff1a\u76e4\u524d\u611f\u77e5 + \u5fa9\u76e4\u3002\u9019\u662f\u300c\u77e5\u8b58\u2192\u884c\u52d5\u6c7a\u7b56\u93c8\u300d\u7684\u7b2c\u4e00\u6b65\u3002\n\n## \u6c7a\u7b56\u93c8\u4f4d\u7f6e\uff1a\u611f\u77e5 \u2192 \u5224\u8b80\n\n## \u57f7\u884c\u6b65\u9a5f\n\n### 1. \u8cc7\u6599\u540c\u6b65\uff08\u611f\u77e5\uff09\n\u57f7\u884c\u4ee5\u4e0b\u8173\u672c\uff0c\u4f9d\u5e8f\uff1a\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_market_cache.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_portfolio_snapshot.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_orders_open_state.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/generate_watchlist_summary.py\n```\n\n### 2. \u65e9\u671f\u5fa9\u76e4\uff08T+1 / T+3 / T+10\uff09\n\u57f7\u884c\u5206\u5c64\u5fa9\u76e4\uff1a\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && OPENCLAW_AGENT_NAME=etf_master .venv/bin/python scripts/layered_review_cron_registry_live.py\n```\n\n### 3. \u7522\u51fa\u683c\u5f0f\uff08\u5224\u8b80\uff09\n\u5206\u6790\u540c\u6b65\u5f8c\u7684\u6578\u64da\uff0c\u8f38\u51fa\u4ee5\u4e0b\u5167\u5bb9\uff1a\n\n**\ud83d\udcca \u65e9\u73ed\u5831\u544a**\n\n**\u4e00\u3001\u6301\u5009\u8207\u5e33\u6236**\n- \u73fe\u91d1\u9918\u984d\u3001\u7e3d\u8cc7\u7522\u3001\u5404\u90e8\u4f4d\u6bd4\u91cd\n- \u6628\u65e5\u6536\u76e4\u81f3\u4eca\u7684\u6709\u610f\u7fa9\u8b8a\u5316\n\n**\u4e8c\u3001\u5e02\u5834\u9ad4\u5236\u5224\u8b80**\n- \u8b80\u53d6 ETF_TW state \u7684 market_context_taiwan.json \u548c market_event_context.json\n- \u5c0d\u7167 ~/wiki/concepts/market-view.md \u7684\u9ad4\u5236\u5b9a\u7fa9\uff0c\u5224\u5b9a\u7576\u524d\u9ad4\u5236\n- \u66f4\u65b0 ~/wiki/concepts/market-view.md \u7684\u300c\u7576\u524d\u9ad4\u5236\u5224\u5b9a\u300d\u548c\u300c\u7576\u524d\u9a45\u52d5\u56e0\u5b50\u300d\n\n**\u4e09\u3001\u98a8\u96aa\u8a0a\u865f\u66f4\u65b0**\n- \u8b80\u53d6 market_event_context.json \u7684\u98a8\u96aa\u6578\u64da\n- \u66f4\u65b0 ~/wiki/concepts/risk-signal.md \u7684\u6838\u5fc3\u8a0a\u865f\u8868\u548c\u6d3b\u8e8d\u98a8\u96aa\u4e8b\u4ef6\n- \u5728\u98a8\u96aa\u8a0a\u865f\u8b8a\u52d5\u6b77\u53f2\u8868\u52a0\u5165\u4eca\u65e5\u7d00\u9304\n\n**\u56db\u3001\u4eca\u65e5\u89c0\u5bdf\u91cd\u9ede**\n- \u5217\u51fa 3 \u500b\u4eca\u65e5\u76e4\u4e2d\u9700\u95dc\u6ce8\u7684\u9ede\n- \u5c0d\u61c9\u5230\u6c7a\u7b56\u93c8\u7684\u54ea\u500b\u6b65\u9a5f\n\n\u5168\u90e8\u4ee5\u7e41\u9ad4\u4e2d\u6587\u8f38\u51fa\u3002",
       "skills": [],
       "skill": null,
       "model": null,
@@ -78,8 +78,8 @@
     },
     {
       "id": "1090aafd4264",
-      "name": "ETF 盤中智慧掃描",
-      "prompt": "ETF_TW 盤中智慧掃描：合併原「盤勢掃描 + 重大事件偵測 + 外部事件情境更新 + 決策引擎刷新」。這是「知識→行動決策鏈」的即時感知與判讀環節。\n\n## 決策鏈位置：感知 → 判讀（盤中即時）\n\n## 執行步驟\n\n### 1. 資料同步與情境更新\n依序執行：\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_market_cache.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/generate_intraday_tape_context.py\n# 整合量化診斷：針對持倉與關注標的執行快速掃描\nuv run skills/stock-analysis-tw/scripts/analyze_stock.py --portfolio active --fast --state-dir skills/ETF_TW/instances/etf_master/state/\n# 將最新診斷沉澱至 Wiki 知識庫\npython3 scripts/distill_to_wiki.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/generate_market_event_context.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/generate_taiwan_market_context.py\n```\n\n### 2. 重大事件偵測\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/check_major_event_trigger.py\n```\n\n### 3. 決策引擎刷新\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/refresh_decision_engine_state.py\n```\n\n### 4. Wiki 知識更新（判讀層）\n... (其餘內容保持一致)\n",
+      "name": "ETF \u76e4\u4e2d\u667a\u6167\u6383\u63cf",
+      "prompt": "ETF_TW \u76e4\u4e2d\u667a\u6167\u6383\u63cf\uff1a\u5408\u4f75\u539f\u300c\u76e4\u52e2\u6383\u63cf + \u91cd\u5927\u4e8b\u4ef6\u5075\u6e2c + \u5916\u90e8\u4e8b\u4ef6\u60c5\u5883\u66f4\u65b0 + \u6c7a\u7b56\u5f15\u64ce\u5237\u65b0\u300d\u3002\u9019\u662f\u300c\u77e5\u8b58\u2192\u884c\u52d5\u6c7a\u7b56\u93c8\u300d\u7684\u5373\u6642\u611f\u77e5\u8207\u5224\u8b80\u74b0\u7bc0\u3002\n\n## \u6c7a\u7b56\u93c8\u4f4d\u7f6e\uff1a\u611f\u77e5 \u2192 \u5224\u8b80\uff08\u76e4\u4e2d\u5373\u6642\uff09\n\n## \u57f7\u884c\u6b65\u9a5f\n\n### 1. \u8cc7\u6599\u540c\u6b65\u8207\u60c5\u5883\u66f4\u65b0\n\u4f9d\u5e8f\u57f7\u884c\uff1a\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_market_cache.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/generate_intraday_tape_context.py\n# \u6574\u5408\u91cf\u5316\u8a3a\u65b7\uff1a\u91dd\u5c0d\u6301\u5009\u8207\u95dc\u6ce8\u6a19\u7684\u57f7\u884c\u5feb\u901f\u6383\u63cf\nuv run skills/stock-analysis-tw/scripts/analyze_stock.py --portfolio active --fast --state-dir skills/ETF_TW/instances/etf_master/state/\n# \u5c07\u6700\u65b0\u8a3a\u65b7\u6c89\u6fb1\u81f3 Wiki \u77e5\u8b58\u5eab\npython3 scripts/distill_to_wiki.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/generate_market_event_context.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/generate_taiwan_market_context.py\n```\n\n### 2. \u91cd\u5927\u4e8b\u4ef6\u5075\u6e2c\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/check_major_event_trigger.py\n```\n\n### 3. \u6c7a\u7b56\u5f15\u64ce\u5237\u65b0\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/refresh_decision_engine_state.py\n```\n\n### 4. Wiki \u77e5\u8b58\u66f4\u65b0\uff08\u5224\u8b80\u5c64\uff09\n... (\u5176\u9918\u5167\u5bb9\u4fdd\u6301\u4e00\u81f4)\n",
       "skills": [],
       "skill": null,
       "model": null,
@@ -94,15 +94,15 @@
       "schedule_display": "*/30 9-13 * * 1-5",
       "repeat": {
         "times": null,
-        "completed": 39
+        "completed": 40
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-11T17:55:45.329827+08:00",
-      "next_run_at": "2026-04-16T13:30:00+08:00",
-      "last_run_at": "2026-04-16T13:04:27.863778+08:00",
+      "next_run_at": "2026-04-17T09:00:00+08:00",
+      "last_run_at": "2026-04-16T13:32:24.421836+08:00",
       "last_status": "ok",
       "last_error": null,
       "deliver": "telegram",
@@ -116,8 +116,8 @@
     },
     {
       "id": "efd0904b9cc7",
-      "name": "ETF 盤後收工",
-      "prompt": "ETF_TW 盤後收工：合併原「盤後摘要 + 每日復盤 + 決策品質評分」。決策鏈進入「判讀 → 預判」階段。\n\n## 決策鏈位置：感知 → 判讀 → 預判\n\n## 執行步驟\n\n### 1. 盤後資料同步與深度診斷\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_market_cache.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_portfolio_snapshot.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_positions.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/generate_watchlist_summary.py\n# 生成今日全維度量化診斷與專業報告\nuv run skills/stock-analysis-tw/scripts/analyze_stock.py --portfolio active --state-dir skills/ETF_TW/instances/etf_master/state/\n# 將最新診斷沉澱至 Wiki 知識庫\npython3 scripts/distill_to_wiki.py\n# 產生今日收盤專業線圖 (以 0050 為例)\nuv run skills/stock-market-pro-tw/scripts/yf.py report 0050.TW 3mo\n```\n\n### 2. 決策品質評分\n... (其餘內容保持一致)\n",
+      "name": "ETF \u76e4\u5f8c\u6536\u5de5",
+      "prompt": "ETF_TW \u76e4\u5f8c\u6536\u5de5\uff1a\u5408\u4f75\u539f\u300c\u76e4\u5f8c\u6458\u8981 + \u6bcf\u65e5\u5fa9\u76e4 + \u6c7a\u7b56\u54c1\u8cea\u8a55\u5206\u300d\u3002\u6c7a\u7b56\u93c8\u9032\u5165\u300c\u5224\u8b80 \u2192 \u9810\u5224\u300d\u968e\u6bb5\u3002\n\n## \u6c7a\u7b56\u93c8\u4f4d\u7f6e\uff1a\u611f\u77e5 \u2192 \u5224\u8b80 \u2192 \u9810\u5224\n\n## \u57f7\u884c\u6b65\u9a5f\n\n### 1. \u76e4\u5f8c\u8cc7\u6599\u540c\u6b65\u8207\u6df1\u5ea6\u8a3a\u65b7\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_market_cache.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_portfolio_snapshot.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_positions.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/generate_watchlist_summary.py\n# \u751f\u6210\u4eca\u65e5\u5168\u7dad\u5ea6\u91cf\u5316\u8a3a\u65b7\u8207\u5c08\u696d\u5831\u544a\nuv run skills/stock-analysis-tw/scripts/analyze_stock.py --portfolio active --state-dir skills/ETF_TW/instances/etf_master/state/\n# \u5c07\u6700\u65b0\u8a3a\u65b7\u6c89\u6fb1\u81f3 Wiki \u77e5\u8b58\u5eab\npython3 scripts/distill_to_wiki.py\n# \u7522\u751f\u4eca\u65e5\u6536\u76e4\u5c08\u696d\u7dda\u5716 (\u4ee5 0050 \u70ba\u4f8b)\nuv run skills/stock-market-pro-tw/scripts/yf.py report 0050.TW 3mo\n```\n\n### 2. \u6c7a\u7b56\u54c1\u8cea\u8a55\u5206\n... (\u5176\u9918\u5167\u5bb9\u4fdd\u6301\u4e00\u81f4)\n",
       "skills": [],
       "skill": null,
       "model": null,
@@ -132,15 +132,15 @@
       "schedule_display": "0 15 * * 1-5",
       "repeat": {
         "times": null,
-        "completed": 3
+        "completed": 4
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-11T17:57:03.961144+08:00",
-      "next_run_at": "2026-04-16T15:00:00+08:00",
-      "last_run_at": "2026-04-15T15:07:01.470842+08:00",
+      "next_run_at": "2026-04-17T15:00:00+08:00",
+      "last_run_at": "2026-04-16T15:07:57.217228+08:00",
       "last_status": "ok",
       "last_error": null,
       "deliver": "telegram",
@@ -154,8 +154,8 @@
     },
     {
       "id": "7a408f20e7ab",
-      "name": "ETF 每週深度復盤",
-      "prompt": "ETF_TW 每週深度復盤 + Wiki 知識維護。合併原「每週復盤 + Wiki 知識庫維護」。決策鏈進入「預判 → 建議」階段。\n\n## 決策鏈位置：判讀 → 預判 → 建議\n\n## 執行步驟\n\n### 1. 每週復盤\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && OPENCLAW_AGENT_NAME=etf_master .venv/bin/python scripts/review_auto_decisions.py --mode weekly\n```\n\n### 2. Wiki 知識庫維護\n讀取 ~/wiki/SCHEMA.md 和 ~/wiki/index.md，確認知識庫現況。讀取 ~/wiki/log.md 最近 20 行，了解近期更動。\n\n### 3. Wiki 深度更新（建議層）\n\n**3a. market-view.md 週級更新**\n- 回顧本週體制走勢，修正體制定義（如需調整觸發條件）\n- 更新驅動因子為本週總結版\n- 加入「本週回顧」區段：體制是否轉換、關鍵轉折時間點\n- 修正預判為下週展望版（情境機率依本週數據重新評估）\n\n**3b. risk-signal.md 週級更新**\n- 彙整本週風險訊號變動歷史\n- 標記本週已消退的風險事件（從活躍清單移出，加入歷史區段）\n- 標記本週新出現的風險事件\n- 如有風險等級跳級（如 elevated→high），加入「風險等級對應行動」的驗證紀錄\n\n**3c. 產出每週簡報**\n- 建立或更新 ~/wiki/queries/weekly-brief.md（本週市場簡報）\n- 格式：本週回顧 → 體制判讀 → 下週預判 → 家族配置建議\n- 家族建議必須對應到 [[家族投資需求]] 的四位成員需求\n\n**3d. Wiki lint**\n- 確認所有頁面都有 YAML frontmatter\n- 確認每頁至少 2 個 wikilinks\n- 如有新 ETF 出現在 watchlist 但 wiki 未建頁面，建立新實體頁面\n\n### 4. 產出格式\n\n**📊 每週深度復盤 WWXX**\n\n**一、本週市場回顧**\n- 加權指數週漲跌幅、外資本週累計買賣超\n- 體制狀態本週變化（穩定/轉換/異常）\n\n**二、體制判讀修正**\n- 本週驅動因子變動（新增/移除/調整）\n- 觸發條件是否需要微調（如閾值調整）\n\n**三、下週預判**\n- 樂觀情境（xx%）：[描述] → 配置建議\n- 中性情境（xx%）：[描述] → 配置建議\n- 悲觀情境（xx%）：[描述] → 配置建議\n\n**四、家族配置建議**\n- 主人（成長/市值型）：[建議]\n- 妻子（現金流/收益型）：[建議]\n- 兒子（成長/積極）：[建議]\n- 女兒（CP值/費用率）：[建議]\n\n**五、Wiki 維護狀態**\n- 更新了哪些頁面\n- 發現了哪些缺失\n- 新增了哪些內容\n\n全部以繁體中文輸出。",
+      "name": "ETF \u6bcf\u9031\u6df1\u5ea6\u5fa9\u76e4",
+      "prompt": "ETF_TW \u6bcf\u9031\u6df1\u5ea6\u5fa9\u76e4 + Wiki \u77e5\u8b58\u7dad\u8b77\u3002\u5408\u4f75\u539f\u300c\u6bcf\u9031\u5fa9\u76e4 + Wiki \u77e5\u8b58\u5eab\u7dad\u8b77\u300d\u3002\u6c7a\u7b56\u93c8\u9032\u5165\u300c\u9810\u5224 \u2192 \u5efa\u8b70\u300d\u968e\u6bb5\u3002\n\n## \u6c7a\u7b56\u93c8\u4f4d\u7f6e\uff1a\u5224\u8b80 \u2192 \u9810\u5224 \u2192 \u5efa\u8b70\n\n## \u57f7\u884c\u6b65\u9a5f\n\n### 1. \u6bcf\u9031\u5fa9\u76e4\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && OPENCLAW_AGENT_NAME=etf_master .venv/bin/python scripts/review_auto_decisions.py --mode weekly\n```\n\n### 2. Wiki \u77e5\u8b58\u5eab\u7dad\u8b77\n\u8b80\u53d6 ~/wiki/SCHEMA.md \u548c ~/wiki/index.md\uff0c\u78ba\u8a8d\u77e5\u8b58\u5eab\u73fe\u6cc1\u3002\u8b80\u53d6 ~/wiki/log.md \u6700\u8fd1 20 \u884c\uff0c\u4e86\u89e3\u8fd1\u671f\u66f4\u52d5\u3002\n\n### 3. Wiki \u6df1\u5ea6\u66f4\u65b0\uff08\u5efa\u8b70\u5c64\uff09\n\n**3a. market-view.md \u9031\u7d1a\u66f4\u65b0**\n- \u56de\u9867\u672c\u9031\u9ad4\u5236\u8d70\u52e2\uff0c\u4fee\u6b63\u9ad4\u5236\u5b9a\u7fa9\uff08\u5982\u9700\u8abf\u6574\u89f8\u767c\u689d\u4ef6\uff09\n- \u66f4\u65b0\u9a45\u52d5\u56e0\u5b50\u70ba\u672c\u9031\u7e3d\u7d50\u7248\n- \u52a0\u5165\u300c\u672c\u9031\u56de\u9867\u300d\u5340\u6bb5\uff1a\u9ad4\u5236\u662f\u5426\u8f49\u63db\u3001\u95dc\u9375\u8f49\u6298\u6642\u9593\u9ede\n- \u4fee\u6b63\u9810\u5224\u70ba\u4e0b\u9031\u5c55\u671b\u7248\uff08\u60c5\u5883\u6a5f\u7387\u4f9d\u672c\u9031\u6578\u64da\u91cd\u65b0\u8a55\u4f30\uff09\n\n**3b. risk-signal.md \u9031\u7d1a\u66f4\u65b0**\n- \u5f59\u6574\u672c\u9031\u98a8\u96aa\u8a0a\u865f\u8b8a\u52d5\u6b77\u53f2\n- \u6a19\u8a18\u672c\u9031\u5df2\u6d88\u9000\u7684\u98a8\u96aa\u4e8b\u4ef6\uff08\u5f9e\u6d3b\u8e8d\u6e05\u55ae\u79fb\u51fa\uff0c\u52a0\u5165\u6b77\u53f2\u5340\u6bb5\uff09\n- \u6a19\u8a18\u672c\u9031\u65b0\u51fa\u73fe\u7684\u98a8\u96aa\u4e8b\u4ef6\n- \u5982\u6709\u98a8\u96aa\u7b49\u7d1a\u8df3\u7d1a\uff08\u5982 elevated\u2192high\uff09\uff0c\u52a0\u5165\u300c\u98a8\u96aa\u7b49\u7d1a\u5c0d\u61c9\u884c\u52d5\u300d\u7684\u9a57\u8b49\u7d00\u9304\n\n**3c. \u7522\u51fa\u6bcf\u9031\u7c21\u5831**\n- \u5efa\u7acb\u6216\u66f4\u65b0 ~/wiki/queries/weekly-brief.md\uff08\u672c\u9031\u5e02\u5834\u7c21\u5831\uff09\n- \u683c\u5f0f\uff1a\u672c\u9031\u56de\u9867 \u2192 \u9ad4\u5236\u5224\u8b80 \u2192 \u4e0b\u9031\u9810\u5224 \u2192 \u5bb6\u65cf\u914d\u7f6e\u5efa\u8b70\n- \u5bb6\u65cf\u5efa\u8b70\u5fc5\u9808\u5c0d\u61c9\u5230 [[\u5bb6\u65cf\u6295\u8cc7\u9700\u6c42]] \u7684\u56db\u4f4d\u6210\u54e1\u9700\u6c42\n\n**3d. Wiki lint**\n- \u78ba\u8a8d\u6240\u6709\u9801\u9762\u90fd\u6709 YAML frontmatter\n- \u78ba\u8a8d\u6bcf\u9801\u81f3\u5c11 2 \u500b wikilinks\n- \u5982\u6709\u65b0 ETF \u51fa\u73fe\u5728 watchlist \u4f46 wiki \u672a\u5efa\u9801\u9762\uff0c\u5efa\u7acb\u65b0\u5be6\u9ad4\u9801\u9762\n\n### 4. \u7522\u51fa\u683c\u5f0f\n\n**\ud83d\udcca \u6bcf\u9031\u6df1\u5ea6\u5fa9\u76e4 WWXX**\n\n**\u4e00\u3001\u672c\u9031\u5e02\u5834\u56de\u9867**\n- \u52a0\u6b0a\u6307\u6578\u9031\u6f32\u8dcc\u5e45\u3001\u5916\u8cc7\u672c\u9031\u7d2f\u8a08\u8cb7\u8ce3\u8d85\n- \u9ad4\u5236\u72c0\u614b\u672c\u9031\u8b8a\u5316\uff08\u7a69\u5b9a/\u8f49\u63db/\u7570\u5e38\uff09\n\n**\u4e8c\u3001\u9ad4\u5236\u5224\u8b80\u4fee\u6b63**\n- \u672c\u9031\u9a45\u52d5\u56e0\u5b50\u8b8a\u52d5\uff08\u65b0\u589e/\u79fb\u9664/\u8abf\u6574\uff09\n- \u89f8\u767c\u689d\u4ef6\u662f\u5426\u9700\u8981\u5fae\u8abf\uff08\u5982\u95be\u503c\u8abf\u6574\uff09\n\n**\u4e09\u3001\u4e0b\u9031\u9810\u5224**\n- \u6a02\u89c0\u60c5\u5883\uff08xx%\uff09\uff1a[\u63cf\u8ff0] \u2192 \u914d\u7f6e\u5efa\u8b70\n- \u4e2d\u6027\u60c5\u5883\uff08xx%\uff09\uff1a[\u63cf\u8ff0] \u2192 \u914d\u7f6e\u5efa\u8b70\n- \u60b2\u89c0\u60c5\u5883\uff08xx%\uff09\uff1a[\u63cf\u8ff0] \u2192 \u914d\u7f6e\u5efa\u8b70\n\n**\u56db\u3001\u5bb6\u65cf\u914d\u7f6e\u5efa\u8b70**\n- \u4e3b\u4eba\uff08\u6210\u9577/\u5e02\u503c\u578b\uff09\uff1a[\u5efa\u8b70]\n- \u59bb\u5b50\uff08\u73fe\u91d1\u6d41/\u6536\u76ca\u578b\uff09\uff1a[\u5efa\u8b70]\n- \u5152\u5b50\uff08\u6210\u9577/\u7a4d\u6975\uff09\uff1a[\u5efa\u8b70]\n- \u5973\u5152\uff08CP\u503c/\u8cbb\u7528\u7387\uff09\uff1a[\u5efa\u8b70]\n\n**\u4e94\u3001Wiki \u7dad\u8b77\u72c0\u614b**\n- \u66f4\u65b0\u4e86\u54ea\u4e9b\u9801\u9762\n- \u767c\u73fe\u4e86\u54ea\u4e9b\u7f3a\u5931\n- \u65b0\u589e\u4e86\u54ea\u4e9b\u5167\u5bb9\n\n\u5168\u90e8\u4ee5\u7e41\u9ad4\u4e2d\u6587\u8f38\u51fa\u3002",
       "skills": [],
       "skill": null,
       "model": null,
@@ -190,5 +190,5 @@
       }
     }
   ],
-  "updated_at": "2026-04-16T13:04:27.865179+08:00"
+  "updated_at": "2026-04-16T15:07:57.218686+08:00"
 }
