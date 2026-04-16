@@ -1270,7 +1270,7 @@ async function previewTrade(symbol, cleanId) {
         let html = `
             <div class="status-item"><span class="muted">委託方向</span><span class="${side === 'buy' ? 'good' : 'bad'}" style="font-weight:700;">${side === 'buy' ? '買進 (BUY)' : '賣出 (SELL)'}</span></div>
             <div class="status-item"><span class="muted">委託標的</span><span class="mono">${symbol}</span></div>
-            <div class="status-item"><span class="muted">委託數量</span><span class="mono">${data.quantity} 股 (${(data.quantity/1000).toFixed(1)} 張)</span></div>
+            <div class="status-item"><span class="muted">委託數量</span><span class="mono">${data.quantity} 股 (${parseFloat((data.quantity/1000).toFixed(3))} 張)</span></div>
             <div class="status-item"><span class="muted">委託價格</span><span class="mono">NT$ ${data.price}</span></div>
             <div class="status-item"><span class="muted">估計總額</span><span class="mono">NT$ ${data.estimated_total.toLocaleString()}</span></div>
             <div class="status-item"><span class="muted">風險檢查</span><span class="${data.pre_flight.ok ? 'good' : 'bad'}" style="font-weight:700; padding:2px 6px; border-radius:4px; background:rgba(${data.pre_flight.ok ? '53,212,154' : '255,107,129'}, 0.1);">${data.pre_flight.ok ? '通過 (PASSED)' : '攔截 (BLOCKED)'}</span></div>
