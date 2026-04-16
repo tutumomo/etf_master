@@ -1,0 +1,2398 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "label": "\"\u5bcc\u90a6\u53f050\uff08006208\uff09\"",
+      "file_type": "document",
+      "source_file": "entities/006208-fubon-taiwan-50.md",
+      "type": "entity",
+      "tags": [
+        "\u5e02\u503c\u578b",
+        "TWSE",
+        "\u767c\u884c\u5546-\u5bcc\u90a6"
+      ],
+      "id": "006208-fubon-taiwan-50",
+      "community": 0
+    },
+    {
+      "label": "\"\u570b\u6cf0\u53f0\u7063\u79d1\u6280\u9f8d\u982d\uff0800881\uff09\"",
+      "file_type": "document",
+      "source_file": "entities/00881-cathay-tech-leaders.md",
+      "type": "entity",
+      "tags": [
+        "\u7522\u696d\u578b",
+        "TWSE",
+        "\u767c\u884c\u5546-\u570b\u6cf0"
+      ],
+      "id": "00881-cathay-tech-leaders",
+      "community": 3
+    },
+    {
+      "label": "\"\u5143\u5927\u53f0\u7063\u9ad8\u606f\u4f4e\u6ce2\uff0800713\uff09\"",
+      "file_type": "document",
+      "source_file": "entities/00713-yuanta-high-div-low-vol.md",
+      "type": "entity",
+      "tags": [
+        "\u9ad8\u80a1\u606f",
+        "TWSE",
+        "\u767c\u884c\u5546-\u5143\u5927"
+      ],
+      "id": "00713-yuanta-high-div-low-vol",
+      "community": 1
+    },
+    {
+      "label": "\"\u4e2d\u4fe1\u9ad8\u8a55\u7d1a\u516c\u53f8\u50b5\uff0800772B\uff09\"",
+      "file_type": "document",
+      "source_file": "entities/00772B-ctbc-high-grade-corp-bond.md",
+      "type": "entity",
+      "tags": [
+        "\u50b5\u5238\u578b",
+        "TPEx",
+        "\u767c\u884c\u5546-\u4e2d\u4fe1"
+      ],
+      "id": "00772B-ctbc-high-grade-corp-bond",
+      "community": 2
+    },
+    {
+      "label": "\"\u5fa9\u83ef\u53f0\u7063\u79d1\u6280\u512a\u606f\uff0800929\uff09\"",
+      "file_type": "document",
+      "source_file": "entities/00929-fuhwa-tech-optimal-income.md",
+      "type": "entity",
+      "tags": [
+        "\u9ad8\u80a1\u606f",
+        "\u7522\u696d\u578b",
+        "TWSE",
+        "\u767c\u884c\u5546-\u5fa9\u83ef"
+      ],
+      "id": "00929-fuhwa-tech-optimal-income",
+      "community": 1
+    },
+    {
+      "label": "\"\u5143\u5927\u9ad8\u80a1\u606f\uff080056\uff09\"",
+      "file_type": "document",
+      "source_file": "entities/0056-yuanta-high-dividend.md",
+      "type": "entity",
+      "tags": [
+        "\u9ad8\u80a1\u606f",
+        "TWSE",
+        "\u767c\u884c\u5546-\u5143\u5927"
+      ],
+      "id": "0056-yuanta-high-dividend",
+      "community": 1
+    },
+    {
+      "label": "\"\u570b\u6cf0\u8cbb\u57ce\u534a\u5c0e\u9ad4\uff0800830\uff09\"",
+      "file_type": "document",
+      "source_file": "entities/00830-cathay-philly-semiconductor.md",
+      "type": "entity",
+      "tags": [
+        "\u7522\u696d\u578b",
+        "TWSE",
+        "\u767c\u884c\u5546-\u570b\u6cf0"
+      ],
+      "id": "00830-cathay-philly-semiconductor",
+      "community": 3
+    },
+    {
+      "label": "\"\u5143\u5927\u53f0\u706350\uff080050\uff09\"",
+      "file_type": "document",
+      "source_file": "entities/0050-yuanta-taiwan-50.md",
+      "type": "entity",
+      "tags": [
+        "\u5e02\u503c\u578b",
+        "TWSE",
+        "\u767c\u884c\u5546-\u5143\u5927"
+      ],
+      "id": "0050-yuanta-taiwan-50",
+      "community": 0
+    },
+    {
+      "label": "\"\u570b\u6cf020\u5e74\u7f8e\u50b5\uff0800687B\uff09\"",
+      "file_type": "document",
+      "source_file": "entities/00687B-cathay-20y-us-bond.md",
+      "type": "entity",
+      "tags": [
+        "\u50b5\u5238\u578b",
+        "\u8de8\u5883\u578b",
+        "TPEx",
+        "\u767c\u884c\u5546-\u570b\u6cf0"
+      ],
+      "id": "00687B-cathay-20y-us-bond",
+      "community": 2
+    },
+    {
+      "label": "\"\u570b\u6cf0\u6c38\u7e8c\u9ad8\u80a1\u606f\uff0800878\uff09\"",
+      "file_type": "document",
+      "source_file": "entities/00878-cathay-esg-high-dividend.md",
+      "type": "entity",
+      "tags": [
+        "\u9ad8\u80a1\u606f",
+        "ESG",
+        "TWSE",
+        "\u767c\u884c\u5546-\u570b\u6cf0"
+      ],
+      "id": "00878-cathay-esg-high-dividend",
+      "community": 1
+    },
+    {
+      "label": "\"\u5143\u5927\u7f8e\u50b520\u5e74\uff0800679B\uff09\"",
+      "file_type": "document",
+      "source_file": "entities/00679B-yuanta-us-20y-bond.md",
+      "type": "entity",
+      "tags": [
+        "\u50b5\u5238\u578b",
+        "\u8de8\u5883\u578b",
+        "TPEx",
+        "\u767c\u884c\u5546-\u5143\u5927"
+      ],
+      "id": "00679B-yuanta-us-20y-bond",
+      "community": 2
+    },
+    {
+      "label": "\"\u7fa4\u76ca\u53f0\u7063\u7cbe\u9078\u9ad8\u606f\uff0800919\uff09\"",
+      "file_type": "document",
+      "source_file": "entities/00919-capital-taiwan-selected-high-dividend.md",
+      "type": "entity",
+      "tags": [
+        "\u9ad8\u80a1\u606f",
+        "TWSE",
+        "\u767c\u884c\u5546-\u7fa4\u76ca"
+      ],
+      "id": "00919-capital-taiwan-selected-high-dividend",
+      "community": 1
+    },
+    {
+      "label": "\"\u5143\u5927\u4e2d\u578b100\uff080051\uff09\"",
+      "file_type": "document",
+      "source_file": "entities/0051-yuanta-mid-cap-100.md",
+      "type": "entity",
+      "tags": [
+        "\u5e02\u503c\u578b",
+        "TWSE",
+        "\u767c\u884c\u5546-\u5143\u5927"
+      ],
+      "id": "0051-yuanta-mid-cap-100",
+      "community": 0
+    },
+    {
+      "label": "\"\u4e2d\u4fe1\u95dc\u9375\u534a\u5c0e\u9ad4\uff0800891\uff09\"",
+      "file_type": "document",
+      "source_file": "entities/00891-ctbc-key-semiconductor.md",
+      "type": "entity",
+      "tags": [
+        "\u7522\u696d\u578b",
+        "TWSE"
+      ],
+      "id": "00891-ctbc-key-semiconductor",
+      "community": 3
+    },
+    {
+      "label": "\"\u6c38\u8c50\u81fa\u7063\u52a0\u6b0a\uff08006204\uff09\"",
+      "file_type": "document",
+      "source_file": "entities/006204-sinopac-weighted.md",
+      "type": "entity",
+      "tags": [
+        "\u5e02\u503c\u578b",
+        "TWSE",
+        "\u767c\u884c\u5546-\u6c38\u8c50"
+      ],
+      "id": "006204-sinopac-weighted",
+      "community": 0
+    },
+    {
+      "label": "ETF \u767c\u884c\u5546\u751f\u614b",
+      "file_type": "document",
+      "source_file": "concepts/etf-\u767c\u884c\u5546\u751f\u614b.md",
+      "type": "concept",
+      "tags": [
+        "\u767c\u884c\u5546",
+        "\u6295\u8cc7\u7b56\u7565"
+      ],
+      "id": "etf-\u767c\u884c\u5546\u751f\u614b",
+      "community": 0
+    },
+    {
+      "label": "\u7522\u696d\u578b ETF",
+      "file_type": "document",
+      "source_file": "concepts/\u7522\u696d\u578b-etf.md",
+      "type": "concept",
+      "tags": [
+        "\u7522\u696d\u578b",
+        "\u6295\u8cc7\u7b56\u7565",
+        "TWSE"
+      ],
+      "id": "\u7522\u696d\u578b-etf",
+      "community": 3
+    },
+    {
+      "label": "\u50b5\u5238\u578b ETF",
+      "file_type": "document",
+      "source_file": "concepts/\u50b5\u5238\u578b-etf.md",
+      "type": "concept",
+      "tags": [
+        "\u50b5\u5238\u578b",
+        "\u6295\u8cc7\u7b56\u7565",
+        "TPEx"
+      ],
+      "id": "\u50b5\u5238\u578b-etf",
+      "community": 2
+    },
+    {
+      "label": "\u9ad8\u80a1\u606f ETF",
+      "file_type": "document",
+      "source_file": "concepts/\u9ad8\u80a1\u606f-etf.md",
+      "type": "concept",
+      "tags": [
+        "\u9ad8\u80a1\u606f",
+        "\u6295\u8cc7\u7b56\u7565",
+        "TWSE"
+      ],
+      "id": "\u9ad8\u80a1\u606f-etf",
+      "community": 1
+    },
+    {
+      "label": "\u5bb6\u65cf\u6295\u8cc7\u9700\u6c42",
+      "file_type": "document",
+      "source_file": "concepts/\u5bb6\u65cf\u6295\u8cc7\u9700\u6c42.md",
+      "type": "concept",
+      "tags": [
+        "\u6295\u8cc7\u7b56\u7565",
+        "\u5bb6\u65cf\u6210\u54e1"
+      ],
+      "id": "\u5bb6\u65cf\u6295\u8cc7\u9700\u6c42",
+      "community": 0
+    },
+    {
+      "label": "\u5e02\u503c\u578b ETF",
+      "file_type": "document",
+      "source_file": "concepts/\u5e02\u503c\u578b-etf.md",
+      "type": "concept",
+      "tags": [
+        "\u5e02\u503c\u578b",
+        "\u6295\u8cc7\u7b56\u7565",
+        "TWSE"
+      ],
+      "id": "\u5e02\u503c\u578b-etf",
+      "community": 0
+    },
+    {
+      "label": "\"00679B vs 00687B \u2014 \u5143\u5927\u7f8e\u50b520\u5e74 vs \u570b\u6cf020\u5e74\u7f8e\u50b5\"",
+      "file_type": "document",
+      "source_file": "comparisons/00679B-vs-00687B.md",
+      "type": "comparison",
+      "tags": [
+        "\u50b5\u5238\u578b",
+        "\u6bd4\u8f03",
+        "TPEx",
+        "\u767c\u884c\u5546-\u5143\u5927",
+        "\u767c\u884c\u5546-\u570b\u6cf0"
+      ],
+      "id": "00679B-vs-00687B",
+      "community": 2
+    },
+    {
+      "label": "\"0056 vs 00878 vs 00929 \u2014 \u4e09\u5927\u9ad8\u80a1\u606f ETF \u5c0d\u6c7a\"",
+      "file_type": "document",
+      "source_file": "comparisons/0056-vs-00878-vs-00929.md",
+      "type": "comparison",
+      "tags": [
+        "\u9ad8\u80a1\u606f",
+        "\u6bd4\u8f03",
+        "TWSE",
+        "\u767c\u884c\u5546-\u5143\u5927",
+        "\u767c\u884c\u5546-\u570b\u6cf0",
+        "\u767c\u884c\u5546-\u5fa9\u83ef"
+      ],
+      "id": "0056-vs-00878-vs-00929",
+      "community": 1
+    },
+    {
+      "label": "\"0050 vs 006208 \u2014 \u5143\u5927\u53f0\u706350 vs \u5bcc\u90a6\u53f050\"",
+      "file_type": "document",
+      "source_file": "comparisons/0050-vs-006208.md",
+      "type": "comparison",
+      "tags": [
+        "\u5e02\u503c\u578b",
+        "\u6bd4\u8f03",
+        "TWSE",
+        "\u767c\u884c\u5546-\u5143\u5927",
+        "\u767c\u884c\u5546-\u5bcc\u90a6"
+      ],
+      "id": "0050-vs-006208",
+      "community": 0
+    }
+  ],
+  "links": [
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "entities/0050-yuanta-taiwan-50.md",
+      "weight": 1.0,
+      "_src": "0050-yuanta-taiwan-50",
+      "_tgt": "006208-fubon-taiwan-50",
+      "source": "006208-fubon-taiwan-50",
+      "target": "0050-yuanta-taiwan-50"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/\u5e02\u503c\u578b-etf.md",
+      "weight": 1.0,
+      "_src": "\u5e02\u503c\u578b-etf",
+      "_tgt": "006208-fubon-taiwan-50",
+      "source": "006208-fubon-taiwan-50",
+      "target": "\u5e02\u503c\u578b-etf"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "entities/0051-yuanta-mid-cap-100.md",
+      "weight": 1.0,
+      "_src": "0051-yuanta-mid-cap-100",
+      "_tgt": "006208-fubon-taiwan-50",
+      "source": "006208-fubon-taiwan-50",
+      "target": "0051-yuanta-mid-cap-100"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "entities/006204-sinopac-weighted.md",
+      "weight": 1.0,
+      "_src": "006204-sinopac-weighted",
+      "_tgt": "006208-fubon-taiwan-50",
+      "source": "006208-fubon-taiwan-50",
+      "target": "006204-sinopac-weighted"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/etf-\u767c\u884c\u5546\u751f\u614b.md",
+      "weight": 1.0,
+      "_src": "etf-\u767c\u884c\u5546\u751f\u614b",
+      "_tgt": "006208-fubon-taiwan-50",
+      "source": "006208-fubon-taiwan-50",
+      "target": "etf-\u767c\u884c\u5546\u751f\u614b"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/\u5bb6\u65cf\u6295\u8cc7\u9700\u6c42.md",
+      "weight": 1.0,
+      "_src": "\u5bb6\u65cf\u6295\u8cc7\u9700\u6c42",
+      "_tgt": "006208-fubon-taiwan-50",
+      "source": "006208-fubon-taiwan-50",
+      "target": "\u5bb6\u65cf\u6295\u8cc7\u9700\u6c42"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "comparisons/0050-vs-006208.md",
+      "weight": 1.0,
+      "_src": "0050-vs-006208",
+      "_tgt": "006208-fubon-taiwan-50",
+      "source": "006208-fubon-taiwan-50",
+      "target": "0050-vs-006208"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "006208-fubon-taiwan-50",
+      "_tgt": "00881-cathay-tech-leaders",
+      "source": "006208-fubon-taiwan-50",
+      "target": "00881-cathay-tech-leaders"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "006208-fubon-taiwan-50",
+      "_tgt": "00713-yuanta-high-div-low-vol",
+      "source": "006208-fubon-taiwan-50",
+      "target": "00713-yuanta-high-div-low-vol"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "006208-fubon-taiwan-50",
+      "_tgt": "00929-fuhwa-tech-optimal-income",
+      "source": "006208-fubon-taiwan-50",
+      "target": "00929-fuhwa-tech-optimal-income"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "006208-fubon-taiwan-50",
+      "_tgt": "0056-yuanta-high-dividend",
+      "source": "006208-fubon-taiwan-50",
+      "target": "0056-yuanta-high-dividend"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "006208-fubon-taiwan-50",
+      "_tgt": "00830-cathay-philly-semiconductor",
+      "source": "006208-fubon-taiwan-50",
+      "target": "00830-cathay-philly-semiconductor"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "006208-fubon-taiwan-50",
+      "_tgt": "00878-cathay-esg-high-dividend",
+      "source": "006208-fubon-taiwan-50",
+      "target": "00878-cathay-esg-high-dividend"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "006208-fubon-taiwan-50",
+      "_tgt": "00919-capital-taiwan-selected-high-dividend",
+      "source": "006208-fubon-taiwan-50",
+      "target": "00919-capital-taiwan-selected-high-dividend"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "006208-fubon-taiwan-50",
+      "_tgt": "00891-ctbc-key-semiconductor",
+      "source": "006208-fubon-taiwan-50",
+      "target": "00891-ctbc-key-semiconductor"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "006208-fubon-taiwan-50",
+      "_tgt": "\u7522\u696d\u578b-etf",
+      "source": "006208-fubon-taiwan-50",
+      "target": "\u7522\u696d\u578b-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "006208-fubon-taiwan-50",
+      "_tgt": "\u9ad8\u80a1\u606f-etf",
+      "source": "006208-fubon-taiwan-50",
+      "target": "\u9ad8\u80a1\u606f-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "006208-fubon-taiwan-50",
+      "_tgt": "0056-vs-00878-vs-00929",
+      "source": "006208-fubon-taiwan-50",
+      "target": "0056-vs-00878-vs-00929"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/\u7522\u696d\u578b-etf.md",
+      "weight": 1.0,
+      "_src": "\u7522\u696d\u578b-etf",
+      "_tgt": "00881-cathay-tech-leaders",
+      "source": "00881-cathay-tech-leaders",
+      "target": "\u7522\u696d\u578b-etf"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "entities/00929-fuhwa-tech-optimal-income.md",
+      "weight": 1.0,
+      "_src": "00929-fuhwa-tech-optimal-income",
+      "_tgt": "00881-cathay-tech-leaders",
+      "source": "00881-cathay-tech-leaders",
+      "target": "00929-fuhwa-tech-optimal-income"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "entities/00830-cathay-philly-semiconductor.md",
+      "weight": 1.0,
+      "_src": "00830-cathay-philly-semiconductor",
+      "_tgt": "00881-cathay-tech-leaders",
+      "source": "00881-cathay-tech-leaders",
+      "target": "00830-cathay-philly-semiconductor"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "entities/00891-ctbc-key-semiconductor.md",
+      "weight": 1.0,
+      "_src": "00891-ctbc-key-semiconductor",
+      "_tgt": "00881-cathay-tech-leaders",
+      "source": "00881-cathay-tech-leaders",
+      "target": "00891-ctbc-key-semiconductor"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/etf-\u767c\u884c\u5546\u751f\u614b.md",
+      "weight": 1.0,
+      "_src": "etf-\u767c\u884c\u5546\u751f\u614b",
+      "_tgt": "00881-cathay-tech-leaders",
+      "source": "00881-cathay-tech-leaders",
+      "target": "etf-\u767c\u884c\u5546\u751f\u614b"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00881-cathay-tech-leaders",
+      "_tgt": "00713-yuanta-high-div-low-vol",
+      "source": "00881-cathay-tech-leaders",
+      "target": "00713-yuanta-high-div-low-vol"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00881-cathay-tech-leaders",
+      "_tgt": "0056-yuanta-high-dividend",
+      "source": "00881-cathay-tech-leaders",
+      "target": "0056-yuanta-high-dividend"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00881-cathay-tech-leaders",
+      "_tgt": "0050-yuanta-taiwan-50",
+      "source": "00881-cathay-tech-leaders",
+      "target": "0050-yuanta-taiwan-50"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00881-cathay-tech-leaders",
+      "_tgt": "00878-cathay-esg-high-dividend",
+      "source": "00881-cathay-tech-leaders",
+      "target": "00878-cathay-esg-high-dividend"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00881-cathay-tech-leaders",
+      "_tgt": "00919-capital-taiwan-selected-high-dividend",
+      "source": "00881-cathay-tech-leaders",
+      "target": "00919-capital-taiwan-selected-high-dividend"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00881-cathay-tech-leaders",
+      "_tgt": "0051-yuanta-mid-cap-100",
+      "source": "00881-cathay-tech-leaders",
+      "target": "0051-yuanta-mid-cap-100"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00881-cathay-tech-leaders",
+      "_tgt": "006204-sinopac-weighted",
+      "source": "00881-cathay-tech-leaders",
+      "target": "006204-sinopac-weighted"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00881-cathay-tech-leaders",
+      "_tgt": "\u9ad8\u80a1\u606f-etf",
+      "source": "00881-cathay-tech-leaders",
+      "target": "\u9ad8\u80a1\u606f-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00881-cathay-tech-leaders",
+      "_tgt": "\u5e02\u503c\u578b-etf",
+      "source": "00881-cathay-tech-leaders",
+      "target": "\u5e02\u503c\u578b-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00881-cathay-tech-leaders",
+      "_tgt": "0056-vs-00878-vs-00929",
+      "source": "00881-cathay-tech-leaders",
+      "target": "0056-vs-00878-vs-00929"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00881-cathay-tech-leaders",
+      "_tgt": "0050-vs-006208",
+      "source": "00881-cathay-tech-leaders",
+      "target": "0050-vs-006208"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u767c\u884c\u5546-\u570b\u6cf0",
+      "weight": 0.6,
+      "_src": "00881-cathay-tech-leaders",
+      "_tgt": "00687B-cathay-20y-us-bond",
+      "source": "00881-cathay-tech-leaders",
+      "target": "00687B-cathay-20y-us-bond"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u767c\u884c\u5546-\u570b\u6cf0",
+      "weight": 0.6,
+      "_src": "00881-cathay-tech-leaders",
+      "_tgt": "00679B-vs-00687B",
+      "source": "00881-cathay-tech-leaders",
+      "target": "00679B-vs-00687B"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "entities/00713-yuanta-high-div-low-vol.md",
+      "weight": 1.0,
+      "_src": "00713-yuanta-high-div-low-vol",
+      "_tgt": "0056-yuanta-high-dividend",
+      "source": "00713-yuanta-high-div-low-vol",
+      "target": "0056-yuanta-high-dividend"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "entities/00713-yuanta-high-div-low-vol.md",
+      "weight": 1.0,
+      "_src": "00713-yuanta-high-div-low-vol",
+      "_tgt": "00878-cathay-esg-high-dividend",
+      "source": "00713-yuanta-high-div-low-vol",
+      "target": "00878-cathay-esg-high-dividend"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/\u9ad8\u80a1\u606f-etf.md",
+      "weight": 1.0,
+      "_src": "\u9ad8\u80a1\u606f-etf",
+      "_tgt": "00713-yuanta-high-div-low-vol",
+      "source": "00713-yuanta-high-div-low-vol",
+      "target": "\u9ad8\u80a1\u606f-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00713-yuanta-high-div-low-vol",
+      "_tgt": "00929-fuhwa-tech-optimal-income",
+      "source": "00713-yuanta-high-div-low-vol",
+      "target": "00929-fuhwa-tech-optimal-income"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00713-yuanta-high-div-low-vol",
+      "_tgt": "00830-cathay-philly-semiconductor",
+      "source": "00713-yuanta-high-div-low-vol",
+      "target": "00830-cathay-philly-semiconductor"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00713-yuanta-high-div-low-vol",
+      "_tgt": "0050-yuanta-taiwan-50",
+      "source": "00713-yuanta-high-div-low-vol",
+      "target": "0050-yuanta-taiwan-50"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00713-yuanta-high-div-low-vol",
+      "_tgt": "00919-capital-taiwan-selected-high-dividend",
+      "source": "00713-yuanta-high-div-low-vol",
+      "target": "00919-capital-taiwan-selected-high-dividend"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00713-yuanta-high-div-low-vol",
+      "_tgt": "0051-yuanta-mid-cap-100",
+      "source": "00713-yuanta-high-div-low-vol",
+      "target": "0051-yuanta-mid-cap-100"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00713-yuanta-high-div-low-vol",
+      "_tgt": "00891-ctbc-key-semiconductor",
+      "source": "00713-yuanta-high-div-low-vol",
+      "target": "00891-ctbc-key-semiconductor"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00713-yuanta-high-div-low-vol",
+      "_tgt": "006204-sinopac-weighted",
+      "source": "00713-yuanta-high-div-low-vol",
+      "target": "006204-sinopac-weighted"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00713-yuanta-high-div-low-vol",
+      "_tgt": "\u7522\u696d\u578b-etf",
+      "source": "00713-yuanta-high-div-low-vol",
+      "target": "\u7522\u696d\u578b-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00713-yuanta-high-div-low-vol",
+      "_tgt": "\u5e02\u503c\u578b-etf",
+      "source": "00713-yuanta-high-div-low-vol",
+      "target": "\u5e02\u503c\u578b-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00713-yuanta-high-div-low-vol",
+      "_tgt": "0056-vs-00878-vs-00929",
+      "source": "00713-yuanta-high-div-low-vol",
+      "target": "0056-vs-00878-vs-00929"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00713-yuanta-high-div-low-vol",
+      "_tgt": "0050-vs-006208",
+      "source": "00713-yuanta-high-div-low-vol",
+      "target": "0050-vs-006208"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u767c\u884c\u5546-\u5143\u5927",
+      "weight": 0.6,
+      "_src": "00713-yuanta-high-div-low-vol",
+      "_tgt": "00679B-yuanta-us-20y-bond",
+      "source": "00713-yuanta-high-div-low-vol",
+      "target": "00679B-yuanta-us-20y-bond"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u767c\u884c\u5546-\u5143\u5927",
+      "weight": 0.6,
+      "_src": "00713-yuanta-high-div-low-vol",
+      "_tgt": "00679B-vs-00687B",
+      "source": "00713-yuanta-high-div-low-vol",
+      "target": "00679B-vs-00687B"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "entities/00772B-ctbc-high-grade-corp-bond.md",
+      "weight": 1.0,
+      "_src": "00772B-ctbc-high-grade-corp-bond",
+      "_tgt": "\u50b5\u5238\u578b-etf",
+      "source": "00772B-ctbc-high-grade-corp-bond",
+      "target": "\u50b5\u5238\u578b-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u50b5\u5238\u578b",
+      "weight": 0.6,
+      "_src": "00772B-ctbc-high-grade-corp-bond",
+      "_tgt": "00687B-cathay-20y-us-bond",
+      "source": "00772B-ctbc-high-grade-corp-bond",
+      "target": "00687B-cathay-20y-us-bond"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u50b5\u5238\u578b",
+      "weight": 0.6,
+      "_src": "00772B-ctbc-high-grade-corp-bond",
+      "_tgt": "00679B-yuanta-us-20y-bond",
+      "source": "00772B-ctbc-high-grade-corp-bond",
+      "target": "00679B-yuanta-us-20y-bond"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u50b5\u5238\u578b",
+      "weight": 0.6,
+      "_src": "00772B-ctbc-high-grade-corp-bond",
+      "_tgt": "00679B-vs-00687B",
+      "source": "00772B-ctbc-high-grade-corp-bond",
+      "target": "00679B-vs-00687B"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "entities/00929-fuhwa-tech-optimal-income.md",
+      "weight": 1.0,
+      "_src": "00929-fuhwa-tech-optimal-income",
+      "_tgt": "0056-yuanta-high-dividend",
+      "source": "00929-fuhwa-tech-optimal-income",
+      "target": "0056-yuanta-high-dividend"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "entities/00929-fuhwa-tech-optimal-income.md",
+      "weight": 1.0,
+      "_src": "00929-fuhwa-tech-optimal-income",
+      "_tgt": "00878-cathay-esg-high-dividend",
+      "source": "00929-fuhwa-tech-optimal-income",
+      "target": "00878-cathay-esg-high-dividend"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/\u9ad8\u80a1\u606f-etf.md",
+      "weight": 1.0,
+      "_src": "\u9ad8\u80a1\u606f-etf",
+      "_tgt": "00929-fuhwa-tech-optimal-income",
+      "source": "00929-fuhwa-tech-optimal-income",
+      "target": "\u9ad8\u80a1\u606f-etf"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "entities/00929-fuhwa-tech-optimal-income.md",
+      "weight": 1.0,
+      "_src": "00929-fuhwa-tech-optimal-income",
+      "_tgt": "\u7522\u696d\u578b-etf",
+      "source": "00929-fuhwa-tech-optimal-income",
+      "target": "\u7522\u696d\u578b-etf"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/etf-\u767c\u884c\u5546\u751f\u614b.md",
+      "weight": 1.0,
+      "_src": "etf-\u767c\u884c\u5546\u751f\u614b",
+      "_tgt": "00929-fuhwa-tech-optimal-income",
+      "source": "00929-fuhwa-tech-optimal-income",
+      "target": "etf-\u767c\u884c\u5546\u751f\u614b"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "comparisons/0056-vs-00878-vs-00929.md",
+      "weight": 1.0,
+      "_src": "0056-vs-00878-vs-00929",
+      "_tgt": "00929-fuhwa-tech-optimal-income",
+      "source": "00929-fuhwa-tech-optimal-income",
+      "target": "0056-vs-00878-vs-00929"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00929-fuhwa-tech-optimal-income",
+      "_tgt": "00830-cathay-philly-semiconductor",
+      "source": "00929-fuhwa-tech-optimal-income",
+      "target": "00830-cathay-philly-semiconductor"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00929-fuhwa-tech-optimal-income",
+      "_tgt": "0050-yuanta-taiwan-50",
+      "source": "00929-fuhwa-tech-optimal-income",
+      "target": "0050-yuanta-taiwan-50"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00929-fuhwa-tech-optimal-income",
+      "_tgt": "00919-capital-taiwan-selected-high-dividend",
+      "source": "00929-fuhwa-tech-optimal-income",
+      "target": "00919-capital-taiwan-selected-high-dividend"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00929-fuhwa-tech-optimal-income",
+      "_tgt": "0051-yuanta-mid-cap-100",
+      "source": "00929-fuhwa-tech-optimal-income",
+      "target": "0051-yuanta-mid-cap-100"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00929-fuhwa-tech-optimal-income",
+      "_tgt": "00891-ctbc-key-semiconductor",
+      "source": "00929-fuhwa-tech-optimal-income",
+      "target": "00891-ctbc-key-semiconductor"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00929-fuhwa-tech-optimal-income",
+      "_tgt": "006204-sinopac-weighted",
+      "source": "00929-fuhwa-tech-optimal-income",
+      "target": "006204-sinopac-weighted"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00929-fuhwa-tech-optimal-income",
+      "_tgt": "\u5e02\u503c\u578b-etf",
+      "source": "00929-fuhwa-tech-optimal-income",
+      "target": "\u5e02\u503c\u578b-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00929-fuhwa-tech-optimal-income",
+      "_tgt": "0050-vs-006208",
+      "source": "00929-fuhwa-tech-optimal-income",
+      "target": "0050-vs-006208"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "entities/00878-cathay-esg-high-dividend.md",
+      "weight": 1.0,
+      "_src": "00878-cathay-esg-high-dividend",
+      "_tgt": "0056-yuanta-high-dividend",
+      "source": "0056-yuanta-high-dividend",
+      "target": "00878-cathay-esg-high-dividend"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/\u9ad8\u80a1\u606f-etf.md",
+      "weight": 1.0,
+      "_src": "\u9ad8\u80a1\u606f-etf",
+      "_tgt": "0056-yuanta-high-dividend",
+      "source": "0056-yuanta-high-dividend",
+      "target": "\u9ad8\u80a1\u606f-etf"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "entities/00919-capital-taiwan-selected-high-dividend.md",
+      "weight": 1.0,
+      "_src": "00919-capital-taiwan-selected-high-dividend",
+      "_tgt": "0056-yuanta-high-dividend",
+      "source": "0056-yuanta-high-dividend",
+      "target": "00919-capital-taiwan-selected-high-dividend"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/etf-\u767c\u884c\u5546\u751f\u614b.md",
+      "weight": 1.0,
+      "_src": "etf-\u767c\u884c\u5546\u751f\u614b",
+      "_tgt": "0056-yuanta-high-dividend",
+      "source": "0056-yuanta-high-dividend",
+      "target": "etf-\u767c\u884c\u5546\u751f\u614b"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "comparisons/0056-vs-00878-vs-00929.md",
+      "weight": 1.0,
+      "_src": "0056-vs-00878-vs-00929",
+      "_tgt": "0056-yuanta-high-dividend",
+      "source": "0056-yuanta-high-dividend",
+      "target": "0056-vs-00878-vs-00929"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "0056-yuanta-high-dividend",
+      "_tgt": "00830-cathay-philly-semiconductor",
+      "source": "0056-yuanta-high-dividend",
+      "target": "00830-cathay-philly-semiconductor"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "0056-yuanta-high-dividend",
+      "_tgt": "0050-yuanta-taiwan-50",
+      "source": "0056-yuanta-high-dividend",
+      "target": "0050-yuanta-taiwan-50"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "0056-yuanta-high-dividend",
+      "_tgt": "0051-yuanta-mid-cap-100",
+      "source": "0056-yuanta-high-dividend",
+      "target": "0051-yuanta-mid-cap-100"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "0056-yuanta-high-dividend",
+      "_tgt": "00891-ctbc-key-semiconductor",
+      "source": "0056-yuanta-high-dividend",
+      "target": "00891-ctbc-key-semiconductor"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "0056-yuanta-high-dividend",
+      "_tgt": "006204-sinopac-weighted",
+      "source": "0056-yuanta-high-dividend",
+      "target": "006204-sinopac-weighted"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "0056-yuanta-high-dividend",
+      "_tgt": "\u7522\u696d\u578b-etf",
+      "source": "0056-yuanta-high-dividend",
+      "target": "\u7522\u696d\u578b-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "0056-yuanta-high-dividend",
+      "_tgt": "\u5e02\u503c\u578b-etf",
+      "source": "0056-yuanta-high-dividend",
+      "target": "\u5e02\u503c\u578b-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "0056-yuanta-high-dividend",
+      "_tgt": "0050-vs-006208",
+      "source": "0056-yuanta-high-dividend",
+      "target": "0050-vs-006208"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u767c\u884c\u5546-\u5143\u5927",
+      "weight": 0.6,
+      "_src": "0056-yuanta-high-dividend",
+      "_tgt": "00679B-yuanta-us-20y-bond",
+      "source": "0056-yuanta-high-dividend",
+      "target": "00679B-yuanta-us-20y-bond"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u767c\u884c\u5546-\u5143\u5927",
+      "weight": 0.6,
+      "_src": "0056-yuanta-high-dividend",
+      "_tgt": "00679B-vs-00687B",
+      "source": "0056-yuanta-high-dividend",
+      "target": "00679B-vs-00687B"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/\u7522\u696d\u578b-etf.md",
+      "weight": 1.0,
+      "_src": "\u7522\u696d\u578b-etf",
+      "_tgt": "00830-cathay-philly-semiconductor",
+      "source": "00830-cathay-philly-semiconductor",
+      "target": "\u7522\u696d\u578b-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00830-cathay-philly-semiconductor",
+      "_tgt": "0050-yuanta-taiwan-50",
+      "source": "00830-cathay-philly-semiconductor",
+      "target": "0050-yuanta-taiwan-50"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00830-cathay-philly-semiconductor",
+      "_tgt": "00878-cathay-esg-high-dividend",
+      "source": "00830-cathay-philly-semiconductor",
+      "target": "00878-cathay-esg-high-dividend"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00830-cathay-philly-semiconductor",
+      "_tgt": "00919-capital-taiwan-selected-high-dividend",
+      "source": "00830-cathay-philly-semiconductor",
+      "target": "00919-capital-taiwan-selected-high-dividend"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00830-cathay-philly-semiconductor",
+      "_tgt": "0051-yuanta-mid-cap-100",
+      "source": "00830-cathay-philly-semiconductor",
+      "target": "0051-yuanta-mid-cap-100"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00830-cathay-philly-semiconductor",
+      "_tgt": "00891-ctbc-key-semiconductor",
+      "source": "00830-cathay-philly-semiconductor",
+      "target": "00891-ctbc-key-semiconductor"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00830-cathay-philly-semiconductor",
+      "_tgt": "006204-sinopac-weighted",
+      "source": "00830-cathay-philly-semiconductor",
+      "target": "006204-sinopac-weighted"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00830-cathay-philly-semiconductor",
+      "_tgt": "\u9ad8\u80a1\u606f-etf",
+      "source": "00830-cathay-philly-semiconductor",
+      "target": "\u9ad8\u80a1\u606f-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00830-cathay-philly-semiconductor",
+      "_tgt": "\u5e02\u503c\u578b-etf",
+      "source": "00830-cathay-philly-semiconductor",
+      "target": "\u5e02\u503c\u578b-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00830-cathay-philly-semiconductor",
+      "_tgt": "0056-vs-00878-vs-00929",
+      "source": "00830-cathay-philly-semiconductor",
+      "target": "0056-vs-00878-vs-00929"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00830-cathay-philly-semiconductor",
+      "_tgt": "0050-vs-006208",
+      "source": "00830-cathay-philly-semiconductor",
+      "target": "0050-vs-006208"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u767c\u884c\u5546-\u570b\u6cf0",
+      "weight": 0.6,
+      "_src": "00830-cathay-philly-semiconductor",
+      "_tgt": "00687B-cathay-20y-us-bond",
+      "source": "00830-cathay-philly-semiconductor",
+      "target": "00687B-cathay-20y-us-bond"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u767c\u884c\u5546-\u570b\u6cf0",
+      "weight": 0.6,
+      "_src": "00830-cathay-philly-semiconductor",
+      "_tgt": "00679B-vs-00687B",
+      "source": "00830-cathay-philly-semiconductor",
+      "target": "00679B-vs-00687B"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/\u5e02\u503c\u578b-etf.md",
+      "weight": 1.0,
+      "_src": "\u5e02\u503c\u578b-etf",
+      "_tgt": "0050-yuanta-taiwan-50",
+      "source": "0050-yuanta-taiwan-50",
+      "target": "\u5e02\u503c\u578b-etf"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "entities/0051-yuanta-mid-cap-100.md",
+      "weight": 1.0,
+      "_src": "0051-yuanta-mid-cap-100",
+      "_tgt": "0050-yuanta-taiwan-50",
+      "source": "0050-yuanta-taiwan-50",
+      "target": "0051-yuanta-mid-cap-100"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "entities/006204-sinopac-weighted.md",
+      "weight": 1.0,
+      "_src": "006204-sinopac-weighted",
+      "_tgt": "0050-yuanta-taiwan-50",
+      "source": "0050-yuanta-taiwan-50",
+      "target": "006204-sinopac-weighted"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/etf-\u767c\u884c\u5546\u751f\u614b.md",
+      "weight": 1.0,
+      "_src": "etf-\u767c\u884c\u5546\u751f\u614b",
+      "_tgt": "0050-yuanta-taiwan-50",
+      "source": "0050-yuanta-taiwan-50",
+      "target": "etf-\u767c\u884c\u5546\u751f\u614b"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/\u5bb6\u65cf\u6295\u8cc7\u9700\u6c42.md",
+      "weight": 1.0,
+      "_src": "\u5bb6\u65cf\u6295\u8cc7\u9700\u6c42",
+      "_tgt": "0050-yuanta-taiwan-50",
+      "source": "0050-yuanta-taiwan-50",
+      "target": "\u5bb6\u65cf\u6295\u8cc7\u9700\u6c42"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "comparisons/0050-vs-006208.md",
+      "weight": 1.0,
+      "_src": "0050-vs-006208",
+      "_tgt": "0050-yuanta-taiwan-50",
+      "source": "0050-yuanta-taiwan-50",
+      "target": "0050-vs-006208"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "0050-yuanta-taiwan-50",
+      "_tgt": "00878-cathay-esg-high-dividend",
+      "source": "0050-yuanta-taiwan-50",
+      "target": "00878-cathay-esg-high-dividend"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "0050-yuanta-taiwan-50",
+      "_tgt": "00919-capital-taiwan-selected-high-dividend",
+      "source": "0050-yuanta-taiwan-50",
+      "target": "00919-capital-taiwan-selected-high-dividend"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "0050-yuanta-taiwan-50",
+      "_tgt": "00891-ctbc-key-semiconductor",
+      "source": "0050-yuanta-taiwan-50",
+      "target": "00891-ctbc-key-semiconductor"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "0050-yuanta-taiwan-50",
+      "_tgt": "\u7522\u696d\u578b-etf",
+      "source": "0050-yuanta-taiwan-50",
+      "target": "\u7522\u696d\u578b-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "0050-yuanta-taiwan-50",
+      "_tgt": "\u9ad8\u80a1\u606f-etf",
+      "source": "0050-yuanta-taiwan-50",
+      "target": "\u9ad8\u80a1\u606f-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "0050-yuanta-taiwan-50",
+      "_tgt": "0056-vs-00878-vs-00929",
+      "source": "0050-yuanta-taiwan-50",
+      "target": "0056-vs-00878-vs-00929"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u767c\u884c\u5546-\u5143\u5927",
+      "weight": 0.6,
+      "_src": "0050-yuanta-taiwan-50",
+      "_tgt": "00679B-yuanta-us-20y-bond",
+      "source": "0050-yuanta-taiwan-50",
+      "target": "00679B-yuanta-us-20y-bond"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u767c\u884c\u5546-\u5143\u5927",
+      "weight": 0.6,
+      "_src": "0050-yuanta-taiwan-50",
+      "_tgt": "00679B-vs-00687B",
+      "source": "0050-yuanta-taiwan-50",
+      "target": "00679B-vs-00687B"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "entities/00687B-cathay-20y-us-bond.md",
+      "weight": 1.0,
+      "_src": "00687B-cathay-20y-us-bond",
+      "_tgt": "\u50b5\u5238\u578b-etf",
+      "source": "00687B-cathay-20y-us-bond",
+      "target": "\u50b5\u5238\u578b-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u767c\u884c\u5546-\u570b\u6cf0",
+      "weight": 0.6,
+      "_src": "00687B-cathay-20y-us-bond",
+      "_tgt": "00878-cathay-esg-high-dividend",
+      "source": "00687B-cathay-20y-us-bond",
+      "target": "00878-cathay-esg-high-dividend"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u767c\u884c\u5546-\u570b\u6cf0",
+      "weight": 0.6,
+      "_src": "00687B-cathay-20y-us-bond",
+      "_tgt": "00679B-vs-00687B",
+      "source": "00687B-cathay-20y-us-bond",
+      "target": "00679B-vs-00687B"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u767c\u884c\u5546-\u570b\u6cf0",
+      "weight": 0.6,
+      "_src": "00687B-cathay-20y-us-bond",
+      "_tgt": "0056-vs-00878-vs-00929",
+      "source": "00687B-cathay-20y-us-bond",
+      "target": "0056-vs-00878-vs-00929"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u50b5\u5238\u578b",
+      "weight": 0.6,
+      "_src": "00687B-cathay-20y-us-bond",
+      "_tgt": "00679B-yuanta-us-20y-bond",
+      "source": "00687B-cathay-20y-us-bond",
+      "target": "00679B-yuanta-us-20y-bond"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/\u9ad8\u80a1\u606f-etf.md",
+      "weight": 1.0,
+      "_src": "\u9ad8\u80a1\u606f-etf",
+      "_tgt": "00878-cathay-esg-high-dividend",
+      "source": "00878-cathay-esg-high-dividend",
+      "target": "\u9ad8\u80a1\u606f-etf"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "entities/00919-capital-taiwan-selected-high-dividend.md",
+      "weight": 1.0,
+      "_src": "00919-capital-taiwan-selected-high-dividend",
+      "_tgt": "00878-cathay-esg-high-dividend",
+      "source": "00878-cathay-esg-high-dividend",
+      "target": "00919-capital-taiwan-selected-high-dividend"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/etf-\u767c\u884c\u5546\u751f\u614b.md",
+      "weight": 1.0,
+      "_src": "etf-\u767c\u884c\u5546\u751f\u614b",
+      "_tgt": "00878-cathay-esg-high-dividend",
+      "source": "00878-cathay-esg-high-dividend",
+      "target": "etf-\u767c\u884c\u5546\u751f\u614b"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/\u5bb6\u65cf\u6295\u8cc7\u9700\u6c42.md",
+      "weight": 1.0,
+      "_src": "\u5bb6\u65cf\u6295\u8cc7\u9700\u6c42",
+      "_tgt": "00878-cathay-esg-high-dividend",
+      "source": "00878-cathay-esg-high-dividend",
+      "target": "\u5bb6\u65cf\u6295\u8cc7\u9700\u6c42"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "comparisons/0056-vs-00878-vs-00929.md",
+      "weight": 1.0,
+      "_src": "0056-vs-00878-vs-00929",
+      "_tgt": "00878-cathay-esg-high-dividend",
+      "source": "00878-cathay-esg-high-dividend",
+      "target": "0056-vs-00878-vs-00929"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00878-cathay-esg-high-dividend",
+      "_tgt": "0051-yuanta-mid-cap-100",
+      "source": "00878-cathay-esg-high-dividend",
+      "target": "0051-yuanta-mid-cap-100"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00878-cathay-esg-high-dividend",
+      "_tgt": "00891-ctbc-key-semiconductor",
+      "source": "00878-cathay-esg-high-dividend",
+      "target": "00891-ctbc-key-semiconductor"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00878-cathay-esg-high-dividend",
+      "_tgt": "006204-sinopac-weighted",
+      "source": "00878-cathay-esg-high-dividend",
+      "target": "006204-sinopac-weighted"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00878-cathay-esg-high-dividend",
+      "_tgt": "\u7522\u696d\u578b-etf",
+      "source": "00878-cathay-esg-high-dividend",
+      "target": "\u7522\u696d\u578b-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00878-cathay-esg-high-dividend",
+      "_tgt": "\u5e02\u503c\u578b-etf",
+      "source": "00878-cathay-esg-high-dividend",
+      "target": "\u5e02\u503c\u578b-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00878-cathay-esg-high-dividend",
+      "_tgt": "0050-vs-006208",
+      "source": "00878-cathay-esg-high-dividend",
+      "target": "0050-vs-006208"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u767c\u884c\u5546-\u570b\u6cf0",
+      "weight": 0.6,
+      "_src": "00878-cathay-esg-high-dividend",
+      "_tgt": "00679B-vs-00687B",
+      "source": "00878-cathay-esg-high-dividend",
+      "target": "00679B-vs-00687B"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "entities/00679B-yuanta-us-20y-bond.md",
+      "weight": 1.0,
+      "_src": "00679B-yuanta-us-20y-bond",
+      "_tgt": "\u50b5\u5238\u578b-etf",
+      "source": "00679B-yuanta-us-20y-bond",
+      "target": "\u50b5\u5238\u578b-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u767c\u884c\u5546-\u5143\u5927",
+      "weight": 0.6,
+      "_src": "00679B-yuanta-us-20y-bond",
+      "_tgt": "0051-yuanta-mid-cap-100",
+      "source": "00679B-yuanta-us-20y-bond",
+      "target": "0051-yuanta-mid-cap-100"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u767c\u884c\u5546-\u5143\u5927",
+      "weight": 0.6,
+      "_src": "00679B-yuanta-us-20y-bond",
+      "_tgt": "00679B-vs-00687B",
+      "source": "00679B-yuanta-us-20y-bond",
+      "target": "00679B-vs-00687B"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u767c\u884c\u5546-\u5143\u5927",
+      "weight": 0.6,
+      "_src": "00679B-yuanta-us-20y-bond",
+      "_tgt": "0056-vs-00878-vs-00929",
+      "source": "00679B-yuanta-us-20y-bond",
+      "target": "0056-vs-00878-vs-00929"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u767c\u884c\u5546-\u5143\u5927",
+      "weight": 0.6,
+      "_src": "00679B-yuanta-us-20y-bond",
+      "_tgt": "0050-vs-006208",
+      "source": "00679B-yuanta-us-20y-bond",
+      "target": "0050-vs-006208"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/\u9ad8\u80a1\u606f-etf.md",
+      "weight": 1.0,
+      "_src": "\u9ad8\u80a1\u606f-etf",
+      "_tgt": "00919-capital-taiwan-selected-high-dividend",
+      "source": "00919-capital-taiwan-selected-high-dividend",
+      "target": "\u9ad8\u80a1\u606f-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00919-capital-taiwan-selected-high-dividend",
+      "_tgt": "0051-yuanta-mid-cap-100",
+      "source": "00919-capital-taiwan-selected-high-dividend",
+      "target": "0051-yuanta-mid-cap-100"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00919-capital-taiwan-selected-high-dividend",
+      "_tgt": "00891-ctbc-key-semiconductor",
+      "source": "00919-capital-taiwan-selected-high-dividend",
+      "target": "00891-ctbc-key-semiconductor"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00919-capital-taiwan-selected-high-dividend",
+      "_tgt": "006204-sinopac-weighted",
+      "source": "00919-capital-taiwan-selected-high-dividend",
+      "target": "006204-sinopac-weighted"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00919-capital-taiwan-selected-high-dividend",
+      "_tgt": "\u7522\u696d\u578b-etf",
+      "source": "00919-capital-taiwan-selected-high-dividend",
+      "target": "\u7522\u696d\u578b-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00919-capital-taiwan-selected-high-dividend",
+      "_tgt": "\u5e02\u503c\u578b-etf",
+      "source": "00919-capital-taiwan-selected-high-dividend",
+      "target": "\u5e02\u503c\u578b-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00919-capital-taiwan-selected-high-dividend",
+      "_tgt": "0056-vs-00878-vs-00929",
+      "source": "00919-capital-taiwan-selected-high-dividend",
+      "target": "0056-vs-00878-vs-00929"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00919-capital-taiwan-selected-high-dividend",
+      "_tgt": "0050-vs-006208",
+      "source": "00919-capital-taiwan-selected-high-dividend",
+      "target": "0050-vs-006208"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/\u5e02\u503c\u578b-etf.md",
+      "weight": 1.0,
+      "_src": "\u5e02\u503c\u578b-etf",
+      "_tgt": "0051-yuanta-mid-cap-100",
+      "source": "0051-yuanta-mid-cap-100",
+      "target": "\u5e02\u503c\u578b-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u5e02\u503c\u578b",
+      "weight": 0.6,
+      "_src": "0051-yuanta-mid-cap-100",
+      "_tgt": "006204-sinopac-weighted",
+      "source": "0051-yuanta-mid-cap-100",
+      "target": "006204-sinopac-weighted"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u5e02\u503c\u578b",
+      "weight": 0.6,
+      "_src": "0051-yuanta-mid-cap-100",
+      "_tgt": "0050-vs-006208",
+      "source": "0051-yuanta-mid-cap-100",
+      "target": "0050-vs-006208"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "0051-yuanta-mid-cap-100",
+      "_tgt": "00891-ctbc-key-semiconductor",
+      "source": "0051-yuanta-mid-cap-100",
+      "target": "00891-ctbc-key-semiconductor"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "0051-yuanta-mid-cap-100",
+      "_tgt": "\u7522\u696d\u578b-etf",
+      "source": "0051-yuanta-mid-cap-100",
+      "target": "\u7522\u696d\u578b-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "0051-yuanta-mid-cap-100",
+      "_tgt": "\u9ad8\u80a1\u606f-etf",
+      "source": "0051-yuanta-mid-cap-100",
+      "target": "\u9ad8\u80a1\u606f-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "0051-yuanta-mid-cap-100",
+      "_tgt": "0056-vs-00878-vs-00929",
+      "source": "0051-yuanta-mid-cap-100",
+      "target": "0056-vs-00878-vs-00929"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u767c\u884c\u5546-\u5143\u5927",
+      "weight": 0.6,
+      "_src": "0051-yuanta-mid-cap-100",
+      "_tgt": "00679B-vs-00687B",
+      "source": "0051-yuanta-mid-cap-100",
+      "target": "00679B-vs-00687B"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/\u7522\u696d\u578b-etf.md",
+      "weight": 1.0,
+      "_src": "\u7522\u696d\u578b-etf",
+      "_tgt": "00891-ctbc-key-semiconductor",
+      "source": "00891-ctbc-key-semiconductor",
+      "target": "\u7522\u696d\u578b-etf"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/etf-\u767c\u884c\u5546\u751f\u614b.md",
+      "weight": 1.0,
+      "_src": "etf-\u767c\u884c\u5546\u751f\u614b",
+      "_tgt": "00891-ctbc-key-semiconductor",
+      "source": "00891-ctbc-key-semiconductor",
+      "target": "etf-\u767c\u884c\u5546\u751f\u614b"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00891-ctbc-key-semiconductor",
+      "_tgt": "006204-sinopac-weighted",
+      "source": "00891-ctbc-key-semiconductor",
+      "target": "006204-sinopac-weighted"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00891-ctbc-key-semiconductor",
+      "_tgt": "\u9ad8\u80a1\u606f-etf",
+      "source": "00891-ctbc-key-semiconductor",
+      "target": "\u9ad8\u80a1\u606f-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00891-ctbc-key-semiconductor",
+      "_tgt": "\u5e02\u503c\u578b-etf",
+      "source": "00891-ctbc-key-semiconductor",
+      "target": "\u5e02\u503c\u578b-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00891-ctbc-key-semiconductor",
+      "_tgt": "0056-vs-00878-vs-00929",
+      "source": "00891-ctbc-key-semiconductor",
+      "target": "0056-vs-00878-vs-00929"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "00891-ctbc-key-semiconductor",
+      "_tgt": "0050-vs-006208",
+      "source": "00891-ctbc-key-semiconductor",
+      "target": "0050-vs-006208"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/\u5e02\u503c\u578b-etf.md",
+      "weight": 1.0,
+      "_src": "\u5e02\u503c\u578b-etf",
+      "_tgt": "006204-sinopac-weighted",
+      "source": "006204-sinopac-weighted",
+      "target": "\u5e02\u503c\u578b-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u5e02\u503c\u578b",
+      "weight": 0.6,
+      "_src": "006204-sinopac-weighted",
+      "_tgt": "0050-vs-006208",
+      "source": "006204-sinopac-weighted",
+      "target": "0050-vs-006208"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "006204-sinopac-weighted",
+      "_tgt": "\u7522\u696d\u578b-etf",
+      "source": "006204-sinopac-weighted",
+      "target": "\u7522\u696d\u578b-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "006204-sinopac-weighted",
+      "_tgt": "\u9ad8\u80a1\u606f-etf",
+      "source": "006204-sinopac-weighted",
+      "target": "\u9ad8\u80a1\u606f-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "006204-sinopac-weighted",
+      "_tgt": "0056-vs-00878-vs-00929",
+      "source": "006204-sinopac-weighted",
+      "target": "0056-vs-00878-vs-00929"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/etf-\u767c\u884c\u5546\u751f\u614b.md",
+      "weight": 1.0,
+      "_src": "etf-\u767c\u884c\u5546\u751f\u614b",
+      "_tgt": "0050-vs-006208",
+      "source": "etf-\u767c\u884c\u5546\u751f\u614b",
+      "target": "0050-vs-006208"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u6295\u8cc7\u7b56\u7565",
+      "weight": 0.6,
+      "_src": "etf-\u767c\u884c\u5546\u751f\u614b",
+      "_tgt": "\u7522\u696d\u578b-etf",
+      "source": "etf-\u767c\u884c\u5546\u751f\u614b",
+      "target": "\u7522\u696d\u578b-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u6295\u8cc7\u7b56\u7565",
+      "weight": 0.6,
+      "_src": "etf-\u767c\u884c\u5546\u751f\u614b",
+      "_tgt": "\u50b5\u5238\u578b-etf",
+      "source": "etf-\u767c\u884c\u5546\u751f\u614b",
+      "target": "\u50b5\u5238\u578b-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u6295\u8cc7\u7b56\u7565",
+      "weight": 0.6,
+      "_src": "etf-\u767c\u884c\u5546\u751f\u614b",
+      "_tgt": "\u9ad8\u80a1\u606f-etf",
+      "source": "etf-\u767c\u884c\u5546\u751f\u614b",
+      "target": "\u9ad8\u80a1\u606f-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u6295\u8cc7\u7b56\u7565",
+      "weight": 0.6,
+      "_src": "etf-\u767c\u884c\u5546\u751f\u614b",
+      "_tgt": "\u5bb6\u65cf\u6295\u8cc7\u9700\u6c42",
+      "source": "etf-\u767c\u884c\u5546\u751f\u614b",
+      "target": "\u5bb6\u65cf\u6295\u8cc7\u9700\u6c42"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u6295\u8cc7\u7b56\u7565",
+      "weight": 0.6,
+      "_src": "etf-\u767c\u884c\u5546\u751f\u614b",
+      "_tgt": "\u5e02\u503c\u578b-etf",
+      "source": "etf-\u767c\u884c\u5546\u751f\u614b",
+      "target": "\u5e02\u503c\u578b-etf"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/\u7522\u696d\u578b-etf.md",
+      "weight": 1.0,
+      "_src": "\u7522\u696d\u578b-etf",
+      "_tgt": "\u5e02\u503c\u578b-etf",
+      "source": "\u7522\u696d\u578b-etf",
+      "target": "\u5e02\u503c\u578b-etf"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/\u7522\u696d\u578b-etf.md",
+      "weight": 1.0,
+      "_src": "\u7522\u696d\u578b-etf",
+      "_tgt": "\u9ad8\u80a1\u606f-etf",
+      "source": "\u7522\u696d\u578b-etf",
+      "target": "\u9ad8\u80a1\u606f-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "\u7522\u696d\u578b-etf",
+      "_tgt": "0056-vs-00878-vs-00929",
+      "source": "\u7522\u696d\u578b-etf",
+      "target": "0056-vs-00878-vs-00929"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "\u7522\u696d\u578b-etf",
+      "_tgt": "0050-vs-006208",
+      "source": "\u7522\u696d\u578b-etf",
+      "target": "0050-vs-006208"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u6295\u8cc7\u7b56\u7565",
+      "weight": 0.6,
+      "_src": "\u7522\u696d\u578b-etf",
+      "_tgt": "\u50b5\u5238\u578b-etf",
+      "source": "\u7522\u696d\u578b-etf",
+      "target": "\u50b5\u5238\u578b-etf"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u6295\u8cc7\u7b56\u7565",
+      "weight": 0.6,
+      "_src": "\u7522\u696d\u578b-etf",
+      "_tgt": "\u5bb6\u65cf\u6295\u8cc7\u9700\u6c42",
+      "source": "\u7522\u696d\u578b-etf",
+      "target": "\u5bb6\u65cf\u6295\u8cc7\u9700\u6c42"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/\u5bb6\u65cf\u6295\u8cc7\u9700\u6c42.md",
+      "weight": 1.0,
+      "_src": "\u5bb6\u65cf\u6295\u8cc7\u9700\u6c42",
+      "_tgt": "\u50b5\u5238\u578b-etf",
+      "source": "\u50b5\u5238\u578b-etf",
+      "target": "\u5bb6\u65cf\u6295\u8cc7\u9700\u6c42"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/\u5e02\u503c\u578b-etf.md",
+      "weight": 1.0,
+      "_src": "\u5e02\u503c\u578b-etf",
+      "_tgt": "\u50b5\u5238\u578b-etf",
+      "source": "\u50b5\u5238\u578b-etf",
+      "target": "\u5e02\u503c\u578b-etf"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "comparisons/00679B-vs-00687B.md",
+      "weight": 1.0,
+      "_src": "00679B-vs-00687B",
+      "_tgt": "\u50b5\u5238\u578b-etf",
+      "source": "\u50b5\u5238\u578b-etf",
+      "target": "00679B-vs-00687B"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u6295\u8cc7\u7b56\u7565",
+      "weight": 0.6,
+      "_src": "\u50b5\u5238\u578b-etf",
+      "_tgt": "\u9ad8\u80a1\u606f-etf",
+      "source": "\u50b5\u5238\u578b-etf",
+      "target": "\u9ad8\u80a1\u606f-etf"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/\u5e02\u503c\u578b-etf.md",
+      "weight": 1.0,
+      "_src": "\u5e02\u503c\u578b-etf",
+      "_tgt": "\u9ad8\u80a1\u606f-etf",
+      "source": "\u9ad8\u80a1\u606f-etf",
+      "target": "\u5e02\u503c\u578b-etf"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/\u9ad8\u80a1\u606f-etf.md",
+      "weight": 1.0,
+      "_src": "\u9ad8\u80a1\u606f-etf",
+      "_tgt": "0056-vs-00878-vs-00929",
+      "source": "\u9ad8\u80a1\u606f-etf",
+      "target": "0056-vs-00878-vs-00929"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/\u5bb6\u65cf\u6295\u8cc7\u9700\u6c42.md",
+      "weight": 1.0,
+      "_src": "\u5bb6\u65cf\u6295\u8cc7\u9700\u6c42",
+      "_tgt": "\u9ad8\u80a1\u606f-etf",
+      "source": "\u9ad8\u80a1\u606f-etf",
+      "target": "\u5bb6\u65cf\u6295\u8cc7\u9700\u6c42"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "\u9ad8\u80a1\u606f-etf",
+      "_tgt": "0050-vs-006208",
+      "source": "\u9ad8\u80a1\u606f-etf",
+      "target": "0050-vs-006208"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/\u5bb6\u65cf\u6295\u8cc7\u9700\u6c42.md",
+      "weight": 1.0,
+      "_src": "\u5bb6\u65cf\u6295\u8cc7\u9700\u6c42",
+      "_tgt": "\u5e02\u503c\u578b-etf",
+      "source": "\u5bb6\u65cf\u6295\u8cc7\u9700\u6c42",
+      "target": "\u5e02\u503c\u578b-etf"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "concepts/\u5e02\u503c\u578b-etf.md",
+      "weight": 1.0,
+      "_src": "\u5e02\u503c\u578b-etf",
+      "_tgt": "0050-vs-006208",
+      "source": "\u5e02\u503c\u578b-etf",
+      "target": "0050-vs-006208"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "\u5e02\u503c\u578b-etf",
+      "_tgt": "0056-vs-00878-vs-00929",
+      "source": "\u5e02\u503c\u578b-etf",
+      "target": "0056-vs-00878-vs-00929"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u767c\u884c\u5546-\u570b\u6cf0",
+      "weight": 0.6,
+      "_src": "00679B-vs-00687B",
+      "_tgt": "0056-vs-00878-vs-00929",
+      "source": "00679B-vs-00687B",
+      "target": "0056-vs-00878-vs-00929"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:\u767c\u884c\u5546-\u5143\u5927",
+      "weight": 0.6,
+      "_src": "00679B-vs-00687B",
+      "_tgt": "0050-vs-006208",
+      "source": "00679B-vs-00687B",
+      "target": "0050-vs-006208"
+    },
+    {
+      "relation": "shares_tag",
+      "confidence": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "tag:TWSE",
+      "weight": 0.6,
+      "_src": "0056-vs-00878-vs-00929",
+      "_tgt": "0050-vs-006208",
+      "source": "0056-vs-00878-vs-00929",
+      "target": "0050-vs-006208"
+    }
+  ],
+  "hyperedges": []
+}

@@ -176,6 +176,9 @@ delegation:
 prefill_messages_file: ''
 skills:
   external_dirs: []
+  config:
+    wiki:
+      path: ~/.hermes/profiles/etf_master/wiki
 honcho: {}
 timezone: ''
 discord:
