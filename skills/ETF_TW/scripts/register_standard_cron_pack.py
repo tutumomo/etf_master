@@ -198,7 +198,7 @@ def main() -> int:
     instance_id = args.instance_id
     dry_run = args.dry_run == "true"
 
-    os.environ["OPENCLAW_AGENT_NAME"] = instance_id
+    os.environ["AGENT_ID"] = instance_id
 
     jobs = build_standard_jobs(instance_id)
     live = cron_list_payload(instance_id)

@@ -46,7 +46,6 @@ def _maybe_set_agent_from_state_dir(args: list[str]) -> list[str]:
         if p.name == "state" and p.parent.parent.name == "instances":
             agent_id = p.parent.name
             os.environ["AGENT_ID"] = agent_id
-            os.environ["OPENCLAW_AGENT_NAME"] = agent_id
             return args[1:]
     except Exception:
         pass

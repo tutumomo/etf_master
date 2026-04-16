@@ -32,7 +32,7 @@ def build_registration_records(plan: dict) -> list[dict]:
 def write_registration_records(state_dir: Path, plan: dict) -> list[dict]:
     # Attach instance identity for cron namespacing (avoid hardcoding etf_master).
     import os
-    instance_id = os.environ.get('OPENCLAW_AGENT_NAME')
+    instance_id = os.environ.get('AGENT_ID') or os.environ.get('OPENCLAW_AGENT_NAME')
     rows = build_registration_records(plan)
     if instance_id:
         for r in rows:
