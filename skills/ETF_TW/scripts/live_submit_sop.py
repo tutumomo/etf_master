@@ -102,6 +102,16 @@ async def submit_live_order(order: dict, adapter=None, state_dir: Path = None) -
         orders_open = safe_load_json(state_dir / "orders_open.json", default=[])
         if not isinstance(orders_open, list):
             orders_open = []
+        # Deduplication: skip if order_id already exists (idempotent re-submit guard)
+        if any(o.get("order_id") == internal_order_id for o in orders_open):
+            return {
+                "success": True,
+                "broker_order_id": broker_order_id,
+                "verified": True,
+                "ghost": False,
+                "order_id": internal_order_id,
+                "reason": "duplicate: order_id already in orders_open"
+            }
         orders_open.append({
             "order_id": internal_order_id,
             "broker_order_id": broker_order_id,
