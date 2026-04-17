@@ -698,13 +698,13 @@
                 
                 <div>
                   <label class="muted" style="display:block; font-size:12px; margin-bottom:6px;">委託數量 (股)</label>
-                  <input type="number" id="qty-{{ clean_id }}" value="100" step="1" min="1" oninput="resetTicketState('{{ clean_id }}')" style="width:100%; padding:10px; border-radius:8px; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.1); color:#fff; font-family:var(--font-mono);">
+                  <input type="number" data-ticket-id="{{ clean_id }}" data-field="qty" value="100" step="1" min="1" oninput="resetTicketState('{{ clean_id }}')" style="width:100%; padding:10px; border-radius:8px; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.1); color:#fff; font-family:var(--font-mono);">
                   <div style="font-size:10px; color:var(--muted); margin-top:4px;">提示：1 張 = 1000 股</div>
                 </div>
-                
+
                 <div>
                   <label class="muted" style="display:block; font-size:12px; margin-bottom:6px;">委託價格 (NT$)</label>
-                  <input type="number" id="price-{{ clean_id }}" value="{{ p.current_price }}" step="0.01" oninput="resetTicketState('{{ clean_id }}')" style="width:100%; padding:10px; border-radius:8px; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.1); color:#fff; font-family:var(--font-mono);">
+                  <input type="number" data-ticket-id="{{ clean_id }}" data-field="price" value="{{ p.current_price }}" step="0.01" oninput="resetTicketState('{{ clean_id }}')" style="width:100%; padding:10px; border-radius:8px; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.1); color:#fff; font-family:var(--font-mono);">
                   <div style="font-size:10px; color:var(--muted); margin-top:4px;">現價參考：{{ p.current_price }}</div>
                 </div>
                 
@@ -715,12 +715,10 @@
               </div>
               
               <!-- Preview Area (Hidden initially) -->
-              <div id="preview-area-{{ clean_id }}" style="display:none; margin-top:16px; padding:16px; border-radius:12px; background:rgba(0,0,0,0.3); border:1px solid rgba(124,214,255,0.3);">
+              <div data-preview-area="{{ clean_id }}" style="display:none; margin-top:16px; padding:16px; border-radius:12px; background:rgba(0,0,0,0.3); border:1px solid rgba(124,214,255,0.3);">
                 <div style="font-weight:700; color:#ffd166; margin-bottom:8px;">交易預覽 (Preview)</div>
-                <div id="preview-content-{{ clean_id }}" class="status-list" style="margin-top:0;">
-                  <!-- Dynamic content -->
-                </div>
-                
+                <div data-preview-content="{{ clean_id }}" class="status-list" style="margin-top:0;"></div>
+
                 <div style="display:flex; gap:10px; margin-top:16px;">
                   <button onclick="cancelPreview('{{ clean_id }}')" style="padding:10px 20px; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:transparent; color:#fff; cursor:pointer;">重新修改</button>
                   <span style="color:var(--muted); font-size:12px; align-self:center;">⚠️ 儀表板目前僅支援預覽 (Preview Only)，正式下單請使用 CLI 指令或透過 Agent 執行。</span>
@@ -1290,16 +1288,21 @@ async function previewTrade(symbol, cleanId) {
     }
 }
 
+// Helper: find preview-area by id OR data-preview-area (supports both watchlist and positions cards)
+function _getPreviewArea(cleanId) {
+    return document.getElementById(`preview-area-${cleanId}`) ||
+           document.querySelector(`[data-preview-area="${cleanId}"]`);
+}
+
 function resetTicketState(cleanId) {
-    const previewArea = document.getElementById(`preview-area-${cleanId}`);
+    const previewArea = _getPreviewArea(cleanId);
     const formArea = document.getElementById(`ticket-form-${cleanId}`);
     const previewBtn = document.getElementById(`preview-btn-${cleanId}`);
-    
-    if (previewArea.style.display !== 'none') {
+
+    if (previewArea && previewArea.style.display !== 'none') {
         previewArea.style.display = 'none';
-        formArea.style.opacity = '1';
-        formArea.style.pointerEvents = 'auto';
-        previewBtn.style.display = 'block';
+        if (formArea) { formArea.style.opacity = '1'; formArea.style.pointerEvents = 'auto'; }
+        if (previewBtn) previewBtn.style.display = 'block';
     }
 }
 
@@ -1310,15 +1313,15 @@ function toggleSubmitBtn(cleanId) {
 }
 
 function cancelPreview(cleanId) {
-    const previewArea = document.getElementById(`preview-area-${cleanId}`);
+    const previewArea = _getPreviewArea(cleanId);
     const formArea = document.getElementById(`ticket-form-${cleanId}`);
     const previewBtn = document.getElementById(`preview-btn-${cleanId}`);
-    
-    previewArea.style.display = 'none';
-    formArea.style.opacity = '1';
-    formArea.style.pointerEvents = 'auto';
-    previewBtn.style.display = 'block';
-    document.getElementById(`confirm-check-${cleanId}`).checked = false;
+
+    if (previewArea) previewArea.style.display = 'none';
+    if (formArea) { formArea.style.opacity = '1'; formArea.style.pointerEvents = 'auto'; }
+    if (previewBtn) previewBtn.style.display = 'block';
+    const confirmCheck = document.getElementById(`confirm-check-${cleanId}`);
+    if (confirmCheck) confirmCheck.checked = false;
 }
 
 async function executeTrade(symbol) {
