@@ -26,6 +26,7 @@ if str(_SCRIPTS) not in sys.path:
 
 from etf_core import context as _ctx
 from etf_core.state_io import safe_load_json, atomic_save_json, safe_append_jsonl
+from daily_order_limits import increment_daily_submit_count
 
 TW_TZ = ZoneInfo("Asia/Taipei")
 
@@ -87,6 +88,8 @@ async def submit_live_order(order: dict, adapter=None, state_dir: Path = None) -
         submitted = await adapter._submit_order_impl(order)
     except Exception as e:
         return {"success": False, "reason": f"Adapter submit error: {e}", "step": "submit"}
+
+    increment_daily_submit_count(state_dir / "daily_order_limits.json", order.get("side", ""))
 
     broker_order_id = getattr(submitted, "broker_order_id", "") or ""
     internal_order_id = order.get("order_id", "")

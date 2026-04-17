@@ -256,3 +256,55 @@ def test_live_mode_explicitly_disabled_rejects(tmp_path):
     assert result["success"] is False
     assert result["step"] == "live_mode_gate"
     adapter._submit_order_impl.assert_not_called()
+
+
+def test_successful_buy_submit_increments_daily_buy_quota(tmp_path):
+    """Live submit counts once the broker submit succeeds, regardless of later fill state."""
+    make_live_mode_json(tmp_path)
+    adapter = make_mock_adapter("ORD004")
+
+    result = asyncio.run(
+        submit_live_order(make_valid_order("quota-buy-001"), adapter=adapter, state_dir=tmp_path)
+    )
+
+    assert result["success"] is True
+    daily_limits = json.loads((tmp_path / "daily_order_limits.json").read_text())
+    assert daily_limits["buy_submit_count"] == 1
+    assert daily_limits["sell_submit_count"] == 0
+
+
+def test_ghost_submit_still_counts_daily_buy_quota(tmp_path):
+    """Ghost orders still consume submit quota because broker submit already happened."""
+    make_live_mode_json(tmp_path)
+    ghost_verify = {
+        "verified": False,
+        "ghost": True,
+        "broker_order_id": "ORD005",
+        "polls": 3,
+    }
+    adapter = make_mock_adapter("ORD005", verify_result=ghost_verify)
+
+    result = asyncio.run(
+        submit_live_order(make_valid_order("quota-buy-ghost-001"), adapter=adapter, state_dir=tmp_path)
+    )
+
+    assert result["ghost"] is True
+    daily_limits = json.loads((tmp_path / "daily_order_limits.json").read_text())
+    assert daily_limits["buy_submit_count"] == 1
+
+
+def test_gate_block_does_not_increment_daily_quota(tmp_path, monkeypatch):
+    """Pre-flight rejection must not consume submit quota."""
+    make_live_mode_json(tmp_path)
+    monkeypatch.setattr(
+        "live_submit_sop.check_order",
+        lambda order, ctx: {"passed": False, "reason": "quota_blocked", "details": {}},
+    )
+    adapter = make_mock_adapter()
+
+    result = asyncio.run(
+        submit_live_order(make_valid_order("quota-block-001"), adapter=adapter, state_dir=tmp_path)
+    )
+
+    assert result["success"] is False
+    assert not (tmp_path / "daily_order_limits.json").exists()

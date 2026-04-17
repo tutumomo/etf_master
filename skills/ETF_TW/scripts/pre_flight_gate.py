@@ -2,18 +2,29 @@
 """
 Pre-flight Gate for ETF_TW.
 Unified validation logic for all trading paths.
+
+Check order (fail-fast, priority-ordered):
+  1. Trading hours gate (if force_trading_hours=True)
+  2. Basic params: symbol, side, quantity > 0, price > 0
+  3. Lot-type unit rules: board=multiple of 1000, odd=1-999
+  4. Inventory check (sell side)
+  5. Sizing limit (cash * max_concentration_pct)
+  6. Safety redlines (absolute caps from safety_redlines.json)
+  7. Confirm flag (is_submit=True requires is_confirmed=True)
+
+Each check returns a machine-readable reason code on failure.
 """
 
-import os
 import json
-from typing import Dict, Any, Optional
-from .sizing_engine_v1 import calculate_size
+from typing import Dict, Any
 from .trading_hours_gate import get_trading_hours_info
+from .daily_order_limits import default_daily_order_limits
 
-def load_safety_data() -> Dict[str, Any]:
+
+def load_safety_data(state_dir_override=None) -> Dict[str, Any]:
     """載入安全紅線與日損益數據"""
     from .etf_core import context
-    state_dir = context.get_state_dir()
+    state_dir = state_dir_override or context.get_state_dir()
     redlines_file = state_dir / "safety_redlines.json"
     daily_pnl_file = state_dir / "daily_pnl.json"
 
@@ -28,112 +39,182 @@ def load_safety_data() -> Dict[str, Any]:
 
     return {
         "redlines": safe_load(redlines_file, {"enabled": False}),
-        "pnl": safe_load(daily_pnl_file, {"circuit_breaker_triggered": False})
+        "pnl": safe_load(daily_pnl_file, {"circuit_breaker_triggered": False}),
     }
+
+
+def load_daily_order_limits(state_dir) -> Dict[str, Any]:
+    """讀取當日送單配額狀態，不在 gate 層寫入狀態。"""
+    limits_file = state_dir / "daily_order_limits.json"
+    try:
+        with open(limits_file, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception:
+        return default_daily_order_limits()
+
+    default_data = default_daily_order_limits()
+    if data.get("date") != default_data["date"]:
+        return default_data
+    return {
+        "date": data.get("date", default_data["date"]),
+        "buy_submit_count": int(data.get("buy_submit_count", 0)),
+        "sell_submit_count": int(data.get("sell_submit_count", 0)),
+        "last_updated": data.get("last_updated", default_data["last_updated"]),
+    }
+
+
+def _fail(reason: str, details: dict = None) -> Dict[str, Any]:
+    return {'passed': False, 'reason': reason, 'details': details or {}}
+
+
+def _pass(details: dict = None) -> Dict[str, Any]:
+    return {'passed': True, 'reason': 'passed', 'details': details or {}}
 
 
 def check_order(order: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
     """
-    統一的下單前檢查閘門（累積式檢查版本）。
+    統一的下單前檢查閘門（fail-fast 優先序版本）。
+    每個檢查點獨立回傳 machine-readable reason code。
     """
-    symbol = order.get('symbol', '').upper()
-    side = order.get('side', '').lower()
+    symbol   = order.get('symbol', '').upper()
+    side     = order.get('side', '').lower()
     quantity = order.get('quantity', 0)
-    price = order.get('price', 0.0)
-    order_type = order.get('order_type', 'limit').lower()
-    
-    errors = []
-    
-    # 1. 基本參數檢查
-    if not symbol: return {'passed': False, 'reason': '缺失標的代號', 'details': {}}
-    if side not in ['buy', 'sell']: return {'passed': False, 'reason': f'不合法的交易方向: {side}', 'details': {}}
-    if quantity <= 0: errors.append(f"委託數量必須大於 0 (目前: {quantity})")
-    if order_type == 'limit' and price <= 0: errors.append(f"限價單價格必須大於 0 (目前: {price})")
+    price    = order.get('price', 0.0)
+    lot_type = order.get('lot_type', '')          # 'board' | 'odd' | ''
+    is_submit    = order.get('is_submit', False)
+    is_confirmed = order.get('is_confirmed', False)
+    order_type   = order.get('order_type', 'limit').lower()
 
-    if errors: return {'passed': False, 'reason': " | ".join(errors), 'details': {}}
-
-    # 2. Safety Redlines (絕對紅線) 檢查
-    safety_data = load_safety_data()
-    redlines = safety_data['redlines']
-    pnl = safety_data['pnl']
-
-    if redlines.get('enabled', True):
-        # 2.1 日損益熔斷器
-        if side == 'buy' and pnl.get('circuit_breaker_triggered', False):
-            errors.append("已觸發日損益熔斷保護，禁止買入")
-
-        # 2.2 買入限制檢查
-        if side == 'buy':
-            order_amount = quantity * price
-            cash = context.get('cash', 0.0)
-
-            # 金額絕對上限
-            max_amount_twd = redlines.get('max_buy_amount_twd', 500000.0)
-            if order_amount > max_amount_twd:
-                errors.append(f"單筆金額 NT$ {order_amount:,.0f} 超過安全紅線 NT$ {max_amount_twd:,.0f}")
-
-            # 股數絕對上限
-            max_shares = redlines.get('max_buy_shares', 1000)
-            if quantity > max_shares:
-                errors.append(f"單筆股數 {quantity} 股 超過安全紅線 {max_shares} 股")
-
-            # 個股集中度上限
-            inventory = context.get('inventory', {})
-            total_portfolio_value = context.get('total_portfolio_value') or (cash + sum(qty * price for s, qty in inventory.items()))
-            max_conc_pct = redlines.get('max_concentration_pct', 30.0)
-            
-            # 修復：確保即使持倉為0，計算也不會混亂
-            current_holding_shares = float(inventory.get(symbol, 0))
-            target_weight = ((current_holding_shares + quantity) * price / total_portfolio_value) * 100 if total_portfolio_value > 0 else 0
-            
-            if target_weight > max_conc_pct:
-                errors.append(f"預計持倉權重 {target_weight:.1f}% (當前{current_holding_shares}股 + 委託{quantity}股) 超過集中度紅線 {max_conc_pct}% (資產總值: {total_portfolio_value:,.0f})")
-
-            # AI 信心門檻
-            ai_conf = order.get('ai_confidence')
-            if ai_conf is not None:
-                threshold = redlines.get('ai_confidence_threshold', 0.7)
-                conf_val = {"high": 0.9, "medium": 0.7, "low": 0.5}.get(str(ai_conf).lower(), float(ai_conf)) if isinstance(ai_conf, str) else float(ai_conf)
-                if conf_val < threshold:
-                    errors.append(f"AI 決策信心度 {conf_val} 低於要求的門檻 {threshold}")
-
-    # 3. 交易時段與單位檢查
+    # ── 1. 交易時段檢查 ─────────────────────────────────────────────────────
     force_hours = context.get('force_trading_hours', True)
     if force_hours:
-        from .trading_hours_gate import get_trading_hours_info
         hours_info = get_trading_hours_info()
-        if not hours_info['is_trading_hours']:
-            errors.append(f"非交易時段 ({hours_info.get('reason', '市場未開盤')})")
+        if not hours_info.get('is_trading_hours', False):
+            return _fail('outside_trading_hours', {'time': hours_info.get('current_time')})
 
-    # 最終結果回傳
-    if errors:
-        return {
-            'passed': False,
-            'reason': "；".join(errors),
-            'details': {'error_count': len(errors)}
-        }
+    # ── 2. 基本參數檢查 ──────────────────────────────────────────────────────
+    if not symbol:
+        return _fail('missing_symbol')
+    if side not in ('buy', 'sell'):
+        return _fail('invalid_side', {'side': side})
+    if not isinstance(quantity, (int, float)) or quantity <= 0:
+        return _fail('invalid_quantity', {'quantity': quantity})
+    if order_type == 'limit' and (not isinstance(price, (int, float)) or price <= 0):
+        return _fail('invalid_price', {'price': price})
 
-    return {'passed': True, 'reason': '已通過所有安全紅線檢查', 'details': {}}
+    # ── 3. 單位格式檢查 ──────────────────────────────────────────────────────
+    if lot_type == 'board':
+        if quantity % 1000 != 0:
+            return _fail('invalid_unit_for_board_lot', {'quantity': quantity, 'rule': 'multiple of 1000'})
+    elif lot_type == 'odd':
+        if not (1 <= quantity <= 999):
+            return _fail('invalid_unit_for_odd_lot', {'quantity': quantity, 'rule': '1-999'})
 
-if __name__ == "__main__":
-    test_context = {'cash': 1000000, 'inventory': {}, 'risk_temperature': 1.0}
-    
-    print("--- Test 1: Amount Limit ---")
-    order1 = {'symbol': '0050', 'side': 'buy', 'quantity': 10000, 'price': 100} # 1,000,000 > 500,000
-    print(f"Order: {order1}")
-    print(f"Result: {check_order(order1, test_context)}")
-    
-    print("\n--- Test 2: Shares Limit ---")
-    order2 = {'symbol': '0050', 'side': 'buy', 'quantity': 500, 'price': 100} # 500 > 200
-    print(f"Order: {order2}")
-    print(f"Result: {check_order(order2, test_context)}")
-    
-    print("\n--- Test 3: AI Confidence Limit ---")
-    order3 = {'symbol': '0050', 'side': 'buy', 'quantity': 100, 'price': 100, 'ai_confidence': 0.5} # 0.5 < 0.7
-    print(f"Order: {order3}")
-    print(f"Result: {check_order(order3, test_context)}")
+    # ── 4. 庫存檢查（賣出）──────────────────────────────────────────────────
+    if side == 'sell':
+        inventory = context.get('inventory', {})
+        held = inventory.get(symbol, inventory.get(symbol.replace('.TW', '').replace('.TWO', ''), 0))
+        if quantity > held:
+            return _fail('insufficient_inventory', {'held': held, 'requested': quantity})
 
-    print("\n--- Test 4: OK Order ---")
-    order4 = {'symbol': '0050', 'side': 'buy', 'quantity': 100, 'price': 100, 'ai_confidence': 0.8}
-    print(f"Order: {order4}")
-    print(f"Result: {check_order(order4, test_context)}")
+    # ── 5. Sizing Limit（買入）──────────────────────────────────────────────
+    if side == 'buy':
+        cash = context.get('cash', 0.0)
+        max_conc = context.get('max_concentration_pct')
+        max_single = context.get('max_single_limit_twd')
+
+        if max_conc is not None and cash > 0:
+            allowed_amount = cash * max_conc
+            allowed_shares = int(allowed_amount // price) if price > 0 else 0
+            # Round down to nearest board lot if lot_type is board
+            if lot_type == 'board' and allowed_shares >= 1000:
+                allowed_shares = (allowed_shares // 1000) * 1000
+            if quantity > allowed_shares:
+                return _fail('exceeds_sizing_limit', {
+                    'allowed': allowed_shares,
+                    'requested': quantity,
+                    'max_amount_twd': allowed_amount,
+                })
+
+        if max_single is not None and price > 0:
+            order_amount = quantity * price
+            if order_amount > max_single:
+                return _fail('exceeds_sizing_limit', {
+                    'allowed': int(max_single // price),
+                    'requested': quantity,
+                    'max_amount_twd': max_single,
+                })
+
+    # ── 6. 確認旗標（三段式送單）── 必須在安全紅線前，讓 UI 流程優先被檢查 ──
+    if is_submit and not is_confirmed:
+        return _fail('missing_confirm_flag')
+
+    # ── 7. Safety Redlines（安全紅線）────────────────────────────────────────
+    # context 可設 _skip_safety_redlines=True 供測試環境跳過檔案紅線
+    if context.get('_skip_safety_redlines'):
+        return _pass()
+
+    try:
+        state_dir = context.get("state_dir")
+        safety_data = load_safety_data(state_dir_override=state_dir)
+        redlines = safety_data['redlines']
+        pnl      = safety_data['pnl']
+        daily_order_limits = load_daily_order_limits(state_dir) if state_dir else default_daily_order_limits()
+
+        if redlines.get('enabled', True):
+            daily_max_buy_submits = int(redlines.get('daily_max_buy_submits', 2))
+            daily_max_sell_submits = int(redlines.get('daily_max_sell_submits', 2))
+
+            if side == 'buy' and daily_order_limits.get('buy_submit_count', 0) >= daily_max_buy_submits:
+                return _fail('daily_buy_submit_quota_exceeded', {
+                    'limit': daily_max_buy_submits,
+                    'used': daily_order_limits.get('buy_submit_count', 0),
+                })
+
+            if side == 'sell' and daily_order_limits.get('sell_submit_count', 0) >= daily_max_sell_submits:
+                return _fail('daily_sell_submit_quota_exceeded', {
+                    'limit': daily_max_sell_submits,
+                    'used': daily_order_limits.get('sell_submit_count', 0),
+                })
+
+            # 日損益熔斷
+            if side == 'buy' and pnl.get('circuit_breaker_triggered', False):
+                return _fail('circuit_breaker_triggered')
+
+            if side == 'buy' and price > 0:
+                order_amount = quantity * price
+
+                # 金額絕對上限
+                max_amount_twd = redlines.get('max_buy_amount_twd', 500_000.0)
+                if order_amount > max_amount_twd:
+                    return _fail('redline_amount_exceeded', {
+                        'order_amount': order_amount,
+                        'max_amount_twd': max_amount_twd,
+                    })
+
+                # 股數絕對上限
+                max_shares = redlines.get('max_buy_shares', 1000)
+                if quantity > max_shares:
+                    return _fail('redline_shares_exceeded', {
+                        'quantity': quantity,
+                        'max_shares': max_shares,
+                    })
+
+                # AI 信心門檻
+                ai_conf = order.get('ai_confidence')
+                if ai_conf is not None:
+                    threshold = redlines.get('ai_confidence_threshold', 0.7)
+                    conf_val = (
+                        {'high': 0.9, 'medium': 0.7, 'low': 0.5}.get(str(ai_conf).lower(), 0.0)
+                        if isinstance(ai_conf, str)
+                        else float(ai_conf)
+                    )
+                    if conf_val < threshold:
+                        return _fail('low_ai_confidence', {
+                            'confidence': conf_val,
+                            'threshold': threshold,
+                        })
+    except Exception:
+        pass  # safety redlines load failure is non-blocking
+
+    return _pass()

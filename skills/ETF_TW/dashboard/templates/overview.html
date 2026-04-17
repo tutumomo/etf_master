@@ -124,6 +124,18 @@
             {{ '%.2f'|format(daily_pnl.get('pnl_pct') or 0) }}%
           </span>
         </div>
+        <div class="status-item">
+          <span class="muted">今日買入送單次數</span>
+          <span class="mono">
+            {{ daily_order_limits.get('buy_submit_count') or 0 }} / {{ safety_redlines.get('daily_max_buy_submits') }}
+          </span>
+        </div>
+        <div class="status-item">
+          <span class="muted">今日賣出送單次數</span>
+          <span class="mono">
+            {{ daily_order_limits.get('sell_submit_count') or 0 }} / {{ safety_redlines.get('daily_max_sell_submits') }}
+          </span>
+        </div>
       </div>
 
       <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:20px;">
@@ -173,6 +185,22 @@
             <div class="tooltip">? <span class="tooltiptext">AI 建議的信心度需高於此值，系統才允許執行。Low=0.5, Medium=0.7, High=0.9。</span></div>
           </div>
           <input type="number" id="redline_ai_confidence" step="0.1" min="0" max="1" value="{{ safety_redlines.get('ai_confidence_threshold') }}" style="width:100%; padding:10px; border-radius:8px; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.1); color:#fff;">
+        </div>
+
+        <div class="form-group">
+          <div class="label" style="font-size:12px; margin-bottom:4px;">
+            <span>每日可下單買入次數</span>
+            <div class="tooltip">? <span class="tooltiptext">當日成功送出至 broker 的買入委託次數上限。不論是否成交，只要掛單送出即算一次。</span></div>
+          </div>
+          <input type="number" id="redline_daily_max_buy_submits" min="0" value="{{ safety_redlines.get('daily_max_buy_submits') }}" style="width:100%; padding:10px; border-radius:8px; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.1); color:#fff;">
+        </div>
+
+        <div class="form-group">
+          <div class="label" style="font-size:12px; margin-bottom:4px;">
+            <span>每日可下單賣出次數</span>
+            <div class="tooltip">? <span class="tooltiptext">當日成功送出至 broker 的賣出委託次數上限。不論是否成交，只要掛單送出即算一次。</span></div>
+          </div>
+          <input type="number" id="redline_daily_max_sell_submits" min="0" value="{{ safety_redlines.get('daily_max_sell_submits') }}" style="width:100%; padding:10px; border-radius:8px; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.1); color:#fff;">
         </div>
       </div>
 
@@ -1073,6 +1101,8 @@ async function removeWatchlistSymbol(symbol) {
   max_concentration_pct: Number(document.getElementById('redline_max_concentration').value),
   daily_loss_limit_pct: Number(document.getElementById('redline_daily_loss').value),
   ai_confidence_threshold: Number(document.getElementById('redline_ai_confidence').value),
+  daily_max_buy_submits: parseInt(document.getElementById('redline_daily_max_buy_submits').value),
+  daily_max_sell_submits: parseInt(document.getElementById('redline_daily_max_sell_submits').value),
   enabled: document.getElementById('redline_enabled').checked
   };
 

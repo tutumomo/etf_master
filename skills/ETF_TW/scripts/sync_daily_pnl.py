@@ -20,6 +20,8 @@ DEFAULT_REDLINES = {
     "max_concentration_pct": 30.0,  # User requirement: 30%
     "daily_loss_limit_pct": 5.0,
     "ai_confidence_threshold": 0.7, # Mapping "Medium" to 0.7
+    "daily_max_buy_submits": 2,
+    "daily_max_sell_submits": 2,
     "ai_confidence_level": "Medium", # Add for UI clarity
     "enabled": True
 }

@@ -108,6 +108,8 @@ class SafetyRedlinesRequest(BaseModel):
     max_concentration_pct: float
     daily_loss_limit_pct: float
     ai_confidence_threshold: float
+    daily_max_buy_submits: int
+    daily_max_sell_submits: int
     enabled: bool
 
 
@@ -424,6 +426,23 @@ def load_state(name: str) -> dict:
         return {"_load_warning": f"failed_to_load:{name}"}
 
 
+def load_daily_order_limits_state() -> dict:
+    from scripts.daily_order_limits import default_daily_order_limits
+
+    daily_order_limits = load_state("daily_order_limits.json")
+    if not daily_order_limits:
+        return default_daily_order_limits()
+
+    default_limits = default_daily_order_limits()
+    merged_limits = {
+        **default_limits,
+        **daily_order_limits,
+    }
+    if merged_limits.get("date") != default_limits["date"]:
+        return default_limits
+    return merged_limits
+
+
 
 
 def load_etf_name_map() -> dict:
@@ -680,6 +699,7 @@ def build_overview_model() -> dict:
         from scripts.sync_daily_pnl import DEFAULT_REDLINES
         safety_redlines = DEFAULT_REDLINES
     daily_pnl = load_state("daily_pnl.json")
+    daily_order_limits = load_daily_order_limits_state()
 
     ai_decision_request = load_state("ai_decision_request.json")
     ai_decision_response = load_state("ai_decision_response.json")
@@ -845,6 +865,7 @@ def build_overview_model() -> dict:
         "auto_trade_state": auto_trade_state,
         "safety_redlines": safety_redlines,
         "daily_pnl": daily_pnl,
+        "daily_order_limits": daily_order_limits,
         "auto_preview_candidate": auto_preview_candidate,
         "ai_decision_request": ai_decision_request,
         "ai_decision_response": ai_decision_response,
