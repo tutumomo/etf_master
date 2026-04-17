@@ -1,7 +1,14 @@
 {
   "model_profile": "inherit",
   "commit_docs": true,
-  "parallelization": true,
+  "parallelization": {
+    "enabled": true,
+    "plan_level": true,
+    "task_level": false,
+    "skip_checkpoints": true,
+    "max_concurrent_agents": 3,
+    "min_plans_for_parallel": 2
+  },
   "search_gitignored": false,
   "brave_search": false,
   "firecrawl": false,
@@ -46,6 +53,5 @@
   "claude_md_path": "./CLAUDE.md",
   "resolve_model_ids": "omit",
   "mode": "yolo",
-  "granularity": "standard",
-  "max_parallel": 3
+  "granularity": "standard"
 }

@@ -1,4 +1,4 @@
-# ETF_Master: 智慧型台灣 ETF 投資與家庭資產管家 (v1.2.0)
+# ETF_Master: 智慧型台灣 ETF 投資與家庭資產管家 (v1.2.2)
 
 `ETF_Master` 是一款專為台灣 ETF 投資者設計的 AI 輔助決策與資產管理系統。本專案秉持「**交易安全優先於功能完備**」的核心價值，透過「三層真相層級」治理與「雙鏈決策仲裁」機制，為投資者提供一個穩定、透明且具備深度洞察的投資工作台。
 
@@ -83,6 +83,14 @@ uv run skills/stock-analysis-tw/scripts/analyze_stock.py 0050.TW
 ---
 
 ## 📦 版本紀錄
+
+### v1.2.2 (2026-04-17)
+- feat(quality-report): 新增 `decision_quality_report.json` 產生流程，統計策略對齊率、信心分佈與攔截率
+- feat(stress-test): 新增 Paper mode 壓力測試與幽靈委託偵測，驗證 scan 週期穩定性
+- feat(backtest): 新增 `ai_decision_outcome.jsonl` 回測框架，輸出勝率、最大回撤與 `quality_gate_passed`
+- feat(live-submit): 永豐金 live submit 路徑接通，修正 broker ordno 讀取，加入 `verify_order_landed()` ghost detection
+- feat(live-gate): Dashboard 新增 Live 模式雙重確認授權閘門，品質閘門未通過前禁止解鎖
+- test(regression): 新增 live submit 7 場景回歸測試；全套測試提升到 **328 passed, 6 warnings**
 
 ### v1.2.0 (2026-04-17)
 - feat(rule-engine): 新增 `OVERLAY_MODIFIERS` — `scenario_overlay` 現在真正影響評分（逢低觀察/高波動警戒/減碼保守/收益再投資）

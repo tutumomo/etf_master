@@ -1,4 +1,4 @@
-# ETF_TW：Hermes 版台灣 ETF 技能與 Dashboard (v1.2.1)
+# ETF_TW：Hermes 版台灣 ETF 技能與 Dashboard (v1.2.2)
 
 這是目前掛載在 Hermes profile (`etf_master`) 下的 ETF_TW 技能目錄。
 它提供台灣 ETF 的研究、風控、持倉監控、state-driven dashboard，以及與券商流程對齊的交易輔助能力。

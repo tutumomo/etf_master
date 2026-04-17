@@ -76,36 +76,36 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PATH-01 | Phase 0 | Pending |
-| PATH-02 | Phase 0 | Pending |
-| PATH-03 | Phase 0 | Pending |
-| TRUTH-01 | Phase 1 | Pending |
-| TRUTH-02 | Phase 1 | Pending |
-| TRUTH-03 | Phase 1 | Pending |
-| TRUTH-04 | Phase 1 | Pending |
-| TRUTH-05 | Phase 1 | Pending |
-| FUSE-01 | Phase 2 | Pending |
-| FUSE-02 | Phase 2 | Pending |
-| FUSE-03 | Phase 2 | Pending |
-| FUSE-04 | Phase 2 | Pending |
-| FUSE-05 | Phase 2 | Pending |
-| FUSE-06 | Phase 2 | Pending |
-| TICKET-01 | Phase 3 | Complete |
-| TICKET-02 | Phase 3 | Complete |
-| TICKET-03 | Phase 3 | Complete |
-| TICKET-04 | Phase 3 | Complete |
-| TICKET-05 | Phase 3 | Complete |
-| TICKET-06 | Phase 3 | Complete |
-| TICKET-07 | Phase 3 | Complete |
-| TEST-01 | Phase 4 | Pending |
-| TEST-02 | Phase 4 | Pending |
-| TEST-03 | Phase 4 | Pending |
-| TEST-04 | Phase 4 | Pending |
-| TEST-05 | Phase 4 | Pending |
+| PATH-01 | Phase 00 | Pending |
+| PATH-02 | Phase 00 | Pending |
+| PATH-03 | Phase 00 | Pending |
+| TRUTH-01 | Phase 01 | Pending |
+| TRUTH-02 | Phase 01 | Pending |
+| TRUTH-03 | Phase 01 | Pending |
+| TRUTH-04 | Phase 01 | Pending |
+| TRUTH-05 | Phase 01 | Pending |
+| FUSE-01 | Phase 02 | Pending |
+| FUSE-02 | Phase 02 | Pending |
+| FUSE-03 | Phase 02 | Pending |
+| FUSE-04 | Phase 02 | Pending |
+| FUSE-05 | Phase 02 | Pending |
+| FUSE-06 | Phase 02 | Pending |
+| TICKET-01 | Phase 03 | Complete |
+| TICKET-02 | Phase 03 | Complete |
+| TICKET-03 | Phase 03 | Complete |
+| TICKET-04 | Phase 03 | Complete |
+| TICKET-05 | Phase 03 | Complete |
+| TICKET-06 | Phase 03 | Complete |
+| TICKET-07 | Phase 03 | Complete |
+| TEST-01 | Phase 04 | Pending |
+| TEST-02 | Phase 04 | Pending |
+| TEST-03 | Phase 04 | Pending |
+| TEST-04 | Phase 04 | Pending |
+| TEST-05 | Phase 04 | Pending |
 | GIT-01 | All Phases | Complete |
 | GIT-02 | All Phases | Complete |
-| GIT-03 | Phase 4 | Pending |
-| UI-INTEGRATE | Phase 7 | Complete |
+| GIT-03 | Phase 04 | Pending |
+| UI-INTEGRATE | Phase 07 | Complete |
 
 **Coverage:**
 - v1 requirements: 30 total

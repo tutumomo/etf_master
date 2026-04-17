@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## v1.2.2 — 2026-04-17
+
+### Added
+- **決策品質報告**：新增 `decision_quality_report.json` 生成流程，統計策略對齊率、confidence bucket 分佈、保險絲攔截率與 Tier arbitration 結果。
+- **Paper 壓力測試**：新增多輪掃描與幽靈委託檢測流程，產出 `paper_stress_test_report.json`，驗證 paper mode 週期穩定性。
+- **決策回測框架**：新增 `backtest_decision_outcomes.py`，從 `ai_decision_outcome.jsonl` 計算 PnL、勝率、最大回撤與 `quality_gate_passed`。
+- **Live Submit SOP**：修正永豐金 `ordno` 讀取路徑，新增 `verify_order_landed()` 3 次輪詢 ghost detection，並建立 `live_submit_sop.py` 單一授權下單入口。
+- **Dashboard Live 授權閘門**：新增 `/api/live-mode/status`、`/api/live-mode/unlock` 與 overview 解鎖卡片，雙重確認字串與品質閘門在伺服器端強制驗證。
+- **Live submit 回歸測試**：新增 7 場景 regression suite，覆蓋 happy path、ghost、gate block、adapter exception、double-submit dedup、live mode lock。
+
+### Validation
+- 全套測試：**328 passed, 6 warnings**
+
 ## v1.2.1 — 2026-04-17
 
 ### Added
