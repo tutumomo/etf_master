@@ -993,6 +993,18 @@ def _run_live_health_check(account_alias: str | None = None) -> tuple[bool, str]
         return False, str(e)
 
 
+def _get_default_broker(config: dict) -> str:
+    """Resolve default broker from config, falling back to account alias prefix."""
+    broker = config.get("trading", {}).get("default_broker")
+    if broker:
+        return broker
+    # Fallback: strip trailing _01/_02 suffix from default_account alias
+    account = config.get("default_account", "")
+    if "_" in account:
+        return account.rsplit("_", 1)[0]
+    return account or "sinopac"
+
+
 def cmd_mode(args: argparse.Namespace) -> int:
     manager = get_account_manager()
     config = manager.get_config()
@@ -1006,7 +1018,7 @@ def cmd_mode(args: argparse.Namespace) -> int:
             payload = resolve_effective_mode(config=config, manual_override=None, live_check_ok=ok, previous_mode="paper")
             payload.update({
                 "default_account": config.get("default_account"),
-                "default_broker": config.get("trading", {}).get("default_broker"),
+                "default_broker": _get_default_broker(config),
                 "health_check_message": msg,
             })
             current = write_trading_mode_state(None, payload)
@@ -1017,7 +1029,7 @@ def cmd_mode(args: argparse.Namespace) -> int:
         payload = resolve_effective_mode(config=config, manual_override="paper", live_check_ok=False, previous_mode=previous_mode)
         payload.update({
             "default_account": config.get("default_account"),
-            "default_broker": config.get("trading", {}).get("default_broker"),
+            "default_broker": _get_default_broker(config),
             "health_check_message": "manual paper switch",
         })
         write_trading_mode_state(None, payload)
@@ -1028,7 +1040,7 @@ def cmd_mode(args: argparse.Namespace) -> int:
     payload = resolve_effective_mode(config=config, manual_override="live", live_check_ok=ok, previous_mode=previous_mode)
     payload.update({
         "default_account": config.get("default_account"),
-        "default_broker": config.get("trading", {}).get("default_broker"),
+        "default_broker": _get_default_broker(config),
         "health_check_message": msg,
     })
     write_trading_mode_state(None, payload)
