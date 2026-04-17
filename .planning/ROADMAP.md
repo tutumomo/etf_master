@@ -12,10 +12,10 @@
 - [x] **Phase 3: 持倉交易票據 UI** -- drawer 展開票據、preview/confirm/submit 三段式、維持人工確認、可摺疊區塊、新手泡泡說明 (COMPLETE)
 - [x] **Phase 4: 回歸測試與版本保全** -- 五類回歸案例覆蓋、全流程 commit hash、push 到 GitHub (COMPLETE)
 - [x] **Phase 5: 財經技能整合與 SOUL 升級** -- 深度檢視 3 個財經技能並建立意圖觸發映射表 (COMPLETE)
-- [ ] **Phase 6: 決策對齊與反應式引擎** -- 確保建議對齊策略與情境，並實作即時連動 (IN PROGRESS)
-- [x] **Phase 7: Dashboard 持倉與關注區塊整合** -- 合併區塊、優化交易票據、動態買賣邏輯 (PLANNED) (completed 2026-04-16)
-- [ ] **Phase 8: Dashboard UI 優化與一鍵同步** -- 實作「一鍵全同步」並精簡冗餘按鈕 (PLANNED)
-- [ ] **Phase 9: 交易閾值與 AI 絕對紅線系統 (Safety Redlines)** -- 實作硬性閾值管理與交易攔截 (PLANNED)
+- [x] **Phase 6: 決策對齊與反應式引擎** -- 確保建議對齊策略與情境，並實作即時連動 (COMPLETE, 2026-04-17)
+- [x] **Phase 7: Dashboard 持倉與關注區塊整合** -- 合併區塊、優化交易票據、動態買賣邏輯 (COMPLETE, 2026-04-16)
+- [x] **Phase 8: Dashboard UI 優化與一鍵同步** -- 實作「一鍵全同步」並精簡冗餘按鈕 (COMPLETE, 2026-04-17)
+- [x] **Phase 9: 交易閾值與 AI 絕對紅線系統 (Safety Redlines)** -- 實作硬性閾值管理與交易攔截 (COMPLETE, 2026-04-17)
 
 ## Phase Details
 
@@ -123,13 +123,13 @@
 | SKILL-03 | Phase 5 | Completed |
 | SKILL-04 | Phase 5 | Completed |
 | SKILL-05 | Phase 5 | Completed |
-| ALIGN-01 | Phase 6 | In Progress |
-| ALIGN-02 | Phase 6 | In Progress |
-| ALIGN-03 | Phase 6 | In Progress |
-| ALIGN-04 | Phase 6 | In Progress |
+| ALIGN-01 | Phase 6 | Completed |
+| ALIGN-02 | Phase 6 | Completed |
+| ALIGN-03 | Phase 6 | Completed |
+| ALIGN-04 | Phase 6 | Completed |
 | UI-INTEGRATE | Phase 7 | Completed |
-| UI-STREAMLINE | Phase 8 | Pending |
-| FUSE-V3-REDLINE | Phase 9 | Pending |
+| UI-STREAMLINE | Phase 8 | Completed |
+| FUSE-V3-REDLINE | Phase 9 | Completed |
 | GIT-01 | All Phases | Completed |
 | GIT-02 | All Phases | Completed |
 | GIT-03 | Phase 4 | Completed |
@@ -155,7 +155,7 @@
 | 3. 持倉交易票據 UI | 3/3 | Completed | 2026-04-16 |
 | 4. 回歸測試與版本保全 | 3/3 | Completed | 2026-04-16 |
 | 5. 財經技能整合與 SOUL 升級 | 3/3 | Completed | 2026-04-16 |
-| 6. 決策對齊與反應式引擎 | 0/3 | In Progress | - |
-| 7. Dashboard 持倉與關注區塊整合 | 2/2 | Complete   | 2026-04-16 |
-| 8. Dashboard UI 優化與一鍵同步 | 0/3 | Pending | - |
-| 9. 交易閾值與 AI 絕對紅線系統 | 0/3 | Planned | - |
+| 6. 決策對齊與反應式引擎 | 3/3 | Completed | 2026-04-17 |
+| 7. Dashboard 持倉與關注區塊整合 | 2/2 | Completed | 2026-04-16 |
+| 8. Dashboard UI 優化與一鍵同步 | 3/3 | Completed | 2026-04-17 |
+| 9. 交易閾值與 AI 絕對紅線系統 | 3/3 | Completed | 2026-04-17 |
