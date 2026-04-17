@@ -219,6 +219,17 @@ def _build_agent_reasoning(request_payload: dict, quality_state: dict | None = N
         dim_parts.append(f"1年報酬 {ret_v:+.0f}%")
     dim_summary = '、'.join(dim_parts) if dim_parts else '指標資料待補'
 
+    # Determine if top candidate aligns with current strategy group preference
+    top_group = metrics.get('group', '')
+    if group_bonus_map and top_group:
+        _bonus = group_bonus_map.get(top_group, 0.0)
+        strategy_aligned_flag = _bonus > 0.0
+    elif not group_bonus_map:
+        # 觀察模式 or unknown strategy — neutral alignment
+        strategy_aligned_flag = None
+    else:
+        strategy_aligned_flag = False
+
     candidate = {
         'symbol': symbol,
         'side': 'buy',
@@ -226,6 +237,8 @@ def _build_agent_reasoning(request_payload: dict, quality_state: dict | None = N
         'quantity': 100,
         'reason': f'AI agent 判斷：{symbol} 多維度評分 {ai_score:.1f}（{dim_summary}），符合 TOMO 三原則，可列入 preview。',
         'risk_note': f'risk_temperature={risk_temperature}；event_regime={event_regime}；仍屬建議層。',
+        'strategy_aligned': strategy_aligned_flag,
+        'strategy_group': top_group or None,
     }
 
     memory_notes = decision_memory_context.get('memory_notes') or []
