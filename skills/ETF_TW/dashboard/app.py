@@ -111,6 +111,11 @@ class SafetyRedlinesRequest(BaseModel):
     enabled: bool
 
 
+class LiveUnlockRequest(BaseModel):
+    confirm_1: str
+    confirm_2: str
+
+
 TradingModeRequest.model_rebuild()
 AIDecisionReviewRequest.model_rebuild()
 AIDecisionOutcomeRequest.model_rebuild()
@@ -1416,3 +1421,74 @@ async def get_decision_quality_report():
     if data is None:
         raise HTTPException(status_code=500, detail="Failed to load report")
     return data
+
+
+# ── Live 模式授權閘門 (LIVE-02) ───────────────────────────────────────────────
+
+LIVE_CONFIRM_1 = "ENABLE LIVE TRADING"
+LIVE_CONFIRM_2 = "I UNDERSTAND REAL MONEY IS AT RISK"
+
+
+@app.get("/api/live-mode/status")
+async def get_live_mode_status():
+    """Live 模式授權狀態 — LIVE-02"""
+    from scripts.etf_core import context as _ctx
+    from scripts.etf_core.state_io import safe_load_json
+    state_dir = _ctx.get_state_dir()
+    live_mode = safe_load_json(state_dir / "live_mode.json", default={"enabled": False})
+    backtest = safe_load_json(state_dir / "backtest_results.json", default={})
+    quality_gate_passed = bool(backtest.get("quality_gate_passed", False))
+    return {
+        "enabled": bool(live_mode.get("enabled", False)),
+        "quality_gate_passed": quality_gate_passed,
+        "unlocked_at": live_mode.get("unlocked_at"),
+        "backtest_summary": {
+            "win_rate": backtest.get("win_rate"),
+            "max_drawdown": backtest.get("max_drawdown"),
+            "last_updated": backtest.get("last_updated"),
+        },
+    }
+
+
+@app.post("/api/live-mode/unlock")
+async def unlock_live_mode(req: LiveUnlockRequest):
+    """Live 模式授權解鎖 — LIVE-02.
+    需要雙重確認字串 + 品質閘門通過才能寫入 live_mode.json.
+    Note: endpoint is localhost-only; future versions should add HTTPS/auth (T-10-05-02).
+    """
+    from scripts.etf_core import context as _ctx
+    from scripts.etf_core.state_io import safe_load_json, atomic_save_json
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+
+    # Server-side double-confirm enforcement (T-10-05-01)
+    if req.confirm_1 != LIVE_CONFIRM_1 or req.confirm_2 != LIVE_CONFIRM_2:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "Confirmation strings incorrect. "
+                f"Required: confirm_1='{LIVE_CONFIRM_1}', "
+                f"confirm_2='{LIVE_CONFIRM_2}'"
+            ),
+        )
+
+    state_dir = _ctx.get_state_dir()
+    # Re-check quality gate on every request (T-10-05-01)
+    backtest = safe_load_json(state_dir / "backtest_results.json", default={})
+    if not backtest.get("quality_gate_passed", False):
+        raise HTTPException(
+            status_code=403,
+            detail=(
+                "Quality gate not passed. Run backtest_decision_outcomes.py first. "
+                "Required: win_rate >= 0.5 and max_drawdown <= 0.15."
+            ),
+        )
+
+    live_mode = {
+        "enabled": True,
+        "unlocked_at": datetime.now(ZoneInfo("Asia/Taipei")).isoformat(),
+        "unlocked_by": "dashboard",
+        "quality_gate_passed_at_unlock": True,
+    }
+    atomic_save_json(state_dir / "live_mode.json", live_mode)
+    return {"success": True, "enabled": True, "unlocked_at": live_mode["unlocked_at"]}

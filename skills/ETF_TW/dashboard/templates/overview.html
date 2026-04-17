@@ -1589,4 +1589,96 @@ window.addEventListener('load', () => {
     }, 1000);
 });
 </script>
+<!-- Live 模式授權閘門 (LIVE-02) -->
+<div id="live-mode-gate" class="card" style="border: 2px solid #e74c3c; margin-top: 1.5rem; padding: 1rem;">
+  <h3 style="color: #e74c3c; margin-top: 0;">Live 模式授權閘門</h3>
+  <div id="live-mode-status-display">
+    <p id="lm-mode-label">載入中...</p>
+    <p id="lm-gate-label"></p>
+    <p id="lm-backtest-summary"></p>
+  </div>
+  <div id="live-mode-gate-form" style="margin-top: 1rem; display: none;">
+    <p style="color: #888; font-size: 0.85rem;">解鎖需輸入確認字串（精確，大小寫相同）：</p>
+    <div style="margin-bottom: 0.5rem;">
+      <label>確認 1：</label><br>
+      <input type="text" id="live-confirm-1" placeholder="ENABLE LIVE TRADING"
+             style="width: 100%; padding: 0.4rem; font-family: monospace;" />
+    </div>
+    <div style="margin-bottom: 0.75rem;">
+      <label>確認 2：</label><br>
+      <input type="text" id="live-confirm-2" placeholder="I UNDERSTAND REAL MONEY IS AT RISK"
+             style="width: 100%; padding: 0.4rem; font-family: monospace;" />
+    </div>
+    <button id="live-unlock-btn" disabled
+            onclick="unlockLiveMode()"
+            style="background:#e74c3c;color:white;border:none;padding:0.5rem 1.5rem;opacity:0.5;cursor:not-allowed;">
+      解鎖 Live 模式
+    </button>
+    <span id="live-gate-msg" style="margin-left:1rem;font-size:0.85rem;"></span>
+  </div>
+</div>
+
+<script>
+(function loadLiveModeStatus() {
+  fetch('/api/live-mode/status')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var modeEl = document.getElementById('lm-mode-label');
+      var gateEl = document.getElementById('lm-gate-label');
+      var bsEl   = document.getElementById('lm-backtest-summary');
+      var form   = document.getElementById('live-mode-gate-form');
+      var btn    = document.getElementById('live-unlock-btn');
+      var msgEl  = document.getElementById('live-gate-msg');
+
+      // Use textContent exclusively — API response data NEVER inserted as HTML (XSS prevention T-10-05-05)
+      modeEl.textContent = '目前模式：' + (data.enabled ? 'LIVE 模式' : 'Paper 模式');
+      gateEl.textContent = '品質閘門：' + (data.quality_gate_passed ? '通過' : '未通過');
+
+      var bs = data.backtest_summary || {};
+      var wr = bs.win_rate != null ? (bs.win_rate * 100).toFixed(1) + '%' : 'N/A';
+      var md = bs.max_drawdown != null ? (bs.max_drawdown * 100).toFixed(1) + '%' : 'N/A';
+      bsEl.textContent = '回測：勝率 ' + wr + '，最大回撤 ' + md;
+
+      if (!data.enabled) {
+        form.style.display = 'block';
+        if (data.quality_gate_passed) {
+          btn.disabled = false;
+          btn.style.opacity = '1';
+          btn.style.cursor = 'pointer';
+        } else {
+          msgEl.textContent = '品質閘門未通過，無法解鎖';
+        }
+      }
+    })
+    .catch(function(e) {
+      document.getElementById('lm-mode-label').textContent = '狀態載入失敗';
+    });
+})();
+
+function unlockLiveMode() {
+  var c1 = document.getElementById('live-confirm-1').value;
+  var c2 = document.getElementById('live-confirm-2').value;
+  var msg = document.getElementById('live-gate-msg');
+  msg.textContent = '提交中...';
+  fetch('/api/live-mode/unlock', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({confirm_1: c1, confirm_2: c2})
+  })
+  .then(function(r) { return r.json().then(function(d) { return {status: r.status, data: d}; }); })
+  .then(function(res) {
+    if (res.status === 200) {
+      msg.textContent = 'Live 模式已解鎖';
+      msg.style.color = 'green';
+      setTimeout(function() { location.reload(); }, 1500);
+    } else {
+      // Use textContent — detail string from server, not rendered as HTML
+      var detail = (res.data && res.data.detail) ? String(res.data.detail) : '未知錯誤';
+      msg.textContent = '解鎖失敗: ' + detail;
+      msg.style.color = 'red';
+    }
+  })
+  .catch(function() { msg.textContent = '網路錯誤，請重試'; msg.style.color = 'red'; });
+}
+</script>
 {% endblock %}
