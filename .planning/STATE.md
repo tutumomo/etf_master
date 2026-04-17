@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in_progress
-stopped_at: Completed 10-02-PLAN.md
-last_updated: "2026-04-17T07:18:59.432Z"
+stopped_at: Completed 10-04-PLAN.md
+last_updated: "2026-04-17T07:27:03.906Z"
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 11
-  completed_plans: 5
-  percent: 45
+  completed_plans: 7
+  percent: 64
 ---
 
 # STATE: ETF_TW 穩定化與技能整合
@@ -53,6 +53,7 @@ progress:
 - Phase 7: Dashboard UI integration completed.
 - Phase 8 (UI-STREAMLINE): Created full-pipeline API and simplified Dashboard UI buttons.
 - [Phase 10-live-submit]: price_fetcher 注入模式確保測試完全隔離
+- [Phase 10-live-submit]: sinopac ordno 讀取路徑修正為 trade.order.ordno；verify_order_landed 3 輪詢 ghost detection；live_submit_sop.py 單一授權 SOP 入口
 
 ### Todos
 
@@ -73,4 +74,4 @@ progress:
 ## Session Continuity
 
 **Session Goal:** Create Phase 8 plans for Dashboard UI Streamline.
-**Stopped At:** Completed 10-02-PLAN.md
+**Stopped At:** Completed 10-04-PLAN.md
