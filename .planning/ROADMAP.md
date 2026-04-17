@@ -95,9 +95,9 @@
   5. Live submit 回歸測試覆蓋：preview → confirm → submit → verify 完整週期含失敗場景。
   6. 回測框架對 `ai_decision_outcome.jsonl` 計算勝率/最大回撤，決策品質達門檻後方可解鎖。
 **Plans**: 6 plans
-- [ ] 10-01-PLAN.md — [決策審計] 決策品質報告框架與統計指標 (QUALITY-01)
-- [ ] 10-02-PLAN.md — [壓力測試] Paper mode N 輪掃描與幽靈委託檢測 (QUALITY-02)
-- [ ] 10-03-PLAN.md — [回測] ai_decision_outcome 勝率/回撤回測框架 (QUALITY-03)
+- [x] 10-01-PLAN.md — [決策審計] 決策品質報告框架與統計指標 (QUALITY-01)
+- [x] 10-02-PLAN.md — [壓力測試] Paper mode N 輪掃描與幽靈委託檢測 (QUALITY-02)
+- [x] 10-03-PLAN.md — [回測] ai_decision_outcome 勝率/回撤回測框架 (QUALITY-03)
 - [ ] 10-04-PLAN.md — [Live Submit] sinopac_adapter 接通與 list_trades() 落地驗證 (LIVE-01)
 - [ ] 10-05-PLAN.md — [授權閘門] Dashboard Live 模式解鎖 UI 與雙重確認 (LIVE-02)
 - [ ] 10-06-PLAN.md — [回歸測試] Live submit 完整週期含失敗場景測試 (LIVE-03)
@@ -187,4 +187,4 @@
 | 7. Dashboard 持倉與關注區塊整合 | 2/2 | Completed | 2026-04-16 |
 | 8. Dashboard UI 優化與一鍵同步 | 3/3 | Completed | 2026-04-17 |
 | 9. 交易閾值與 AI 絕對紅線系統 | 3/3 | Completed | 2026-04-17 |
-| 10. 決策品質驗證與 Live Submit 解鎖 | 0/6 | Planned | - |
+| 10. 決策品質驗證與 Live Submit 解鎖 | 3/6 | In Progress|  |
