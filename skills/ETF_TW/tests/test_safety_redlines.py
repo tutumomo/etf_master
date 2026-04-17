@@ -1,11 +1,6 @@
 import unittest
 from unittest.mock import patch, MagicMock
-import sys
-import os
-
-# Ensure scripts directory is in path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from skills.ETF_TW.scripts.pre_flight_gate import check_order
+from scripts.pre_flight_gate import check_order
 
 class TestSafetyRedlines(unittest.TestCase):
     def setUp(self):
@@ -30,7 +25,7 @@ class TestSafetyRedlines(unittest.TestCase):
             "circuit_breaker_triggered": False
         }
 
-    @patch('pre_flight_gate.load_safety_data')
+    @patch('scripts.pre_flight_gate.load_safety_data')
     def test_max_shares_blocking(self, mock_load):
         # 測試買入 2000 股 (當上限為 1000 股時) 被阻斷
         mock_load.return_value = {
@@ -40,34 +35,31 @@ class TestSafetyRedlines(unittest.TestCase):
         order = {'symbol': '0050', 'side': 'buy', 'quantity': 2000, 'price': 100}
         result = check_order(order, self.context)
         self.assertFalse(result['passed'])
-        self.assertEqual(result['reason'], 'redline_exceed_max_buy_shares')
+        self.assertEqual(result['reason'], 'redline_shares_exceeded')
 
-    @patch('pre_flight_gate.load_safety_data')
+    @patch('scripts.pre_flight_gate.load_safety_data')
     def test_max_amount_twd_blocking(self, mock_load):
-        # 測試買入 100 萬 TWD (當上限為 50 萬時) 被阻斷
+        # 測試買入 100 萬 TWD (當上限為 50 萬時) 被紅線阻斷
+        # 移除 max_single_limit_twd 避免在 sizing step 就被攔截
         mock_load.return_value = {
             "redlines": {**self.default_redlines, "max_buy_amount_twd": 500000.0},
             "pnl": self.default_pnl
         }
+        ctx = {**self.context, 'max_single_limit_twd': None, 'max_concentration_pct': None}
         order = {'symbol': '0050', 'side': 'buy', 'quantity': 10000, 'price': 100}
+        result = check_order(order, ctx)
+        self.assertFalse(result['passed'])
+        self.assertEqual(result['reason'], 'redline_amount_exceeded')
+
+    def test_max_amount_pct_blocking(self):
+        # max_buy_amount_pct 已整合進 sizing limit (step 5)
+        # max_single_limit_twd=500,000; 6000×100=600,000 超過 → exceeds_sizing_limit
+        order = {'symbol': '0050', 'side': 'buy', 'quantity': 6000, 'price': 100}
         result = check_order(order, self.context)
         self.assertFalse(result['passed'])
-        self.assertEqual(result['reason'], 'redline_exceed_max_buy_amount_twd')
+        self.assertEqual(result['reason'], 'exceeds_sizing_limit')
 
-    @patch('pre_flight_gate.load_safety_data')
-    def test_max_amount_pct_blocking(self, mock_load):
-        # 測試買入超過 50% 現金金額被阻斷
-        # cash = 1,000,000, 50% = 500,000
-        mock_load.return_value = {
-            "redlines": {**self.default_redlines, "max_buy_amount_pct": 50.0},
-            "pnl": self.default_pnl
-        }
-        order = {'symbol': '0050', 'side': 'buy', 'quantity': 6000, 'price': 100} # 600,000 > 500,000
-        result = check_order(order, self.context)
-        self.assertFalse(result['passed'])
-        self.assertEqual(result['reason'], 'redline_exceed_max_buy_amount_pct')
-
-    @patch('pre_flight_gate.load_safety_data')
+    @patch('scripts.pre_flight_gate.load_safety_data')
     def test_daily_loss_circuit_breaker(self, mock_load):
         # 模擬 circuit_breaker_triggered: true 並驗證所有買入被阻斷
         mock_load.return_value = {
@@ -86,7 +78,7 @@ class TestSafetyRedlines(unittest.TestCase):
         result_sell = check_order(order_sell, self.context)
         self.assertTrue(result_sell['passed'])
 
-    @patch('pre_flight_gate.load_safety_data')
+    @patch('scripts.pre_flight_gate.load_safety_data')
     def test_ai_confidence_blocking(self, mock_load):
         # 模擬 AI 信心 0.5 (當門檻 0.7 時) 並驗證被阻斷
         mock_load.return_value = {
@@ -96,9 +88,9 @@ class TestSafetyRedlines(unittest.TestCase):
         order = {'symbol': '0050', 'side': 'buy', 'quantity': 100, 'price': 100, 'ai_confidence': 0.5}
         result = check_order(order, self.context)
         self.assertFalse(result['passed'])
-        self.assertEqual(result['reason'], 'redline_insufficient_ai_confidence')
+        self.assertEqual(result['reason'], 'low_ai_confidence')
 
-    @patch('pre_flight_gate.load_safety_data')
+    @patch('scripts.pre_flight_gate.load_safety_data')
     def test_safety_redlines_disabled(self, mock_load):
         # 驗證紅線系統 enabled: false 時不影響正常交易
         mock_load.return_value = {

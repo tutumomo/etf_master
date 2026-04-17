@@ -32,15 +32,15 @@
 
 <div id="global_banner" class="inline-banner" style="margin: 0 16px 18px 16px; border-radius: 12px; background: rgba(124, 214, 255, 0.1); display: none;"></div>
 {% if intelligence_warning %}
-<div class="inline-banner show error" style="margin: 0 16px 18px 16px; border-radius: 12px;">
+<div class="inline-banner show error" style="margin: 0 16px 18px 16px; border-radius: 12px;" data-banner-type="intelligence">
   <strong>技術指標資料尚未建立：</strong>
-  {{ intelligence_warning }}
+  資料同步完成，但技術指標資料尚未建立 — {{ intelligence_warning }}
 </div>
 {% endif %}
 {% if filled_reconciliation and not filled_reconciliation.get('ok') and filled_reconciliation.get('unreconciled_symbols') %}
-<div class="inline-banner show error" style="margin: 0 16px 18px 16px; border-radius: 12px;">
+<div class="inline-banner show error" style="margin: 0 16px 18px 16px; border-radius: 12px;" data-banner-type="reconciliation">
   <strong>未對齊成交提醒：</strong>
-  已有成交事實但尚未對齊 broker positions：{{ filled_reconciliation.get('unreconciled_symbols', []) }}
+  資料同步完成，但仍有未對齊成交 — 已有成交事實但尚未對齊 broker positions：{{ filled_reconciliation.get('unreconciled_symbols', []) }}
 </div>
 {% endif %}
 
