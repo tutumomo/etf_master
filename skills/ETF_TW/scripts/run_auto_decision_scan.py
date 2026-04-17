@@ -93,7 +93,28 @@ BUY_THRESHOLD_BY_RISK = {
 # Consensus Arbitration: resolve conflicts between Rule Engine & AI Bridge
 # ---------------------------------------------------------------------------
 
-def resolve_consensus(rule_engine_action: str | None, ai_bridge_action: str | None, rule_engine_symbol: str | None, ai_bridge_symbol: str | None, rule_score: int | None = None) -> dict:
+def _adjust_confidence(base: str, rule_aligned: bool | None, ai_aligned: bool | None) -> str:
+    """策略對齊信心調整：雙鏈對齊升級，任一不對齊降級。"""
+    both_aligned = rule_aligned is True and ai_aligned is True
+    either_misaligned = rule_aligned is False or ai_aligned is False
+    if both_aligned and base == 'medium':
+        return 'high'
+    if either_misaligned and base == 'high':
+        return 'medium'
+    if either_misaligned and base == 'medium':
+        return 'low'
+    return base
+
+
+def resolve_consensus(
+    rule_engine_action: str | None,
+    ai_bridge_action: str | None,
+    rule_engine_symbol: str | None,
+    ai_bridge_symbol: str | None,
+    rule_score: int | None = None,
+    rule_strategy_aligned: bool | None = None,   # NEW: from 06-01 candidate result
+    ai_strategy_aligned: bool | None = None,      # NEW: from 06-02 candidate result
+) -> dict:
     """
     Three-tier arbitration:
       Tier 1: Both agree on symbol + direction -> high confidence, execute
@@ -111,6 +132,7 @@ def resolve_consensus(rule_engine_action: str | None, ai_bridge_action: str | No
         "conflict": <bool>,
         "conflict_detail": <str or None>,
         "tier": <1|2|3>,
+        "strategy_alignment_signal": {"rule": <bool|None>, "ai": <bool|None>},
       }
     """
     rule_action = (rule_engine_action or 'hold').lower()
@@ -132,6 +154,8 @@ def resolve_consensus(rule_engine_action: str | None, ai_bridge_action: str | No
 
     rule_side = rule_action if rule_action in ('buy', 'sell') else 'hold'
 
+    _alignment_signal = {'rule': rule_strategy_aligned, 'ai': ai_strategy_aligned}
+
     # --- Tier 1: Full agreement ---
     if rule_side != 'hold' and ai_normalized != 'hold' and rule_sym and ai_sym and rule_sym == ai_sym and rule_side == ai_normalized:
         return {
@@ -140,10 +164,11 @@ def resolve_consensus(rule_engine_action: str | None, ai_bridge_action: str | No
             'rule_engine_symbol': rule_sym,
             'ai_bridge_symbol': ai_sym,
             'resolved': rule_side,
-            'confidence_level': 'high',
+            'confidence_level': _adjust_confidence('high', rule_strategy_aligned, ai_strategy_aligned),
             'conflict': False,
             'conflict_detail': None,
             'tier': 1,
+            'strategy_alignment_signal': _alignment_signal,
         }
 
     # --- Tier 3: Opposite directions on same symbol ---
@@ -154,10 +179,11 @@ def resolve_consensus(rule_engine_action: str | None, ai_bridge_action: str | No
             'rule_engine_symbol': rule_sym,
             'ai_bridge_symbol': ai_sym,
             'resolved': 'locked',
-            'confidence_level': 'low',
+            'confidence_level': _adjust_confidence('low', rule_strategy_aligned, ai_strategy_aligned),
             'conflict': True,
             'conflict_detail': f'方向衝突：規則引擎={rule_side} vs AI Bridge={ai_normalized}，標的={rule_sym}',
             'tier': 3,
+            'strategy_alignment_signal': _alignment_signal,
         }
 
     # --- Tier 2: Disagreement (different symbol, or one says hold) ---
@@ -173,10 +199,11 @@ def resolve_consensus(rule_engine_action: str | None, ai_bridge_action: str | No
                 'rule_engine_symbol': rule_sym,
                 'ai_bridge_symbol': ai_sym or None,
                 'resolved': rule_side,
-                'confidence_level': 'low',
+                'confidence_level': _adjust_confidence('low', rule_strategy_aligned, ai_strategy_aligned),
                 'conflict': True,
                 'conflict_detail': f'AI Bridge 建議 hold，規則引擎建議 {rule_side} {rule_sym}，降級執行',
                 'tier': 2,
+                'strategy_alignment_signal': _alignment_signal,
             }
         if ai_sym and ai_sym != rule_sym:
             # Different symbols -> rule engine wins
@@ -186,10 +213,11 @@ def resolve_consensus(rule_engine_action: str | None, ai_bridge_action: str | No
                 'rule_engine_symbol': rule_sym,
                 'ai_bridge_symbol': ai_sym,
                 'resolved': rule_side,
-                'confidence_level': 'medium',
+                'confidence_level': _adjust_confidence('medium', rule_strategy_aligned, ai_strategy_aligned),
                 'conflict': True,
                 'conflict_detail': f'標的不同：規則引擎={rule_sym} vs AI Bridge={ai_sym}，規則引擎優先',
                 'tier': 2,
+                'strategy_alignment_signal': _alignment_signal,
             }
         if rule_side == ai_normalized and rule_sym == ai_sym:
             # Same direction same symbol (already handled by Tier 1, but safe fallback)
@@ -199,10 +227,11 @@ def resolve_consensus(rule_engine_action: str | None, ai_bridge_action: str | No
                 'rule_engine_symbol': rule_sym,
                 'ai_bridge_symbol': ai_sym,
                 'resolved': rule_side,
-                'confidence_level': 'high',
+                'confidence_level': _adjust_confidence('high', rule_strategy_aligned, ai_strategy_aligned),
                 'conflict': False,
                 'conflict_detail': None,
                 'tier': 1,
+                'strategy_alignment_signal': _alignment_signal,
             }
         # Same symbol, same direction but Tier 1 didn't catch -> fallback agree
         if rule_sym == ai_sym and rule_side == ai_normalized:
@@ -212,10 +241,11 @@ def resolve_consensus(rule_engine_action: str | None, ai_bridge_action: str | No
                 'rule_engine_symbol': rule_sym,
                 'ai_bridge_symbol': ai_sym,
                 'resolved': rule_side,
-                'confidence_level': 'high',
+                'confidence_level': _adjust_confidence('high', rule_strategy_aligned, ai_strategy_aligned),
                 'conflict': False,
                 'conflict_detail': None,
                 'tier': 1,
+                'strategy_alignment_signal': _alignment_signal,
             }
 
     # Rule engine says hold, AI wants to act -> veto, AI cannot override
@@ -226,10 +256,11 @@ def resolve_consensus(rule_engine_action: str | None, ai_bridge_action: str | No
             'rule_engine_symbol': rule_sym or None,
             'ai_bridge_symbol': ai_sym,
             'resolved': 'hold',
-            'confidence_level': 'low',
+            'confidence_level': _adjust_confidence('low', rule_strategy_aligned, ai_strategy_aligned),
             'conflict': True,
             'conflict_detail': f'規則引擎否決：AI Bridge 建議 {ai_normalized} {ai_sym}，但規則引擎未達門檻',
             'tier': 2,
+            'strategy_alignment_signal': _alignment_signal,
         }
 
     # Both say hold
@@ -239,10 +270,11 @@ def resolve_consensus(rule_engine_action: str | None, ai_bridge_action: str | No
         'rule_engine_symbol': rule_sym or None,
         'ai_bridge_symbol': ai_sym or None,
         'resolved': 'hold',
-        'confidence_level': 'medium',
+        'confidence_level': _adjust_confidence('medium', rule_strategy_aligned, ai_strategy_aligned),
         'conflict': False,
         'conflict_detail': None,
         'tier': 1,
+        'strategy_alignment_signal': _alignment_signal,
     }
 
 
