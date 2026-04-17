@@ -2,3 +2,4 @@
 \n.env\nauth.json\nauth.lock\ngateway.pid\ngateway_state.json\nstate.db*\nlogs/\nsessions/\ncache/
 \n# Exclude non-finance skills\nskills/*\n!skills/ETF_TW\n!skills/stock-analysis-tw\n!skills/stock-market-pro-tw\n!skills/taiwan-finance\n!skills/graphify\nskills/etf_tw
 \n# OS & IDE Noise\n.DS_Store\n.vscode/\n.idea/\n\n# Python & Runtime Noise\n__pycache__/\n*.pyc\n.venv/\n.pytest_cache/\n\n# Agent & CLI Internal State\n.env\n.hermes_history\n.skills_prompt_snapshot.json\n.update_check
+.worktrees/
