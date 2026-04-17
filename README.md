@@ -1,4 +1,4 @@
-# ETF_Master: 智慧型台灣 ETF 投資與家庭資產管家 (v1.0.0)
+# ETF_Master: 智慧型台灣 ETF 投資與家庭資產管家 (v1.1.1)
 
 `ETF_Master` 是一款專為台灣 ETF 投資者設計的 AI 輔助決策與資產管理系統。本專案秉持「**交易安全優先於功能完備**」的核心價值，透過「三層真相層級」治理與「雙鏈決策仲裁」機制，為投資者提供一個穩定、透明且具備深度洞察的投資工作台。
 
@@ -79,6 +79,29 @@ uv run skills/stock-analysis-tw/scripts/analyze_stock.py 0050.TW
    python scripts/etf_tw.py init --install-deps
    ```
 3. **憑證配置**：於 `assets/config.json` 設定永豐金 API 憑證與策略參數。
+
+---
+
+## 📦 版本紀錄
+
+### v1.1.1 (2026-04-17)
+- fix: 持倉快照「交易」按鈕因 watchlist/positions 重複 DOM ID 衝突靜默失效
+- fix: 持倉票據 `data-ticket-id` / `data-preview-area` 屬性與 JS 函數不一致
+- fix: `cancelPreview` / `resetTicketState` 加 null 防護，新增 `_getPreviewArea()` helper
+- chore: 清除 `OPENCLAW_AGENT_NAME` 遺毒，所有 cron 與腳本統一改用 `AGENT_ID`
+
+### v1.1.0 (2026-04-16)
+- feat: ETF_TW 從 git submodule 轉為 inline 目錄，單一 repo 可完整重建 agent
+- feat: llm-wiki 財經知識庫合併進 repo，config.yaml 路徑綁定
+- feat: 新增 `distill_to_wiki.py`，Cron 自動將市場快照沉澱至 wiki 實體頁
+- fix: Dashboard HTML 結構修復（12 個區塊全部正常顯示）
+- fix: 交易預覽張數顯示精度問題（`toFixed(1)` → `toFixed(3)`）
+- fix: 規則引擎「無有效報價」誤報，改為帶時間戳的友善訊息
+- fix: CDN script 補上 SRI integrity 屬性（CWE-353）
+- fix: `<form>` 替換為 `<div>+onclick`（消除 Semgrep CSRF 誤報）
+
+### v1.0.0 (2026-04-10)
+- 初始穩定版本：ETF_TW + Dashboard + 雙鏈決策 + 5 個 Cron 任務
 
 ---
 
