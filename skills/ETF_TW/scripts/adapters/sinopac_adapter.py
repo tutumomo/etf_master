@@ -482,7 +482,9 @@ class SinopacAdapter(BaseAdapter):
             trade = self.api.place_order(contract, sj_order)
             
             order.status = 'submitted'
-            order.order_id = str(getattr(trade.status, 'order_id', ''))
+            # Broker order ID lives in trade.order.ordno, NOT trade.status.order_id (CLAUDE.md constraint)
+            trade_order = getattr(trade, 'order', None)
+            order.broker_order_id = str(getattr(trade_order, 'ordno', '')) if trade_order else ''
             order.created_at = datetime.now()
             
             return order
@@ -535,6 +537,41 @@ class SinopacAdapter(BaseAdapter):
         except Exception as e:
             print(f"[SinoPac] list_trades error: {e}")
             return []
+
+    async def verify_order_landed(self, broker_order_id: str, max_polls: int = 3, poll_interval_s: float = 1.0) -> dict:
+        """
+        Poll list_trades() up to max_polls times to verify broker_order_id (ordno) is present.
+        Returns verified=True only when ordno is found in the trade list.
+        Ghost order: ordno not found after max_polls → verified=False, ghost=True.
+
+        NEVER call api.logout() — it segfaults. Let process exit naturally.
+        """
+        import asyncio
+        for poll_num in range(1, max_polls + 1):
+            try:
+                trades = await self.list_trades()
+                for trade in trades:
+                    trade_order = getattr(trade, 'order', None)
+                    found_ordno = str(getattr(trade_order, 'ordno', '')) if trade_order else ''
+                    if found_ordno and found_ordno == str(broker_order_id):
+                        return {
+                            "verified": True,
+                            "ghost": False,
+                            "broker_order_id": broker_order_id,
+                            "polls": poll_num
+                        }
+            except Exception as e:
+                print(f"[SinoPac] verify_order_landed poll {poll_num} error: {e}")
+
+            if poll_num < max_polls:
+                await asyncio.sleep(poll_interval_s)
+
+        return {
+            "verified": False,
+            "ghost": True,
+            "broker_order_id": broker_order_id,
+            "polls": max_polls
+        }
 
     async def cancel_order(self, order_id: str) -> bool:
         """Cancel order by matching current trades and canceling the matched trade."""
