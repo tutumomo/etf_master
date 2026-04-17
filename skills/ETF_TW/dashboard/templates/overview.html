@@ -657,7 +657,7 @@
       </thead>
       <tbody>
         {% for p in position_rows %}
-        {% set clean_id = p.symbol.replace('.', '') %}
+        {% set clean_id = 'pos-' ~ p.symbol.replace('.', '') %}
         <tr>
           <td class="mono">{{ p.symbol }}</td>
           <td>{{ p.name }}</td>
@@ -670,7 +670,7 @@
           <td class="mono" style="color: {{ '#35d49a' if p.return_pct >= 0 else '#ff6b81' }}">{{ '%.2f'|format(p.return_pct) }}%</td>
           <td><span class="tag">{{ p.source }}</span></td>
           <td>
-            <button onclick="toggleTradeTicket('{{ p.symbol }}')" class="btn-sm" style="padding:4px 8px; font-size:11px; border-radius:6px; border:1px solid rgba(124,214,255,0.3); background:rgba(124,214,255,0.1); color:#7cd6ff; cursor:pointer; font-weight:700;">交易</button>
+            <button onclick="toggleTradeTicket('{{ clean_id }}')" class="btn-sm" style="padding:4px 8px; font-size:11px; border-radius:6px; border:1px solid rgba(124,214,255,0.3); background:rgba(124,214,255,0.1); color:#7cd6ff; cursor:pointer; font-weight:700;">交易</button>
           </td>
         </tr>
         <tr id="ticket-{{ clean_id }}" style="display:none;">
@@ -680,7 +680,7 @@
                 <div style="font-weight:700; color:#7cd6ff; font-size:16px;">快速交易票據：{{ p.symbol }} {{ p.name }} <span class="tag" style="background:rgba(255,107,129,0.15); color:#ff6b81; border:1px solid rgba(255,107,129,0.25);">Preview Only</span></div>
                 <div class="tag">Inline Ticket</div>
               </div>
-              
+
               <div id="ticket-form-{{ clean_id }}" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:16px; align-items:end;">
                 <div>
                   <label class="muted" style="display:block; font-size:12px; margin-bottom:6px;">買賣方向</label>
@@ -695,7 +695,7 @@
                     </label>
                   </div>
                 </div>
-                
+
                 <div>
                   <label class="muted" style="display:block; font-size:12px; margin-bottom:6px;">委託數量 (股)</label>
                   <input type="number" data-ticket-id="{{ clean_id }}" data-field="qty" value="100" step="1" min="1" oninput="resetTicketState('{{ clean_id }}')" style="width:100%; padding:10px; border-radius:8px; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.1); color:#fff; font-family:var(--font-mono);">
@@ -707,14 +707,14 @@
                   <input type="number" data-ticket-id="{{ clean_id }}" data-field="price" value="{{ p.current_price }}" step="0.01" oninput="resetTicketState('{{ clean_id }}')" style="width:100%; padding:10px; border-radius:8px; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.1); color:#fff; font-family:var(--font-mono);">
                   <div style="font-size:10px; color:var(--muted); margin-top:4px;">現價參考：{{ p.current_price }}</div>
                 </div>
-                
+
                 <div style="display:flex; gap:8px;">
                   <button id="preview-btn-{{ clean_id }}" onclick="previewTrade('{{ p.symbol }}', '{{ clean_id }}')" style="flex:2; padding:10px; border-radius:8px; border:none; background:linear-gradient(90deg,#7cd6ff,#8b8fff); color:#07111f; font-weight:700; cursor:pointer;">預覽交易</button>
-                  <button onclick="toggleTradeTicket('{{ p.symbol }}')" style="flex:1; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.05); color:#fff; cursor:pointer;">取消</button>
+                  <button onclick="toggleTradeTicket('{{ clean_id }}')" style="flex:1; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.05); color:#fff; cursor:pointer;">取消</button>
                 </div>
               </div>
-              
-              <!-- Preview Area (Hidden initially) -->
+
+              <!-- Preview Area -->
               <div data-preview-area="{{ clean_id }}" style="display:none; margin-top:16px; padding:16px; border-radius:12px; background:rgba(0,0,0,0.3); border:1px solid rgba(124,214,255,0.3);">
                 <div style="font-weight:700; color:#ffd166; margin-bottom:8px;">交易預覽 (Preview)</div>
                 <div data-preview-content="{{ clean_id }}" class="status-list" style="margin-top:0;"></div>
