@@ -64,6 +64,30 @@ STRATEGY_WEIGHTS = {
     }
 }
 
+# ---------------------------------------------------------------------------
+# Overlay Modifiers: scenario_overlay 對各群組的加/減分修正
+# ---------------------------------------------------------------------------
+
+OVERLAY_MODIFIERS = {
+    '收益再投資': {'income': +1.0, 'core': +0.5, 'defensive': 0, 'growth': -0.5, 'smart_beta': 0},
+    '收益優先':   {'income': +1.5, 'core': 0, 'defensive': +0.5, 'growth': -1.0, 'smart_beta': 0},
+    '高波動防守': {'defensive': +2.0, 'core': +0.5, 'income': +0.5, 'growth': -2.0, 'smart_beta': -1.0},
+    '減碼保守':   {'defensive': +1.5, 'core': 0, 'income': +0.5, 'growth': -1.5, 'smart_beta': -1.0},
+    '積極成長':   {'growth': +2.0, 'core': +0.5, 'smart_beta': +1.0, 'income': -0.5, 'defensive': -1.0},
+    '無':         {},  # No overlay modifier
+}
+
+# ---------------------------------------------------------------------------
+# Buy Threshold By Risk Temperature: dynamic threshold replacing hardcoded 4
+# ---------------------------------------------------------------------------
+
+BUY_THRESHOLD_BY_RISK = {
+    'low':      3.5,   # 低風險市場：放寬門檻，鼓勵建倉
+    'normal':   4.0,   # 一般市場：標準門檻
+    'elevated': 5.0,   # 高風險市場：提高門檻，保守操作
+    'high':     6.0,   # 極高風險：非常保守
+}
+
 
 # ---------------------------------------------------------------------------
 # Consensus Arbitration: resolve conflicts between Rule Engine & AI Bridge
@@ -479,16 +503,38 @@ def decide_action(strategy: dict, watchlist: dict, market_cache: dict, portfolio
                 score += 1
                 reasons.append('外部風險升高，防守型相對受益')
 
-        # === 策略對齊 ===
+        # === 策略對齊（含 overlay 修正）===
+        strategy_aligned = False
         if base_strategy == '平衡配置' and group in {'core', 'income'}:
             score += 1
             reasons.append('符合平衡配置主要候選')
-        if scenario_overlay in {'收益再投資', '收益優先'} and group == 'income':
+            strategy_aligned = True
+        if base_strategy == '核心累積' and group == 'core':
+            strategy_aligned = True
+        if base_strategy == '收益優先' and group == 'income':
+            strategy_aligned = True
+        if base_strategy == '防守保守' and group == 'defensive':
+            strategy_aligned = True
+
+        # Apply scenario_overlay modifiers from OVERLAY_MODIFIERS table
+        overlay_mod = OVERLAY_MODIFIERS.get(scenario_overlay, {})
+        overlay_delta = overlay_mod.get(group, 0)
+        if overlay_delta != 0:
+            score += overlay_delta
+            if overlay_delta > 0:
+                reasons.append(f'情境疊加「{scenario_overlay}」加分 +{overlay_delta}（群組 {group}）')
+                strategy_aligned = True
+            else:
+                reasons.append(f'情境疊加「{scenario_overlay}」扣分 {overlay_delta}（群組 {group}）')
+        elif scenario_overlay in {'收益再投資', '收益優先'} and group == 'income':
+            # fallback for groups not in overlay dict
             score += 1
             reasons.append('符合收益傾向情境')
-        if scenario_overlay in {'高波動防守', '減碼保守'} and group == 'defensive':
+            strategy_aligned = True
+        if scenario_overlay in {'高波動防守', '減碼保守'} and group == 'defensive' and overlay_delta == 0:
             score += 1
             reasons.append('符合防守情境')
+            strategy_aligned = True
         if market_context.get('market_regime') == 'cautious' and group == 'defensive':
             score += 1
             reasons.append('市場 regime 偏保守，防守型優先度提高')
@@ -522,6 +568,7 @@ def decide_action(strategy: dict, watchlist: dict, market_cache: dict, portfolio
             'reasons': reasons,
             'risk_notes': risk_notes,
             'holding_qty': holding_qty,
+            'strategy_aligned': strategy_aligned,
             # 新維度明細（方便 dashboard 展示）
             'dimension_scores': {
                 'yield': round(weighted_yield, 2),
@@ -531,7 +578,8 @@ def decide_action(strategy: dict, watchlist: dict, market_cache: dict, portfolio
         })
 
     candidates.sort(key=lambda x: x['score'], reverse=True)
-    actionable = next((c for c in candidates if c['side'] == 'buy' and c['score'] >= 4), None)
+    buy_threshold = BUY_THRESHOLD_BY_RISK.get(risk_temperature, BUY_THRESHOLD_BY_RISK['normal'])
+    actionable = next((c for c in candidates if c['side'] == 'buy' and c['score'] >= buy_threshold), None)
 
     if actionable:
         dims = actionable.get('dimension_scores', {})
