@@ -106,6 +106,27 @@ def _build_agent_reasoning(request_payload: dict, quality_state: dict | None = N
         }
         return {}, reasoning, '目前資料不足，先維持觀望。', 'hold', 'medium'
 
+    # === Strategy-aware scoring tables (mirrors rule engine STRATEGY_WEIGHTS group preferences) ===
+    STRATEGY_GROUP_BONUS: dict[str, dict[str, float]] = {
+        '核心累積':  {'core': 1.5, 'growth': 1.0, 'income': 0.0, 'defensive': 0.0},
+        '收益優先':  {'income': 2.0, 'core': 0.5, 'growth': 0.0, 'defensive': 0.5},
+        '防守保守':  {'defensive': 2.0, 'income': 1.0, 'core': 0.0, 'growth': -1.0},
+        '平衡配置':  {'core': 0.5, 'growth': 0.5, 'income': 0.5, 'defensive': 0.5},
+        '觀察模式':  {},
+    }
+
+    # Scenario overlay modifiers (mirrors rule engine OVERLAY_MODIFIERS)
+    OVERLAY_AI_MODS: dict[str, dict] = {
+        '減碼保守':  {'score_penalty': 1.0},
+        '高波動警戒': {'score_cap': 4.0},
+        '逢低觀察':  {'rsi_bonus_threshold': 40, 'rsi_bonus': 1.0},
+    }
+
+    base_strategy_name = strategy.get('base_strategy', '')
+    scenario_overlay_name = strategy.get('scenario_overlay', '') or ''
+    group_bonus_map = STRATEGY_GROUP_BONUS.get(base_strategy_name, {})
+    overlay_mods = OVERLAY_AI_MODS.get(scenario_overlay_name, {})
+
     # === Candidate selection: multi-dimensional (not just RSI) ===
     # Score each symbol using TOMO 三原則 + technical signals
     scored = []
@@ -152,7 +173,24 @@ def _build_agent_reasoning(request_payload: dict, quality_state: dict | None = N
             if bb_pct < 0.2:
                 s += 1  # Near lower band
 
+        # Strategy group bonus: align scoring with current base_strategy
+        sym_group = m.get('group', '')
+        if sym_group and group_bonus_map:
+            s += group_bonus_map.get(sym_group, 0.0)
+
+        # Overlay modifiers
+        if overlay_mods.get('rsi_bonus_threshold') and isinstance(rsi, (int, float)):
+            if rsi <= overlay_mods['rsi_bonus_threshold']:
+                s += overlay_mods.get('rsi_bonus', 0.0)
+        if 'score_penalty' in overlay_mods:
+            s -= overlay_mods['score_penalty']
+
         scored.append((sym, s, m))
+
+    # Apply score_cap overlay (cap each symbol's score)
+    if 'score_cap' in overlay_mods:
+        cap = overlay_mods['score_cap']
+        scored = [(sym, min(s, cap), m) for sym, s, m in scored]
 
     scored.sort(key=lambda x: x[1], reverse=True)
 
