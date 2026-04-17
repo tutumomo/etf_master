@@ -1,5 +1,28 @@
 # CHANGELOG
 
+## v1.2.1 — 2026-04-17
+
+### Added
+- **Phase 6 決策對齊**：Rule Engine 新增 `OVERLAY_MODIFIERS`（情境覆蓋加分/懲罰）、`BUY_THRESHOLD_BY_RISK`（動態買入門檻）、`strategy_aligned` 候選欄位。
+- **AI Bridge 策略強化**：`STRATEGY_GROUP_BONUS` 依 `base_strategy` 動態調整 AI 評分，候選結果帶 `strategy_aligned` 旗標。
+- **仲裁優化**：`_adjust_confidence()` 雙鏈同向時升級信心等級，任一鏈失對齊時降級；`resolve_consensus()` 回傳 `strategy_alignment_signal`。
+- **LLM-Wiki 注入**：AI Bridge 對前 3 名候選自動讀取本地 `llm-wiki/etf/{sym}.md` 知識注入 Prompt。
+- **Phase 8 一鍵全同步**：新增 `_run_full_pipeline_helper()` 與 `/api/decision/full-pipeline` 整合端點；Dashboard 加入一鍵同步按鈕，精簡冗餘操作。
+- **Phase 9 Safety Redlines**：Dashboard「交易閾值與安全紅線」UI 區塊落地，支援金額/股數/集中度/日虧損/AI 信心全參數設定與持久化；`pre_flight_gate.py` 全面改寫為 fail-fast 優先序架構，7 道檢查點各有 machine-readable reason code。
+- **Dashboard 操作按鈕補齊**：規則引擎「立即規則掃描」、AI Bridge「更新背景知識」/「生成 AI 建議」/「重跑決策管線」。
+- **預設券商修復**：`_get_default_broker()` 從帳戶別名推導，解決 N/A 顯示問題。
+- **全域 Banner 文字補齊**：`overview.html` 加入技術指標缺失與未對齊成交的精確提示文字。
+
+### Fixed
+- `test_safety_redlines.py`：修正錯誤 import 路徑、`@patch` 目標、過時 reason code、sizing context 干擾。
+- `test_fuse_v1` / `test_trade_validation` / `test_sizing_policy` / `test_ui_flow`：補齊 `_skip_safety_redlines` context flag，解除 state 檔案對測試環境的干擾。
+- `test_dashboard_global_banner_*`：補齊 overview.html 精確 banner 字串。
+
+### Validation
+- 全套測試：**275 passed, 0 failures**
+
+---
+
 ## v1.3.6 — 2026-04-15
 ### Added
 - **真相層級治理 (Truth Level Governance)**：正式定義三層真相分級，取代單一真相源 (SSoT) 概念。
