@@ -259,11 +259,14 @@ def add_watchlist_symbol(symbol: str) -> dict:
 
 @app.get("/api/safety-redlines")
 async def get_safety_redlines_api():
+    from scripts.sync_daily_pnl import DEFAULT_REDLINES
     path = STATE / "safety_redlines.json"
     if not path.exists():
-        from scripts.sync_daily_pnl import DEFAULT_REDLINES
         return DEFAULT_REDLINES
-    return json.loads(path.read_text(encoding="utf-8"))
+    return {
+        **DEFAULT_REDLINES,
+        **json.loads(path.read_text(encoding="utf-8")),
+    }
 
 
 @app.post("/api/safety-redlines/update")
@@ -695,9 +698,14 @@ def build_overview_model() -> dict:
     
     # Safety Redlines & PnL
     safety_redlines = load_state("safety_redlines.json")
+    from scripts.sync_daily_pnl import DEFAULT_REDLINES
     if not safety_redlines:
-        from scripts.sync_daily_pnl import DEFAULT_REDLINES
         safety_redlines = DEFAULT_REDLINES
+    else:
+        safety_redlines = {
+            **DEFAULT_REDLINES,
+            **safety_redlines,
+        }
     daily_pnl = load_state("daily_pnl.json")
     daily_order_limits = load_daily_order_limits_state()
 
