@@ -1402,3 +1402,17 @@ def generate_trade_journal(payload: dict | None = None):
     journal = build_daily_journal(target_date)
     path = save_journal(journal)
     return {"ok": True, "date": journal["date"], "path": str(path), "summary": journal.get("summary")}
+
+
+@app.get("/api/decision/quality-report")
+async def get_decision_quality_report():
+    """決策品質報告 — QUALITY-01"""
+    from scripts.etf_core import context as _ctx
+    from scripts.etf_core.state_io import safe_load_json
+    report_path = _ctx.get_state_dir() / "decision_quality_report.json"
+    if not report_path.exists():
+        raise HTTPException(status_code=404, detail="decision_quality_report.json not found. Run generate_decision_quality_report.py first.")
+    data = safe_load_json(report_path, default=None)
+    if data is None:
+        raise HTTPException(status_code=500, detail="Failed to load report")
+    return data
