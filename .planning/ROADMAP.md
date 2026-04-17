@@ -16,6 +16,7 @@
 - [x] **Phase 7: Dashboard 持倉與關注區塊整合** -- 合併區塊、優化交易票據、動態買賣邏輯 (COMPLETE, 2026-04-16)
 - [x] **Phase 8: Dashboard UI 優化與一鍵同步** -- 實作「一鍵全同步」並精簡冗餘按鈕 (COMPLETE, 2026-04-17)
 - [x] **Phase 9: 交易閾值與 AI 絕對紅線系統 (Safety Redlines)** -- 實作硬性閾值管理與交易攔截 (COMPLETE, 2026-04-17)
+- [ ] **Phase 10: 決策品質驗證與 Live Submit 解鎖** -- Paper mode 壓力測試、決策審計報告、sinopac adapter 接通、授權閘門 UI (PLANNED)
 
 ## Phase Details
 
@@ -81,6 +82,26 @@
 - [ ] 09-02-PLAN.md — [Frontend] Dashboard 閾值管理區塊與 Tooltips (FUSE-V3-REDLINE)
 - [ ] 09-03-PLAN.md — [Testing] 超限阻斷回歸測試撰寫 (FUSE-V3-REDLINE)
 
+### Phase 10: 決策品質驗證與 Live Submit 解鎖
+
+**Goal**: 在解鎖真實下單前建立可驗證的決策品質證據，並安全接通 sinopac live submit 路徑。
+**Depends on**: Phase 6, Phase 9
+**Requirements**: QUALITY-01, QUALITY-02, QUALITY-03, LIVE-01, LIVE-02, LIVE-03
+**Success Criteria** (what must be TRUE):
+  1. `decision_quality_report.json` 自動產生，包含策略對齊率、信心分佈、攔截率統計。
+  2. Paper mode 跑 N 輪自動決策掃描，Tier 1/2/3 仲裁分佈正常，無幽靈委託。
+  3. `sinopac_adapter` 完整接通 live submit，通過 `list_trades()` 落地驗證。
+  4. Dashboard「解鎖 Live 模式」授權閘門實作，需雙重確認 + Safety Redlines 明文展示。
+  5. Live submit 回歸測試覆蓋：preview → confirm → submit → verify 完整週期含失敗場景。
+  6. 回測框架對 `ai_decision_outcome.jsonl` 計算勝率/最大回撤，決策品質達門檻後方可解鎖。
+**Plans**: 6 plans
+- [ ] 10-01-PLAN.md — [決策審計] 決策品質報告框架與統計指標 (QUALITY-01)
+- [ ] 10-02-PLAN.md — [壓力測試] Paper mode N 輪掃描與幽靈委託檢測 (QUALITY-02)
+- [ ] 10-03-PLAN.md — [回測] ai_decision_outcome 勝率/回撤回測框架 (QUALITY-03)
+- [ ] 10-04-PLAN.md — [Live Submit] sinopac_adapter 接通與 list_trades() 落地驗證 (LIVE-01)
+- [ ] 10-05-PLAN.md — [授權閘門] Dashboard Live 模式解鎖 UI 與雙重確認 (LIVE-02)
+- [ ] 10-06-PLAN.md — [回歸測試] Live submit 完整週期含失敗場景測試 (LIVE-03)
+
 **Mandatory Reporting Format:**
 1. 本階段做了什麼（3~6行）
 2. 修改檔案清單（完整路徑）
@@ -134,7 +155,14 @@
 | GIT-02 | All Phases | Completed |
 | GIT-03 | Phase 4 | Completed |
 
-**Mapped: 41/41 requirements**
+| QUALITY-01 | Phase 10 | Pending |
+| QUALITY-02 | Phase 10 | Pending |
+| QUALITY-03 | Phase 10 | Pending |
+| LIVE-01 | Phase 10 | Pending |
+| LIVE-02 | Phase 10 | Pending |
+| LIVE-03 | Phase 10 | Pending |
+
+**Mapped: 47/47 requirements**
 
 ## Hard Constraints
 
@@ -159,3 +187,4 @@
 | 7. Dashboard 持倉與關注區塊整合 | 2/2 | Completed | 2026-04-16 |
 | 8. Dashboard UI 優化與一鍵同步 | 3/3 | Completed | 2026-04-17 |
 | 9. 交易閾值與 AI 絕對紅線系統 | 3/3 | Completed | 2026-04-17 |
+| 10. 決策品質驗證與 Live Submit 解鎖 | 0/6 | Planned | - |
