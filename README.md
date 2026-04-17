@@ -1,4 +1,4 @@
-# ETF_Master: 智慧型台灣 ETF 投資與家庭資產管家 (v1.1.1)
+# ETF_Master: 智慧型台灣 ETF 投資與家庭資產管家 (v1.2.0)
 
 `ETF_Master` 是一款專為台灣 ETF 投資者設計的 AI 輔助決策與資產管理系統。本專案秉持「**交易安全優先於功能完備**」的核心價值，透過「三層真相層級」治理與「雙鏈決策仲裁」機制，為投資者提供一個穩定、透明且具備深度洞察的投資工作台。
 
@@ -83,6 +83,17 @@ uv run skills/stock-analysis-tw/scripts/analyze_stock.py 0050.TW
 ---
 
 ## 📦 版本紀錄
+
+### v1.2.0 (2026-04-17)
+- feat(rule-engine): 新增 `OVERLAY_MODIFIERS` — `scenario_overlay` 現在真正影響評分（逢低觀察/高波動警戒/減碼保守/收益再投資）
+- feat(rule-engine): 新增 `BUY_THRESHOLD_BY_RISK` — 買入門檻由 `risk_temperature` 動態決定（low=3.0 ~ high=7.0）
+- feat(rule-engine): 每個候選結果攜帶 `strategy_aligned: bool` 欄位供仲裁層使用
+- feat(ai-bridge): 新增 `STRATEGY_GROUP_BONUS` — AI 評分迴圈依 `base_strategy` 對 ETF 群組加/扣分
+- feat(ai-bridge): candidate dict 攜帶 `strategy_aligned` 欄位，reason 字串標註策略對齊狀態
+- feat(ai-bridge): llm-wiki ETF 知識庫背景注入候選 reason（graceful fallback）
+- feat(consensus): `resolve_consensus()` 新增 `_adjust_confidence()` — 雙鏈對齊時提升信心，任一不對齊時降級
+- feat(consensus): 返回 dict 加入 `strategy_alignment_signal` 欄位，完整記錄雙鏈對齊狀態
+- fix(dashboard): 修復「預設券商」顯示 N/A — 新增 `_get_default_broker()` 從帳戶別名推導，instance_config 缺少 `trading.default_broker` 時不再覆蓋為 null
 
 ### v1.1.1 (2026-04-17)
 - fix: 持倉快照「交易」按鈕因 watchlist/positions 重複 DOM ID 衝突靜默失效
