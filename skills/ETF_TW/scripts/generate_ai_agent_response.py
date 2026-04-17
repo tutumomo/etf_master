@@ -194,6 +194,18 @@ def _build_agent_reasoning(request_payload: dict, quality_state: dict | None = N
 
     scored.sort(key=lambda x: x[1], reverse=True)
 
+    # === Phase D: Load llm-wiki background for top candidates (if available) ===
+    WIKI_DIR = ROOT / 'instances' / 'etf_master' / 'llm-wiki' / 'etf'
+    wiki_context: dict[str, str] = {}
+    for sym, _, _ in scored[:3]:
+        wiki_path = WIKI_DIR / f'{sym}.md'
+        if wiki_path.exists():
+            try:
+                wiki_text = wiki_path.read_text(encoding='utf-8')
+                wiki_context[sym] = wiki_text[:800]
+            except Exception:
+                pass
+
     if not scored:
         reasoning = {
             'market_context_summary': market_context_summary,
@@ -203,6 +215,13 @@ def _build_agent_reasoning(request_payload: dict, quality_state: dict | None = N
         return {}, reasoning, '無可用候選，維持觀望。', 'hold', 'medium'
 
     symbol, ai_score, metrics = scored[0]
+    wiki_note = ''
+    if wiki_context.get(symbol):
+        first_section = next(
+            (ln.strip() for ln in wiki_context[symbol].splitlines() if ln.startswith('## ')),
+            ''
+        )
+        wiki_note = f'；Wiki分類: {first_section[3:]}' if first_section else ''
     # Build dimension detail for reasoning
     dim_parts = []
     rsi_v = metrics.get('rsi', 50)
@@ -235,7 +254,7 @@ def _build_agent_reasoning(request_payload: dict, quality_state: dict | None = N
         'side': 'buy',
         'reference_price': metrics.get('last_price'),
         'quantity': 100,
-        'reason': f'AI agent 判斷：{symbol} 多維度評分 {ai_score:.1f}（{dim_summary}），符合 TOMO 三原則，可列入 preview。',
+        'reason': f'AI agent 判斷：{symbol} 多維度評分 {ai_score:.1f}（{dim_summary}），符合 TOMO 三原則，可列入 preview。{wiki_note}',
         'risk_note': f'risk_temperature={risk_temperature}；event_regime={event_regime}；仍屬建議層。',
         'strategy_aligned': strategy_aligned_flag,
         'strategy_group': top_group or None,
