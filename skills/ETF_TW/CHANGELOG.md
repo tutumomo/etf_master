@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## v1.3.2 — 2026-04-19
+
+### Added
+- **Hermes multi-instance 契約落地**：文件全面補齊 `AGENT_ID` 顯式注入規範，將新安裝預設從「依賴 fallback」改為「入口明確指定 instance」。
+- **新裝流程補強**：`README.md`、`INSTALL.md`、`BOOT.md` 新增 AGENT_ID 設定與範例，明確標記 `OPENCLAW_AGENT_NAME` 為 legacy fallback。
+
+### Changed
+- `scripts/start_dashboard.sh`：啟動時自動注入 `AGENT_ID=${AGENT_ID:-etf_master}`，並同步填入 legacy 變數給舊腳本相容。
+- `scripts/etf_core/context.py`：instance 解析改為 `AGENT_ID` 優先、`OPENCLAW_AGENT_NAME` 次之；缺失警告改為可直接執行的修復導引。
+- `scripts/sync_news_via_opencli.py` / `scripts/sync_news_from_local.py`：示例與 state 路徑解析改為 AGENT_ID 優先。
+
+### Validation
+- `AGENT_ID=etf_master .venv/bin/python3 scripts/etf_tw.py search 0050`：exit code 0，且不再出現 defaulting 警告。
+- `.venv/bin/python3 scripts/distill_to_wiki.py --help`：exit code 0（確認既有修復未回歸）。
+
 ## v1.2.2 — 2026-04-17
 
 ### Added

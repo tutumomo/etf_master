@@ -9,7 +9,7 @@ sync_news_from_local.py — 在本機執行，抓台股新聞 RSS → 摘要 →
 
 因沙盒無外網，此腳本由使用者在真實終端機執行：
   cd ~/.hermes/profiles/etf_master/skills/ETF_TW
-  OPENCLAW_AGENT_NAME=etf_master .venv/bin/python3 scripts/sync_news_from_local.py
+  AGENT_ID=etf_master .venv/bin/python3 scripts/sync_news_from_local.py
 
 資料來源：
 1. 鉅亨網 RSS (tw_stock)

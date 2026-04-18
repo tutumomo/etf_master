@@ -5,7 +5,7 @@
 分兩步走：先開頁面等渲染，再提取。
 
 使用方式：
-  OPENCLAW_AGENT_NAME=etf_master .venv/bin/python3 scripts/sync_news_via_opencli.py
+  AGENT_ID=etf_master .venv/bin/python3 scripts/sync_news_via_opencli.py
 """
 
 import json
@@ -18,7 +18,7 @@ from pathlib import Path
 
 # --- Paths ---
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-STATE_DIR = PROJECT_ROOT / "instances" / os.environ.get("OPENCLAW_AGENT_NAME", "etf_master") / "state"
+STATE_DIR = PROJECT_ROOT / "instances" / (os.environ.get("AGENT_ID") or os.environ.get("OPENCLAW_AGENT_NAME", "etf_master")) / "state"
 STATE_DIR.mkdir(parents=True, exist_ok=True)
 OUTPUT_FILE = STATE_DIR / "news_articles.json"
 

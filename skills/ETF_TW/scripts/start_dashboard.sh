@@ -13,6 +13,12 @@ STARTUP_LOG="$LOG_DIR/dashboard-startup.log"
 mkdir -p "$LOG_DIR"
 cd "$ROOT"
 
+# Hermes multi-instance contract:
+# - AGENT_ID is primary (required for deterministic instance routing)
+# - OPENCLAW_AGENT_NAME remains legacy fallback for old scripts
+export AGENT_ID="${AGENT_ID:-etf_master}"
+export OPENCLAW_AGENT_NAME="${OPENCLAW_AGENT_NAME:-$AGENT_ID}"
+
 timestamp() {
   date '+%Y-%m-%d %H:%M:%S'
 }

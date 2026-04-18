@@ -1,9 +1,9 @@
 # ETF Dashboard Boot & Alignment Sequence
 
 ## 啟動服務 (Start Services)
-若要啟動或重啟監控儀表板，請執行：
+若要啟動或重啟監控儀表板，請執行（**建議顯式注入 AGENT_ID**）：
 ```bash
-cd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.0 --port 5055
+cd ~/.hermes/profiles/etf_master/skills/ETF_TW && AGENT_ID=etf_master .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.0 --port 5055
 ```
 
 ## 技能對齊協定 (Agent Alignment Protocol)

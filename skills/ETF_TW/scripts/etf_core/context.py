@@ -12,13 +12,13 @@ def get_instance_id():
     """Detect the current agent instance from environment variables.
 
     NOTE:
-    - OPENCLAW_AGENT_NAME / AGENT_ID are legacy-compatible env names from the migration period.
-    - Hermes sessions may still inject AGENT_ID; both are accepted for backward compatibility.
-    - If missing, we fall back to "etf_master" but emit a warning once to avoid silent state contamination.
+    - AGENT_ID is the primary env var in Hermes multi-instance mode.
+    - OPENCLAW_AGENT_NAME is legacy-compatible fallback from migration period.
+    - If both are missing, we fall back to "etf_master" but emit a warning once to avoid silent state contamination.
     """
     global _WARNED_DEFAULT_INSTANCE
 
-    instance_id = os.environ.get("OPENCLAW_AGENT_NAME") or os.environ.get("AGENT_ID")
+    instance_id = os.environ.get("AGENT_ID") or os.environ.get("OPENCLAW_AGENT_NAME")
     if instance_id:
         return instance_id
 
@@ -28,8 +28,8 @@ def get_instance_id():
             import sys
 
             print(
-                "WARN: AGENT_ID (or legacy OPENCLAW_AGENT_NAME) missing; defaulting instance_id=etf_master. "
-                "This may cause cross-agent state contamination if unintended.",
+                "WARN: AGENT_ID missing; fallback to legacy OPENCLAW_AGENT_NAME also not found; defaulting instance_id=etf_master. "
+                "Set AGENT_ID=<instance_id> to avoid cross-instance state contamination.",
                 file=sys.stderr,
             )
         except Exception:

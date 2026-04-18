@@ -1,4 +1,4 @@
-# ETF_TW：Hermes 版台灣 ETF 技能與 Dashboard (v1.2.2)
+# ETF_TW：Hermes 版台灣 ETF 技能與 Dashboard (v1.3.2)
 
 這是目前掛載在 Hermes profile (`etf_master`) 下的 ETF_TW 技能目錄。
 它提供台灣 ETF 的研究、風控、持倉監控、state-driven dashboard，以及與券商流程對齊的交易輔助能力。
@@ -9,14 +9,23 @@
 - Dashboard：`http://localhost:5055`
 - 本機狀態快照 (Level 3 Snapshot)：`instances/<agent_id>/state/`
 
+## Multi-instance 環境變數契約（新安裝必做）
+- `AGENT_ID`：Hermes 現行主鍵（**必填**）
+- `OPENCLAW_AGENT_NAME`：legacy fallback（相容舊腳本，非新安裝主設定）
+
+```bash
+# 建議：在所有入口顯式注入
+AGENT_ID=etf_master .venv/bin/python3 scripts/etf_tw.py search 0050
+```
+
 ## 啟動方式
 ```bash
 # 推薦方式 (透過 CLI 工具)
-python3 scripts/etf_tw.py dashboard --port 5055
+AGENT_ID=etf_master python3 scripts/etf_tw.py dashboard --port 5055
 
 # 手動方式 (直接啟動 uvicorn)
 cd ~/.hermes/profiles/etf_master/skills/ETF_TW
-.venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.0 --port 5055
+AGENT_ID=etf_master .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.0 --port 5055
 ```
 
 ## 維運原則

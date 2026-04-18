@@ -14,6 +14,20 @@ cd ~/.hermes/profiles/etf_master/skills/ETF_TW
 pwd
 ```
 
+## Multi-instance 必要設定（Hermes 現行標準）
+`AGENT_ID` 是 Hermes 版 ETF_TW 的主要 instance 路由變數，建議在所有入口顯式注入。
+
+```bash
+# 當前 shell（立即生效）
+export AGENT_ID=etf_master
+
+# 永久生效（zsh）
+echo 'export AGENT_ID=etf_master' >> ~/.zshrc
+source ~/.zshrc
+```
+
+> `OPENCLAW_AGENT_NAME` 僅保留為 legacy fallback，不建議作為新安裝主設定。
+
 ## 建立虛擬環境
 ```bash
 python3 -m venv .venv
@@ -24,7 +38,7 @@ python -m pip install -r scripts/etf_core/requirements.txt
 ## 啟動 Dashboard
 ```bash
 cd ~/.hermes/profiles/etf_master/skills/ETF_TW
-.venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.0 --port 5055
+AGENT_ID=etf_master .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.0 --port 5055
 ```
 
 ## 驗證
