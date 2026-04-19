@@ -51,6 +51,57 @@ Hermes 版範例：
 8. `sync_ohlcv_history.py`
 9. `generate_intraday_tape_context.py`
 10. `sync_agent_summary.py`
+11. `sync_worldmonitor.py --mode daily`（每日快照，寫入 `worldmonitor_snapshot.json`）
+
+> **盤中 Watch 模式**（非 pipeline，獨立 cron）：`sync_worldmonitor.py --mode watch` — 每 30 分鐘偵測風險升級，append `worldmonitor_alerts.jsonl`
+
+## 新增 State 檔案（v1.4.0 worldmonitor 整合）
+
+### `worldmonitor_snapshot.json`
+- **寫入方式**：atomic overwrite（`atomic_save_json`）
+- **更新頻率**：每日一次（cron `worldmonitor_daily`）+ watch 模式每 30 分鐘覆寫
+- **內容摘要**：
+  ```json
+  {
+    "updated_at": "ISO timestamp (Asia/Taipei)",
+    "source": "worldmonitor",
+    "supply_chain": {
+      "global_stress_level": "low|moderate|elevated|high|critical",
+      "chokepoints": [...],
+      "shipping_stress_level": "string",
+      "shipping_stress_score": 0.0,
+      "critical_minerals": {
+        "taiwan_semiconductor_risk": "low|moderate|elevated|high|critical"
+      }
+    },
+    "geopolitical": {
+      "global_risk_level": "string",
+      "active_conflicts": 0,
+      "highest_severity": "string",
+      "taiwan_strait_risk": "low|moderate|elevated|high|critical"
+    },
+    "macro": {}
+  }
+  ```
+- **注意**：`global_stress_level` 為派生欄位，由 `chokepoints[].disruptionScore` 推算，worldmonitor API 本身無此欄位。
+
+### `worldmonitor_alerts.jsonl`
+- **寫入方式**：append-only（`safe_append_jsonl`），不得覆寫
+- **更新頻率**：僅在 watch 模式偵測到風險升級時 append
+- **內容摘要（每筆）**：
+  ```json
+  {
+    "timestamp": "ISO timestamp",
+    "alert_type": "geopolitical_escalation|supply_chain_disruption|taiwan_strait_escalation",
+    "severity": "L2|L3",
+    "title": "string",
+    "affected_etfs": ["0050", "00830"],
+    "action_hint": "reduce_confidence|pause_auto_trade",
+    "raw_source": "worldmonitor/conflicts|worldmonitor/supply-chain"
+  }
+  ```
+- **L3 觸發**：自動呼叫 `check_major_event_trigger.py`
+- **消費方**：`generate_ai_decision_request.py`（讀取最近 2 小時 alerts 注入 AI bridge）、`check_major_event_trigger.py`（L2 alert 可升級事件等級至 L2）
 
 ## 策略抬頭對齊
 唯一抬頭來源：`instances/<agent_id>/state/strategy_link.json`

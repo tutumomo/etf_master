@@ -52,3 +52,11 @@ sources: [raw/data/etf_universe_tw.json]
 | [[00878-cathay-esg-high-dividend|00878]] | SKILL.md, shioaji_api_reference.md |
 | 00892 | SKILL.md |
 | 00923 | SKILL.md |
+
+## 最新市場數據快照
+
+> 自動更新於 2026-04-19 01:43（來源：yfinance:00929.TW）
+
+| 欄位 | 數值 |
+|------|------|
+| 現價 | NT$ 21.36 |

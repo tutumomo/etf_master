@@ -50,3 +50,11 @@ sources: [raw/data/etf_universe_tw.json]
 | [[00679B-yuanta-us-20y-bond|00679B]] | beginner-guide.md |
 | [[00878-cathay-esg-high-dividend|00878]] | beginner-guide.md |
 | [[00881-cathay-tech-leaders|00881]] | beginner-guide.md |
+
+## 最新市場數據快照
+
+> 自動更新於 2026-04-19 01:43（來源：yfinance:00713.TW）
+
+| 欄位 | 數值 |
+|------|------|
+| 現價 | NT$ 54.00 |

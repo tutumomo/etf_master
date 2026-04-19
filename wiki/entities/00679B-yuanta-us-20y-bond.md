@@ -53,3 +53,11 @@ sources: [raw/data/etf_universe_tw.json]
 | [[00922-zhaoying-blue-chip-30|00922]] | SYMBOL_NORMALIZATION.md |
 | 00923 | SKILL.md |
 | [[00929-fuhwa-tech-optimal-income|00929]] | SKILL.md, shioaji_api_reference.md |
+
+## 最新市場數據快照
+
+> 自動更新於 2026-04-19 01:43（來源：yfinance:00679B.TWO）
+
+| 欄位 | 數值 |
+|------|------|
+| 現價 | NT$ 26.91 |

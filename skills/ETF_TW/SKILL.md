@@ -1,7 +1,7 @@
 ---
 name: ETF_TW
-version: v1.3.0
-description: 台灣 ETF 投資助理技能（包含 state-driven dashboard、orders_open lifecycle、callback/polling reconciliation、交易流程驗證、回測去重與報酬回補）
+version: v1.4.0
+description: 台灣 ETF 投資助理技能（包含 state-driven dashboard、orders_open lifecycle、callback/polling reconciliation、交易流程驗證、回測去重與報酬回補、worldmonitor 全球風險雷達整合）
 ---
 
 # ETF_TW - 台灣 ETF 投資助理技能
@@ -204,6 +204,7 @@ ETF_TW/
 ```
 
 ### 2. 重要規範
+- **環境變數契約（Hermes 現行）**：執行入口必須顯式注入 `AGENT_ID=<instance_id>`；`OPENCLAW_AGENT_NAME` 僅保留 legacy fallback，不作新安裝主設定。
 - **帳戶別名**：應與 `trading_mode.json` 中的 `default_account` 欄位一致。
 - **券商代號**：必須匹配 `data/broker_registry.json` 中的定義（如永豐金應使用 `sinopac`）。
 - **隱私安全**：此檔案僅存於代理人私有目錄 (`instances/<agent_id>/`)，禁止推送到公共代碼倉庫。
@@ -626,6 +627,14 @@ decision_log   orders_open  trade_logs  trade_journal/{date}.json
 - `generate_watchlist_summary.py` 必須帶 `--mode {am|pm}` 參數，否則會報錯。盤前用 `--mode am`，盤後用 `--mode pm`。
 - `layered_review_cron_registry_live.py` 屬於舊版 cron 註冊鏈，Hermes 環境下不應再依賴它做實際落地。如需在 Hermes 執行分層復盤，應改用 `read_layered_review_artifacts.py` 的 `build_layered_review_status(state_dir)` 函數直接讀取復盤狀態。
 - 早班報告的 wiki 更新流程：讀取 `market_context_taiwan.json` + `market_event_context.json` → 體制判讀 → 更新 `instances/etf_master/wiki/market-view.md` 和 `instances/etf_master/wiki/risk-signal.md`（注意：wiki 目錄不一定預先存在，寫入前需確認或建立）。更新時務必同步更新 timestamp，並在「訊號變動歷史」表加入今日紀錄。
+- **stock-analysis-tw 盤中掃描整合**（2026-04-17 驗證）：
+  - `--portfolio active` **不存在**，會報 `Error: Portfolio 'active' not found`
+  - 正確做法：從 `positions.json` 讀取持倉 ticker → 轉換為 yfinance 格式（0050→0050.TW, 00679B→00679B.TWO）→ 作為 positional arguments 傳入
+  - 路徑必須用絕對路徑：`uv run {home}/.hermes/.../stock-analysis-tw/scripts/analyze_stock.py 0050.TW 00679B.TWO --fast --state-dir ...`，相對路徑 `skills/stock-analysis-tw/...` 在 cron 中無法解析
+- **terminal() 讀取 JSON state 檔案坑**（2026-04-17 驗證）：
+  - `terminal(f"cat {path} | python3 -c \"import sys,json; print(json.load(sys.stdin))\"")` 回傳空字串
+  - 必須改用 `terminal(f'python3 -c "import json; d=json.load(open(\'{path}\')); print(json.dumps(d, ensure_ascii=False, indent=2))"')` 直接用 `open()` 讀檔
+  - 或在 `execute_code` 中直接 `import json; json.load(open(path))` 最穩
 
 ### 盤中智慧掃描 SOP（完整流程）
 
@@ -701,6 +710,8 @@ cd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/refre
 - 健康巡檢：每日
 - 復盤：T+1 早期 / T+3 短期 / T+10 中期（每筆決策自動註冊）
 - 3 筆 ai-decision-request-9eb38f84b514 復盤需清除（持續 timeout）
+- **worldmonitor_daily**：每日（啟用）— `sync_worldmonitor.py --mode daily`，寫入 `worldmonitor_snapshot.json`
+- **worldmonitor_watch**：盤中每 30 分鐘（啟用）— `sync_worldmonitor.py --mode watch`，偵測 L2/L3 升級事件並 append `worldmonitor_alerts.jsonl`
 
 ---
 
@@ -835,6 +846,19 @@ cd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/refre
   - sync_ohlcv_history.py 新增：calc_momentum(), calc_sharpe(), 寫入 momentum_20d/sharpe_30d/return_1y
   - AI agent reasoning 重寫：多維評分取代「最低RSI」、填入實質市場判斷
   - 結果：00679B 不再壟斷候選，00892/006208/00923 依三原則分數正常競爭
+
+- **v1.4.0**（2026-04-19）：Worldmonitor 全球風險雷達整合
+  - 新增 `sync_worldmonitor.py`：雙模式（daily 快照 / watch 事件監控），從 worldmonitor API 拉取全球風險信號
+  - API 欄位修正：`chokepoints[].disruptionScore/status/warRiskTier`（無 global_stress_level，需推算）；`stressScore`/`stressLevel`（非 shipping_stress_index）；`minerals[].mineral/riskRating`
+  - Bot UA 繞過：加入 `User-Agent: Mozilla/5.0 ETF-Master/1.0` 繞過 worldmonitor `middleware.ts` 過濾
+  - 新增 `_derive_global_stress_level()`、`_derive_taiwan_strait_risk()`、`_derive_taiwan_semiconductor_risk()` 從 API 回傳推算風險等級
+  - `_detect_alerts()`：前後快照比對，產生 L2/L3 geopolitical/supply_chain/taiwan_strait 升級事件
+  - `_compute_affected_etfs()`：根據 ETF focus/index/name 動態比對受影響 ETF
+  - AI Decision Bridge 接線：`generate_ai_decision_request.py` 新增 `worldmonitor_snapshot`、`worldmonitor_alerts` 作為第 14 個輸入源；`ai_decision_bridge.py` 新增 `_build_worldmonitor_context()`
+  - Dashboard 全球風險雷達卡：`/api/worldmonitor-status`（含 chokepoints 清單、shipping_stress_score）；`POST /api/worldmonitor/refresh` 一鍵更新；收合 ▾/▸ 按鈕；↻ 更新按鈕；tooltip 說明
+  - Cron 啟用：`worldmonitor_daily`（每日）、`worldmonitor_watch`（盤中每 30 分鐘）
+  - 新增 state 檔案：`worldmonitor_snapshot.json`（atomic overwrite）、`worldmonitor_alerts.jsonl`（append-only L2/L3 事件）
+  - 新增 9 項 worldmonitor 測試（全通）；全套 12 項測試通過
 
 - **v1.3.5**（2026-04-14）：Phase B 宏觀指標 + Phase C LLM 增強推理
   - B1: sync_news_from_local.py — 本機新聞 RSS 採集（沙盒無外網 fallback）、關鍵字標籤、情緒分類

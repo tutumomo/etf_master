@@ -952,35 +952,56 @@
 
   <!-- 全球風險雷達卡片 -->
   <div class="card side" id="card_worldmonitor">
-    <div class="card-header" onclick="toggleCard('card_worldmonitor')">
-      <span>🌐 全球風險雷達</span>
-      <span class="badge" id="wm-badge" style="font-size:0.75rem;">載入中...</span>
+    <div class="card-header" onclick="toggleCard('card_worldmonitor')" style="display:flex;align-items:center;justify-content:space-between;">
+      <span>🌐 全球風險雷達 <span id="wm-collapse-arrow" style="font-size:0.75rem;color:#666;">▾</span></span>
+      <span style="display:flex;align-items:center;gap:8px;">
+        <button id="wm-refresh-btn" onclick="event.stopPropagation();wmRefresh();" title="立即從 worldmonitor 拉取最新資料" style="background:none;border:1px solid #444;color:#aaa;border-radius:4px;padding:1px 7px;font-size:0.75rem;cursor:pointer;">↻ 更新</button>
+        <span class="badge" id="wm-badge" style="font-size:0.75rem;">載入中...</span>
+      </span>
     </div>
     <div class="card-content">
       <table style="width:100%;font-size:0.85rem;border-collapse:collapse;">
-        <tr><td style="padding:3px 6px;color:#888;">供應鏈壓力</td><td id="wm-supply-chain" style="padding:3px 6px;font-weight:600;">-</td></tr>
-        <tr><td style="padding:3px 6px;color:#888;">地緣政治風險</td><td id="wm-geo-risk" style="padding:3px 6px;font-weight:600;">-</td></tr>
-        <tr><td style="padding:3px 6px;color:#888;">台海風險</td><td id="wm-taiwan-strait" style="padding:3px 6px;font-weight:600;">-</td></tr>
-        <tr><td style="padding:3px 6px;color:#888;">航運壓力指數</td><td id="wm-shipping" style="padding:3px 6px;">-</td></tr>
-        <tr><td style="padding:3px 6px;color:#888;">最近警報（24h）</td><td id="wm-alerts" style="padding:3px 6px;">-</td></tr>
+        <tr><td style="padding:3px 6px;color:#888;">供應鏈壓力 <span title="從全球關鍵航道的中斷分數推算。high = 至少一條主要航道中斷分數 ≥70，可能影響原物料或出口路線。" style="cursor:help;color:#666;font-size:0.75rem;">?</span></td><td id="wm-supply-chain" style="padding:3px 6px;font-weight:600;">-</td></tr>
+        <tr><td style="padding:3px 6px;color:#888;">地緣政治風險 <span title="全球衝突與供應鏈壓力的綜合等級。high 表示多個熱點同時升溫，對新興市場 ETF 的情緒面影響較大。" style="cursor:help;color:#666;font-size:0.75rem;">?</span></td><td id="wm-geo-risk" style="padding:3px 6px;font-weight:600;">-</td></tr>
+        <tr><td style="padding:3px 6px;color:#888;">台海風險 <span title="依據台灣海峽航道的戰爭風險評級。moderate = PLA 演習或軍事緊張，尚未達到封鎖級別。直接影響 0050、006208 等台股 ETF 的外資情緒。" style="cursor:help;color:#666;font-size:0.75rem;">?</span></td><td id="wm-taiwan-strait" style="padding:3px 6px;font-weight:600;">-</td></tr>
+        <tr><td style="padding:3px 6px;color:#888;">航運壓力指數 <span title="全球貨櫃運費壓力指數（0–100）。數值越高代表運費越貴、供應鏈瓶頸越嚴重。目前資料來源為航運股價，數據尚在建立中。" style="cursor:help;color:#666;font-size:0.75rem;">?</span></td><td id="wm-shipping" style="padding:3px 6px;">-</td></tr>
+        <tr><td style="padding:3px 6px;color:#888;">最近警報（24h） <span title="過去 24 小時內由 worldmonitor 偵測到的風險升級事件。L2 = 建議降低信心；L3 = 自動暫停交易建議。" style="cursor:help;color:#666;font-size:0.75rem;">?</span></td><td id="wm-alerts" style="padding:3px 6px;">-</td></tr>
         <tr><td style="padding:3px 6px;color:#888;">更新時間</td><td id="wm-updated" style="padding:3px 6px;font-size:0.75rem;color:#aaa;">-</td></tr>
       </table>
+      <div id="wm-chokepoints" style="margin-top:8px;display:none;">
+        <div style="font-size:0.75rem;color:#888;margin-bottom:4px;padding-left:4px;">⚠️ 高風險航道 <span title="僅列出中斷分數 &gt; 0 的航道，依嚴重度排序。分數 0–100：綠色正常、黃色警戒、紅色中斷。戰區 = Lloyd's JWC 列管區域，航運保費大幅上漲。" style="cursor:help;color:#666;font-size:0.75rem;">?</span></div>
+        <table id="wm-cp-table" style="width:100%;font-size:0.8rem;border-collapse:collapse;"></table>
+      </div>
     </div>
   </div>
 </section>
 <script>
-(function() {
-  const RISK_COLOR = {low:'#2ecc71', moderate:'#f39c12', elevated:'#e67e22', high:'#e74c3c', critical:'#8e44ad', unknown:'#95a5a6'};
-  function colorize(el, val) {
-    el.textContent = val || '-';
-    el.style.color = RISK_COLOR[val] || '#95a5a6';
-  }
-  fetch('/api/worldmonitor-status')
+const WM_RISK_COLOR = {low:'#2ecc71', moderate:'#f39c12', elevated:'#e67e22', high:'#e74c3c', critical:'#8e44ad', unknown:'#95a5a6'};
+const WM_STATUS_COLOR = {green:'#2ecc71', yellow:'#f39c12', orange:'#e67e22', red:'#e74c3c'};
+const WM_TIER_LABEL = {
+  'WAR_RISK_TIER_WAR_ZONE': '⚔️ 戰區',
+  'WAR_RISK_TIER_CRITICAL': '極高',
+  'WAR_RISK_TIER_HIGH': '高',
+  'WAR_RISK_TIER_ELEVATED': '偏高',
+  'WAR_RISK_TIER_NORMAL': '正常',
+};
+function wmColorize(el, val) {
+  el.textContent = val || '-';
+  el.style.color = WM_RISK_COLOR[val] || '#95a5a6';
+}
+function wmMakeCell(text, style) {
+  const td = document.createElement('td');
+  td.textContent = text;
+  Object.assign(td.style, style);
+  return td;
+}
+function wmLoadStatus() {
+  return fetch('/api/worldmonitor-status')
     .then(r => r.json())
     .then(d => {
-      colorize(document.getElementById('wm-supply-chain'), d.supply_chain_stress);
-      colorize(document.getElementById('wm-geo-risk'), d.geopolitical_risk);
-      colorize(document.getElementById('wm-taiwan-strait'), d.taiwan_strait_risk);
+      wmColorize(document.getElementById('wm-supply-chain'), d.supply_chain_stress);
+      wmColorize(document.getElementById('wm-geo-risk'), d.geopolitical_risk);
+      wmColorize(document.getElementById('wm-taiwan-strait'), d.taiwan_strait_risk);
       document.getElementById('wm-shipping').textContent = d.shipping_stress_index != null ? d.shipping_stress_index.toFixed(2) : '-';
       const sev = d.highest_alert_severity || 'none';
       const alertEl = document.getElementById('wm-alerts');
@@ -990,11 +1011,59 @@
       const badge = document.getElementById('wm-badge');
       badge.textContent = d.updated_at ? '已同步' : '未同步';
       badge.style.color = d.updated_at ? '#2ecc71' : '#e74c3c';
+      const cps = d.chokepoints || [];
+      if (cps.length > 0) {
+        document.getElementById('wm-chokepoints').style.display = 'block';
+        const tbody = document.getElementById('wm-cp-table');
+        while (tbody.firstChild) tbody.removeChild(tbody.firstChild);
+        cps.forEach(function(cp) {
+          const tr = document.createElement('tr');
+          const scoreColor = WM_STATUS_COLOR[cp.status] || '#95a5a6';
+          tr.appendChild(wmMakeCell(cp.name, {padding:'2px 6px', color:'#ccc'}));
+          tr.appendChild(wmMakeCell(String(cp.score), {padding:'2px 4px', textAlign:'right', fontWeight:'600', color:scoreColor}));
+          tr.appendChild(wmMakeCell(WM_TIER_LABEL[cp.war_risk_tier] || cp.war_risk_tier || '', {padding:'2px 6px', fontSize:'0.72rem', color:'#aaa'}));
+          tbody.appendChild(tr);
+        });
+      }
     })
-    .catch(() => {
+    .catch(function() {
       document.getElementById('wm-badge').textContent = '載入失敗';
       document.getElementById('wm-badge').style.color = '#e74c3c';
     });
+}
+function wmRefresh() {
+  const btn = document.getElementById('wm-refresh-btn');
+  const badge = document.getElementById('wm-badge');
+  btn.textContent = '⟳ 更新中...';
+  btn.disabled = true;
+  badge.textContent = '同步中...';
+  badge.style.color = '#f39c12';
+  fetch('/api/worldmonitor/refresh', {method:'POST'})
+    .then(r => r.json())
+    .then(function() { return wmLoadStatus(); })
+    .catch(function() {
+      badge.textContent = '更新失敗';
+      badge.style.color = '#e74c3c';
+    })
+    .finally(function() {
+      btn.textContent = '↻ 更新';
+      btn.disabled = false;
+    });
+}
+// Patch toggleCard to sync collapse arrow
+(function() {
+  const orig = window.toggleCard;
+  window.toggleCard = function(id) {
+    if (orig) orig(id);
+    if (id === 'card_worldmonitor') {
+      const content = document.querySelector('#card_worldmonitor .card-content');
+      const arrow = document.getElementById('wm-collapse-arrow');
+      if (arrow && content) {
+        arrow.textContent = content.style.display === 'none' ? '▸' : '▾';
+      }
+    }
+  };
+  wmLoadStatus();
 })();
 </script>
 <script>

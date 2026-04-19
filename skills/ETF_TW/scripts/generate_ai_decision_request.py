@@ -26,6 +26,34 @@ def _load_json(path: Path) -> dict:
         return {}
 
 
+def _load_worldmonitor_alerts(state_dir: Path, hours: int = 2) -> list[dict]:
+    """讀取最近 N 小時的 worldmonitor alerts"""
+    from datetime import timezone, timedelta
+    alerts_path = state_dir / 'worldmonitor_alerts.jsonl'
+    if not alerts_path.exists():
+        return []
+    cutoff = datetime.now(timezone.utc) - timedelta(hours=hours)
+    results = []
+    try:
+        for line in alerts_path.read_text(encoding='utf-8').splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                record = json.loads(line)
+                ts_str = record.get('timestamp', '')
+                ts = datetime.fromisoformat(ts_str.replace('Z', '+00:00'))
+                if ts.tzinfo is None:
+                    ts = ts.replace(tzinfo=timezone.utc)
+                if ts >= cutoff:
+                    results.append(record)
+            except Exception:
+                continue
+    except Exception:
+        pass
+    return results
+
+
 def generate_request_payload_from_state_dir(state_dir: Path, requested_by: str = 'system', mode: str = 'decision_only') -> dict:
     strategy = _load_json(state_dir / 'strategy_link.json')
     positions = _load_json(state_dir / 'positions.json')
@@ -84,6 +112,9 @@ def generate_request_payload_from_state_dir(state_dir: Path, requested_by: str =
     market_calendar_status = market_calendar_payload or get_today_market_status(datetime.now().astimezone(), market_calendar_payload)
     context_version = f"{strategy.get('base_strategy', 'unknown')}::{strategy.get('scenario_overlay', 'unknown')}"
 
+    worldmonitor_snapshot = _load_json(state_dir / 'worldmonitor_snapshot.json')
+    worldmonitor_alerts = _load_worldmonitor_alerts(state_dir, hours=2)
+
     payload = build_ai_decision_request_from_state(
         strategy=strategy,
         positions=positions,
@@ -98,6 +129,8 @@ def generate_request_payload_from_state_dir(state_dir: Path, requested_by: str =
         market_calendar_status=market_calendar_status,
         reconciliation=reconciliation,
         decision_memory_context=decision_memory_context,
+        worldmonitor_snapshot=worldmonitor_snapshot,
+        worldmonitor_alerts=worldmonitor_alerts,
         requested_by=requested_by,
         mode=mode,
         context_version=context_version,

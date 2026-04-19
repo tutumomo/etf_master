@@ -13,20 +13,36 @@ class TestSyncWorldmonitorDaily(unittest.TestCase):
     def _make_mock_responses(self):
         return {
             '/api/supply-chain/v1/get-chokepoint-status': {
-                'global_stress_level': 'moderate',
-                'chokepoints': [{'name': 'Strait of Hormuz', 'status': 'disrupted', 'severity': 3}],
+                # Real schema: chokepoints[] with disruptionScore/status/warRiskTier
+                'chokepoints': [
+                    {'id': 'hormuz_strait', 'name': 'Strait of Hormuz', 'disruptionScore': 70,
+                     'status': 'red', 'warRiskTier': 'WAR_RISK_TIER_WAR_ZONE'},
+                    {'id': 'taiwan_strait', 'name': 'Taiwan Strait', 'disruptionScore': 15,
+                     'status': 'green', 'warRiskTier': 'WAR_RISK_TIER_ELEVATED'},
+                ],
+                'fetchedAt': '2026-04-19T00:00:00Z',
+                'upstreamUnavailable': False,
             },
             '/api/conflict/v1/list-acled-events': {
                 'global_risk_level': 'elevated',
                 'active_conflicts': 3,
                 'highest_severity': 'high',
-                'taiwan_strait_risk': 'low',
             },
             '/api/supply-chain/v1/get-shipping-stress': {
-                'shipping_stress_index': 0.72,
+                # Real schema: stressScore/stressLevel (not shipping_stress_index)
+                'stressScore': 0.72,
+                'stressLevel': 'moderate',
+                'fetchedAt': 0,
+                'upstreamUnavailable': False,
             },
             '/api/supply-chain/v1/get-critical-minerals': {
-                'taiwan_semiconductor_risk': 'elevated',
+                # Real schema: minerals[] with mineral/riskRating
+                'minerals': [
+                    {'mineral': 'Gallium', 'riskRating': 'high', 'hhi': 8500},
+                    {'mineral': 'Germanium', 'riskRating': 'critical', 'hhi': 9200},
+                ],
+                'fetchedAt': '2026-04-19T00:00:00Z',
+                'upstreamUnavailable': False,
             },
         }
 
@@ -47,9 +63,15 @@ class TestSyncWorldmonitorDaily(unittest.TestCase):
 
         mock_save.assert_called_once()
         saved_payload = mock_save.call_args[0][1]
-        self.assertEqual(saved_payload['supply_chain']['global_stress_level'], 'moderate')
+        # global_stress_level derived from chokepoints (hormuz red score=70 → high)
+        self.assertEqual(saved_payload['supply_chain']['global_stress_level'], 'high')
         self.assertEqual(saved_payload['geopolitical']['global_risk_level'], 'elevated')
-        self.assertAlmostEqual(saved_payload['supply_chain']['shipping_stress_index'], 0.72)
+        # shipping_stress_score from stressScore field
+        self.assertAlmostEqual(saved_payload['supply_chain']['shipping_stress_score'], 0.72)
+        # taiwan_strait_risk derived from WAR_RISK_TIER_ELEVATED → moderate
+        self.assertEqual(saved_payload['geopolitical']['taiwan_strait_risk'], 'moderate')
+        # taiwan_semiconductor_risk derived from minerals (germanium critical)
+        self.assertEqual(saved_payload['supply_chain']['critical_minerals']['taiwan_semiconductor_risk'], 'critical')
         self.assertIn('updated_at', saved_payload)
 
     @patch('sync_worldmonitor._get_config')

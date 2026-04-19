@@ -1558,6 +1558,31 @@ async def unlock_live_mode(req: LiveUnlockRequest):
     return {"success": True, "enabled": True, "unlocked_at": live_mode["unlocked_at"]}
 
 
+@app.post("/api/worldmonitor/refresh")
+def worldmonitor_refresh():
+    """觸發 sync_worldmonitor.py --mode daily，立即更新快照"""
+    script = ROOT / "scripts" / "sync_worldmonitor.py"
+    try:
+        env = os.environ.copy()
+        result = subprocess.run(
+            [str(PYTHON_VENV), str(script), "--mode", "daily"],
+            cwd=str(ROOT),
+            env=env,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=30,
+        )
+        if result.returncode != 0:
+            detail = (result.stderr or result.stdout or "未知錯誤").strip()
+            raise HTTPException(status_code=500, detail=f"worldmonitor 更新失敗：{detail}")
+        return {"ok": True, "updated_at": datetime.now().astimezone().isoformat()}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.get("/api/worldmonitor-status")
 def get_worldmonitor_status():
     """回傳 worldmonitor 全球風險快照摘要"""
@@ -1594,13 +1619,33 @@ def get_worldmonitor_status():
         if level_rank.get(sev, 0) > level_rank.get(highest_severity, 0):
             highest_severity = sev
 
+    # 擷取有風險的 chokepoints（score > 0），按 disruptionScore 降序
+    all_chokepoints = snapshot.get("supply_chain", {}).get("chokepoints", [])
+    hot_chokepoints = sorted(
+        [cp for cp in all_chokepoints if cp.get("disruptionScore", 0) > 0],
+        key=lambda cp: cp.get("disruptionScore", 0),
+        reverse=True,
+    )
+    chokepoint_summary = [
+        {
+            "id": cp.get("id", ""),
+            "name": cp.get("name", ""),
+            "score": cp.get("disruptionScore", 0),
+            "status": cp.get("status", "green"),
+            "war_risk_tier": cp.get("warRiskTier", ""),
+            "description": cp.get("description", ""),
+        }
+        for cp in hot_chokepoints
+    ]
+
     return {
         "ok": True,
         "updated_at": snapshot.get("updated_at"),
         "supply_chain_stress": snapshot.get("supply_chain", {}).get("global_stress_level", "unknown"),
         "geopolitical_risk": snapshot.get("geopolitical", {}).get("global_risk_level", "unknown"),
         "taiwan_strait_risk": snapshot.get("geopolitical", {}).get("taiwan_strait_risk", "unknown"),
-        "shipping_stress_index": snapshot.get("supply_chain", {}).get("shipping_stress_index"),
+        "shipping_stress_index": snapshot.get("supply_chain", {}).get("shipping_stress_score"),
         "recent_alerts_count": len(recent_alerts),
         "highest_alert_severity": highest_severity,
+        "chokepoints": chokepoint_summary,
     }

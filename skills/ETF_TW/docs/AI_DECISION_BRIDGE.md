@@ -121,7 +121,16 @@ AI 建議不可以反過來覆蓋真相源。
     "market_context_taiwan": {},
     "market_event_context": {},
     "market_calendar_status": {},
-    "reconciliation": {}
+    "reconciliation": {},
+    "decision_memory_context": {},
+    "worldmonitor_context": {
+      "supply_chain_stress": "low|moderate|elevated|high|critical",
+      "geopolitical_risk": "low|moderate|elevated|high|critical",
+      "taiwan_strait_risk": "low|moderate|elevated|high|critical",
+      "active_alerts_count": 0,
+      "highest_alert_severity": "L1|L2|L3|none",
+      "affected_etf_signals": []
+    }
   }
 }
 ```
@@ -273,6 +282,53 @@ Dashboard 顯示：
 - review outcome 有足夠樣本
 - 風控 gating 明確
 - 人工可審核 / 可回滾 / 可停用
+
+---
+
+## Worldmonitor 全球風險信號整合（v1.4.0）
+
+### 第 14 個輸入源：`worldmonitor_context`
+
+`ai_decision_request.json` 的 `inputs.worldmonitor_context` 由 `generate_ai_decision_request.py` 從以下兩個 state 檔案組合生成：
+
+| 來源檔案 | 說明 |
+|---|---|
+| `worldmonitor_snapshot.json` | 每日快照，供應鏈/地緣/宏觀風險等級 |
+| `worldmonitor_alerts.jsonl` | 最近 2 小時內的 L2/L3 升級事件 |
+
+組合邏輯由 `scripts/ai_decision_bridge.py` 的 `_build_worldmonitor_context()` 執行：
+
+```python
+{
+  "supply_chain_stress": snapshot.supply_chain.global_stress_level,
+  "geopolitical_risk":   snapshot.geopolitical.global_risk_level,
+  "taiwan_strait_risk":  snapshot.geopolitical.taiwan_strait_risk,
+  "active_alerts_count": len(recent_alerts),
+  "highest_alert_severity": max(alerts.severity) or "none",
+  "affected_etf_signals": union(alert.affected_etfs for alert in recent_alerts)
+}
+```
+
+### AI 如何使用此信號
+
+- **`supply_chain_stress` ≥ elevated** → 半導體相關 ETF（00830 等）建議調降 confidence
+- **`geopolitical_risk` ≥ high** → 所有台股 ETF 建議 `watch_only`，暫停 preview_buy
+- **`taiwan_strait_risk` ≥ elevated** → `action_hint: pause_auto_trade`，台股部位風險提醒
+- **L3 alert 存在** → `check_major_event_trigger.py` 已自動觸發，decision engine 應優先採納最新 event context
+
+### 資料流
+
+```
+worldmonitor API
+    ↓ (sync_worldmonitor.py --mode daily/watch)
+worldmonitor_snapshot.json / worldmonitor_alerts.jsonl
+    ↓ (generate_ai_decision_request.py)
+ai_decision_request.json → inputs.worldmonitor_context
+    ↓ (AI Agent)
+ai_decision_response.json → decision.confidence / warnings
+    ↓ (dashboard)
+🌐 全球風險雷達 card + AI 決策建議
+```
 
 ---
 

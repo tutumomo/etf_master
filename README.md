@@ -1,4 +1,4 @@
-# ETF_Master: 智慧型台灣 ETF 投資與家庭資產管家 (v1.2.2)
+# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.4.0)
 
 `ETF_Master` 是一款專為台灣 ETF 投資者設計的 AI 輔助決策與資產管理系統。本專案秉持「**交易安全優先於功能完備**」的核心價值，透過「三層真相層級」治理與「雙鏈決策仲裁」機制，為投資者提供一個穩定、透明且具備深度洞察的投資工作台。
 
@@ -62,27 +62,58 @@ uv run skills/stock-analysis-tw/scripts/analyze_stock.py 0050.TW
 ---
 
 ## 📅 自動化排程 (Cron Jobs)
-系統預設 5 個關鍵自動化任務：
+系統預設 **7 個**關鍵自動化任務（定義於 `cron/jobs.json`）：
 1. **早班準備 (08:45)**：盤前感知與復盤。
 2. **盤中智慧掃描 (每30分)**：動態刷新報價、量化診斷與決策共識。
 3. **盤後收工 (15:00)**：每日總結、決策品質評分與 Wiki 沉澱。
 4. **每週深度復盤 (週六)**：長線趨勢對齊與週報生成。
 5. **健康巡檢 (08:00)**：確保執行環境與 API 連線完好。
+6. **worldmonitor 每日快照 (07:50 平日)**：拉取全球供應鏈/地緣風險信號。
+7. **worldmonitor 事件巡檢 (盤中每30分)**：偵測 L2/L3 升級事件。
 
 ---
 
-## ⚙️ 安裝與設定
+## ⚙️ 快速部署
 
-1. **環境需求**：Python 3.8+, `uv` 套件管理員。
-2. **初始化**：
-   ```bash
-   python scripts/etf_tw.py init --install-deps
-   ```
-3. **憑證配置**：於 `assets/config.json` 設定永豐金 API 憑證與策略參數。
+> 完整步驟請見 [DEPLOYMENT.md](DEPLOYMENT.md)。
+
+**最低部署（paper 模式，無需帳號）：**
+
+```bash
+# 1. 建立 venv（Python 3.14+ 必須）
+cd ~/.hermes/profiles/etf_master/skills/ETF_TW
+python3.14 -m venv .venv && source .venv/bin/activate
+pip install -r scripts/etf_core/requirements.txt
+
+# 2. 建立 instance config
+mkdir -p instances/etf_master/state
+cp instance_config.json.example instances/etf_master/instance_config.json
+
+# 3. 設定 Agent ID
+export AGENT_ID=etf_master
+
+# 4. 啟動 Dashboard
+AGENT_ID=etf_master .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.0 --port 5055
+```
+
+開啟 `http://localhost:5055` 即可使用。
+
+**環境需求**：Python **3.14+**、`uv`、Hermes Agent v0.9.0+
 
 ---
 
 ## 📦 版本紀錄
+
+### v1.4.0 (2026-04-19)
+- feat(worldmonitor): 整合全球風險雷達 — `sync_worldmonitor.py` 雙模式（daily/watch）
+- feat(worldmonitor): API 欄位修正，新增 `_derive_global_stress_level/taiwan_strait_risk/taiwan_semiconductor_risk()` 推算邏輯
+- feat(worldmonitor): Bot UA 繞過 middleware.ts 403 過濾
+- feat(ai-bridge): worldmonitor 接入 AI Decision Bridge 作為第 14 個輸入源
+- feat(dashboard): 全球風險雷達卡新增 chokepoints 展開、tooltip、收合、↻ 更新按鈕
+- feat(cron): 新增 `worldmonitor_daily`（07:50）、`worldmonitor_watch`（盤中每30分）排程
+- docs: 新增 `DEPLOYMENT.md`、`instance_config.json.example`、`private/.env.example`
+- docs: 更新 `SKILL.md`（v1.4.0）、`AI_DECISION_BRIDGE.md`、`STATE_ARCHITECTURE.md`
+- test: 9 項 worldmonitor 測試全通（含 API schema、alert 偵測、AI bridge 接線）
 
 ### v1.2.2 (2026-04-17)
 - feat(quality-report): 新增 `decision_quality_report.json` 產生流程，統計策略對齊率、信心分佈與攔截率

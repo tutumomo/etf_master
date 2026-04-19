@@ -1,0 +1,49 @@
+{
+  "_comment": "複製本檔為 instances/<agent_id>/instance_config.json 並填入真實值。本檔可 commit；instance_config.json 已 gitignore，絕對不可 commit。",
+
+  "agent_id": "etf_master",
+
+  "accounts": {
+    "sinopac_01": {
+      "alias": "sinopac_01",
+      "broker_id": "sinopac",
+      "account_id": "YOUR_SINOPAC_ACCOUNT_ID",
+      "mode": "paper",
+      "_comment_mode": "paper = 模擬交易（預設安全）; live = 真實下單（需明確授權）",
+      "credentials": {
+        "api_key": "YOUR_SINOPAC_PERSON_ID",
+        "api_secret": "YOUR_SINOPAC_PASSWORD"
+      }
+    },
+    "paper_01": {
+      "alias": "paper_01",
+      "broker_id": "paper",
+      "account_id": "paper_default",
+      "mode": "paper",
+      "credentials": {}
+    }
+  },
+
+  "default_account": "paper_01",
+  "_comment_default": "預設使用 paper 模式；切換到 sinopac_01 前請確認 live 授權流程",
+
+  "port": 5050,
+
+  "watchlist": [
+    "0050.TW",
+    "006208.TW",
+    "00878.TW",
+    "0056.TW",
+    "00919.TW",
+    "00679B.TWO",
+    "00687B.TWO",
+    "00830.TW"
+  ],
+
+  "worldmonitor": {
+    "enabled": false,
+    "_comment_enabled": "設為 true 需要有效的 base_url 與 api_key，否則 sync_worldmonitor.py 會跳過",
+    "base_url": "https://worldmonitor-gamma-mocha.vercel.app",
+    "api_key": "YOUR_WORLDMONITOR_API_KEY"
+  }
+}
