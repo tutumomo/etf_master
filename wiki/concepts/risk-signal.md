@@ -1,7 +1,7 @@
 ---
 title: 風險訊號儀表板
 created: 2026-04-11
-updated: 2026-04-15
+updated: 2026-04-19
 type: concept
 tags: [風險, 市場體制, 投資策略]
 sources: [ETF_TW/instances/etf_master/state/market_event_context.json]
@@ -15,22 +15,23 @@ sources: [ETF_TW/instances/etf_master/state/market_event_context.json]
 
 | 訊號 | 當前值 | 狀態 | 判斷基準 |
 |------|--------|------|----------|
-| 事件體制 | risk-on | ✅ 偏多 | risk-on / neutral / risk-off |
-| 全球風險 | moderate | 🟡 中性 | low / moderate / elevated / high |
-| 地緣政治 | medium | 🟡 中性 | low / medium / high |
+| 事件體制 | neutral | 🟡 中性 | risk-on / neutral / risk-off |
+| 全球風險 | normal | 🟢 正常 | low / normal / elevated / high |
+| 地緣政治 | low | 🟢 降溫 | low / medium / high |
 | 利率風險 | low | 🟢 降溫 | low / medium / high |
 | 能源風險 | medium | 🟡 中性 | low / medium / high |
-| 台股衝擊 | cautious | ⚠️ 觀望 | positive / neutral / cautious / negative |
+| 台股衝擊 | neutral | 🟡 中性 | positive / neutral / cautious / negative |
 | 防守傾向 | low | 🛡️ 偏進攻 | low / medium / high |
-| 更新時間 | 2026-04-15 08:46 | — | — |
+| 更新時間 | 2026-04-17 10:16 | — | — |
 
-**今日判讀（2026-04-15 早班）**：體制由 cautious → balanced_bullish，risk-off 解除。核心台股 006208/0050 跳空大漲 +2.7~3.1%，risk-on 信號明顯增強。event_regime 由 risk-off 降為 neutral，global_risk 由 elevated 降至 moderate，rate_risk 降至 low（反映美債拋售壓力暫緩）。地緣+能源風險仍在但未升級，台股短線偏多但外部風險因子未除，仍需紀律執行。
+**今日判讀（2026-04-17 早班）**：體制維持 balanced_bullish。事件體制 neutral（較 4/15 的 risk-on 微降），全球風險 normal（較 4/15 的 moderate 改善），地緣政治降至 low，利率風險維持 low。能源風險 medium 不變（霍爾木茲海峽/曼德海峽威脅仍在）。超買面積擴大（50% 標的 RSI 超買）成為新的內生風險。防守型組別（債券）嚴重落隊，RSI 43.4 + MACD 為負，與權益市場走勢背離。整體風險可控但追高風險升溫。
 
 ## 活躍風險事件
 
-1. **伊朗封鎖霍爾木茲海峽威脅** — 仍有 12% 石油運輸經過，實質封鎖未發生但威脅等級 medium，需持續關注
-2. **美伊談判未完** — 台股明日開盤存在不確定性，為最大外部風險
-3. **平均年化波動 31.7%** — 波動仍高，核心 ETF 跳空後可能引發短線獲利了結
+1. **超買面積擴大** — 9/18 檔 ETF RSI 超買（50%），00892 RSI 偏高為首，成長型均 RSI 75.9，短期回檔風險顯著
+2. **霍爾木茲海峽封鎖威脅** — 伊朗揚言反制，曼德海峽也被點名，12% 石油運輸經過，能源風險 medium
+3. **美伊談判未完** — 台股開盤存在不確定性，台積電 ADR 跌 0.57%，為最大外部風險
+4. **防守型嚴重落隊** — 00679B/00687B 跌破 SMA20，MACD 負值，與權益類走勢背離
 
 ## 訊號變動歷史
 
@@ -40,6 +41,7 @@ sources: [ETF_TW/instances/etf_master/state/market_event_context.json]
 | 2026-04-13 | 持平無變動 | 風險訊號與 4/10 一致，地緣+能源雙高未解；盤面偏多但事件層未鬆動 |
 | 2026-04-14 | 利率風險持續 | 00679B -0.48%，長天期美債承壓未止；地緣+能源雙高仍懸而未決 |
 | 2026-04-15 | ⚠️ 顯著改善 | risk-off→neutral，global_risk elevated→moderate，rate_risk medium→low；核心台股大漲 risk-on 信號明顯回升 |
+| 2026-04-17 | 小幅改善+內生風險升溫 | global_risk moderate→normal，geo_political medium→low；但超買面積擴大（50%），防守型落隊加劇，追高風險成為新焦點 |
 
 ## 風險等級對應行動
 
@@ -51,12 +53,12 @@ sources: [ETF_TW/instances/etf_master/state/market_event_context.json]
 | high | 暫停買入 | 維持不動 | 偏重 | 偏高 |
 | crisis | 全數迴避 | 設停損 | 最大配置 | 最高 |
 
-**當前行動對照**（balanced_bullish + moderate risk覆蓋）：
-- 市值型（0050/006208）：體制升級為偏多，可正常布局，006208 已有 1000 股續抱，0050 已有 253 股續抱
-- 高股息（00878）：偏重持有，已有 100 股，配息成長路徑未變
-- 債券型（00679B）：已有 100 股（27.17），持續觀望，利率風險降至 low 後可考慮加碼
-- 現金：中等偏低（目前 215,185 / 458,497 = 46.9%）
-- 掛單：目前無活躍掛單（orders_open.json 為空）
+**當前行動對照**（balanced_bullish + normal risk）：
+- 市值型（0050）：體制偏多，可正常布局，0050 已有 253 股（+13.0%），但 RSI 69 接近超買，追高需謹慎
+- 高股息（00878/00919）：偏重持有，00878 +6.9%、00919 +1.6%，配息路徑未變
+- 債券型（00679B）：已有 100 股（-0.8%），持續觀望；RSI 低 + MACD 負，暫不加碼
+- 現金：偏高（197,526 / 249,683 = 79.1%），可支應逢低加碼
+- 掛單：目前無活躍掛單
 
 ## 關聯頁面
 

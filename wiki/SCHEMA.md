@@ -6,7 +6,7 @@
 ## Conventions
 - File names: lowercase, hyphens, no spaces（例：`0050-yuanta-taiwan-50.md`）
 - 每個 wiki 頁面必須以 YAML frontmatter 開頭（見下方模板）
-- 使用 `[[wikilinks]]` 連結頁面（每頁至少 2 個對外連結）
+- 使用 `[雙中括號]` 連結頁面（每頁至少 2 個對外連結）
 - 更新頁面時必須更新 `updated` 日期
 - 新頁面必須加入 `index.md` 對應區段
 - 所有動作必須追加到 `log.md`
@@ -74,7 +74,7 @@ sources: [raw/articles/來源檔名.md 或 raw/data/etf_universe_tw.json]
 每一個值得關注的 ETF 一頁。包含：
 - 基本資料：代碼、名稱、發行商、追蹤指數、上市交易所、上市日期
 - 投資特性：市值型/高股息/債券型等分類
-- 與其他 ETF 的關聯（[[wikilinks]]）
+- 與其他 ETF 的關聯（`雙中括號連結`）
 - 來源引用
 
 ## Concept Pages（概念頁）
@@ -82,7 +82,7 @@ sources: [raw/articles/來源檔名.md 或 raw/data/etf_universe_tw.json]
 - 定義與解釋
 - 目前知識狀態
 - 開放問題或爭議
-- 相關概念（[[wikilinks]]）
+- 相關概念（`雙中括號連結`）
 
 ## Comparison Pages（比較頁）
 併排分析。包含：
