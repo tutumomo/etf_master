@@ -269,7 +269,83 @@
         "thread_id": null
       },
       "last_delivery_error": null
+    },
+    {
+      "id": "decision_auto_review",
+      "name": "ETF 決策自動復盤",
+      "prompt": "執行 ETF 決策自動 T+N 回填（script 已自動執行，請引用 script 輸出並簡短摘要填入欄位狀況）",
+      "script": "sync_decision_reviews.py",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "5 15 * * 1-5",
+        "display": "5 15 * * 1-5"
+      },
+      "schedule_display": "5 15 * * 1-5",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-04-20T00:00:00+08:00",
+      "next_run_at": null,
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "deliver": "telegram",
+      "origin": {
+        "platform": "telegram",
+        "chat_id": "",
+        "chat_name": "",
+        "thread_id": null
+      },
+      "last_delivery_error": null
+    },
+    {
+      "id": "decision_quality_weekly",
+      "name": "ETF 決策品質週報",
+      "prompt": "執行 ETF 決策品質週報產出（script 已自動執行，請確認 wiki/decision-quality-latest.md 已更新）",
+      "script": "generate_decision_quality_weekly.py",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "5 9 * * 6",
+        "display": "5 9 * * 6"
+      },
+      "schedule_display": "5 9 * * 6",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-04-20T00:00:00+08:00",
+      "next_run_at": null,
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "deliver": "telegram",
+      "origin": {
+        "platform": "telegram",
+        "chat_id": "",
+        "chat_name": "",
+        "thread_id": null
+      },
+      "last_delivery_error": null
     }
   ],
-  "updated_at": "2026-04-19T20:05:01.700486+08:00"
+  "updated_at": "2026-04-20T00:00:00+08:00"
 }
