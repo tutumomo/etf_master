@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import subprocess
 import sys
 # Force default agent before importing ETF core
@@ -568,6 +568,41 @@ def classify_freshness(iso_ts: str | None) -> dict:
         return {"label": "invalid", "level": "bad"}
 
 
+def classify_freshness_market_aware(iso_ts: str | None) -> dict:
+    """Freshness check with relaxed thresholds outside trading hours.
+
+    During trading session (09:00-14:30 weekdays): strict (10min/1hr).
+    Outside trading hours or weekends: relaxed (1hr/8hr) — market data
+    is not updated outside sessions so stale readings are expected.
+    """
+    if not iso_ts:
+        return {"label": "unknown", "level": "warn"}
+    try:
+        dt = datetime.fromisoformat(iso_ts.replace('Z', '+00:00'))
+        tz_taipei = timezone(timedelta(hours=8))
+        now_taipei = datetime.now(tz_taipei)
+        weekday = now_taipei.weekday()  # 0=Mon, 5=Sat, 6=Sun
+        hour = now_taipei.hour + now_taipei.minute / 60
+        in_trading = weekday < 5 and 9.0 <= hour <= 14.5
+        now = datetime.now(dt.tzinfo) if dt.tzinfo else datetime.now()
+        age = (now - dt).total_seconds()
+        if in_trading:
+            if age <= 600:
+                return {"label": "fresh", "level": "good"}
+            if age <= 3600:
+                return {"label": "stale", "level": "warn"}
+            return {"label": "old", "level": "bad"}
+        else:
+            # Outside trading hours: data is not refreshed, so 8hr is acceptable
+            if age <= 28800:  # 8 hours
+                return {"label": "fresh", "level": "good"}
+            if age <= 86400:  # 24 hours
+                return {"label": "stale", "level": "warn"}
+            return {"label": "old", "level": "bad"}
+    except Exception:
+        return {"label": "invalid", "level": "bad"}
+
+
 def build_risk_signals(position_rows: list[dict], market_cache: dict, orders_open: dict) -> list[dict]:
     signals = []
     freshness = classify_freshness(market_cache.get("updated_at"))
@@ -803,7 +838,7 @@ def build_overview_model() -> dict:
         auto_trade_state=auto_trade_state,
         market_intelligence=market_intelligence,
         reconciliation_warnings=reconciliation_warnings,
-        classify_freshness=classify_freshness,
+        classify_freshness=classify_freshness_market_aware,
     )
     intelligence_warning = None
     for w in decision_engine_health.get("warnings", []):
@@ -1521,3 +1556,51 @@ async def unlock_live_mode(req: LiveUnlockRequest):
     }
     atomic_save_json(state_dir / "live_mode.json", live_mode)
     return {"success": True, "enabled": True, "unlocked_at": live_mode["unlocked_at"]}
+
+
+@app.get("/api/worldmonitor-status")
+def get_worldmonitor_status():
+    """回傳 worldmonitor 全球風險快照摘要"""
+    import json as _json
+    from scripts.etf_core import context as _ctx
+    from scripts.etf_core.state_io import safe_load_json
+    from datetime import timezone, timedelta
+
+    state_dir = _ctx.get_state_dir()
+    snapshot = safe_load_json(state_dir / "worldmonitor_snapshot.json", {})
+
+    alerts_path = state_dir / "worldmonitor_alerts.jsonl"
+    recent_alerts = []
+    if alerts_path.exists():
+        cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
+        for line in alerts_path.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                record = _json.loads(line)
+                ts = datetime.fromisoformat(record.get("timestamp", "").replace("Z", "+00:00"))
+                if ts.tzinfo is None:
+                    ts = ts.replace(tzinfo=timezone.utc)
+                if ts >= cutoff:
+                    recent_alerts.append(record)
+            except Exception:
+                continue
+
+    level_rank = {"L1": 1, "L2": 2, "L3": 3}
+    highest_severity = "none"
+    for a in recent_alerts:
+        sev = a.get("severity", "L1")
+        if level_rank.get(sev, 0) > level_rank.get(highest_severity, 0):
+            highest_severity = sev
+
+    return {
+        "ok": True,
+        "updated_at": snapshot.get("updated_at"),
+        "supply_chain_stress": snapshot.get("supply_chain", {}).get("global_stress_level", "unknown"),
+        "geopolitical_risk": snapshot.get("geopolitical", {}).get("global_risk_level", "unknown"),
+        "taiwan_strait_risk": snapshot.get("geopolitical", {}).get("taiwan_strait_risk", "unknown"),
+        "shipping_stress_index": snapshot.get("supply_chain", {}).get("shipping_stress_index"),
+        "recent_alerts_count": len(recent_alerts),
+        "highest_alert_severity": highest_severity,
+    }

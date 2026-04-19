@@ -949,7 +949,54 @@
       </div>
     </div>
   </div>
+
+  <!-- 全球風險雷達卡片 -->
+  <div class="card side" id="card_worldmonitor">
+    <div class="card-header" onclick="toggleCard('card_worldmonitor')">
+      <span>🌐 全球風險雷達</span>
+      <span class="badge" id="wm-badge" style="font-size:0.75rem;">載入中...</span>
+    </div>
+    <div class="card-content">
+      <table style="width:100%;font-size:0.85rem;border-collapse:collapse;">
+        <tr><td style="padding:3px 6px;color:#888;">供應鏈壓力</td><td id="wm-supply-chain" style="padding:3px 6px;font-weight:600;">-</td></tr>
+        <tr><td style="padding:3px 6px;color:#888;">地緣政治風險</td><td id="wm-geo-risk" style="padding:3px 6px;font-weight:600;">-</td></tr>
+        <tr><td style="padding:3px 6px;color:#888;">台海風險</td><td id="wm-taiwan-strait" style="padding:3px 6px;font-weight:600;">-</td></tr>
+        <tr><td style="padding:3px 6px;color:#888;">航運壓力指數</td><td id="wm-shipping" style="padding:3px 6px;">-</td></tr>
+        <tr><td style="padding:3px 6px;color:#888;">最近警報（24h）</td><td id="wm-alerts" style="padding:3px 6px;">-</td></tr>
+        <tr><td style="padding:3px 6px;color:#888;">更新時間</td><td id="wm-updated" style="padding:3px 6px;font-size:0.75rem;color:#aaa;">-</td></tr>
+      </table>
+    </div>
+  </div>
 </section>
+<script>
+(function() {
+  const RISK_COLOR = {low:'#2ecc71', moderate:'#f39c12', elevated:'#e67e22', high:'#e74c3c', critical:'#8e44ad', unknown:'#95a5a6'};
+  function colorize(el, val) {
+    el.textContent = val || '-';
+    el.style.color = RISK_COLOR[val] || '#95a5a6';
+  }
+  fetch('/api/worldmonitor-status')
+    .then(r => r.json())
+    .then(d => {
+      colorize(document.getElementById('wm-supply-chain'), d.supply_chain_stress);
+      colorize(document.getElementById('wm-geo-risk'), d.geopolitical_risk);
+      colorize(document.getElementById('wm-taiwan-strait'), d.taiwan_strait_risk);
+      document.getElementById('wm-shipping').textContent = d.shipping_stress_index != null ? d.shipping_stress_index.toFixed(2) : '-';
+      const sev = d.highest_alert_severity || 'none';
+      const alertEl = document.getElementById('wm-alerts');
+      alertEl.textContent = d.recent_alerts_count + ' 筆（' + sev + '）';
+      alertEl.style.color = sev === 'L3' ? '#e74c3c' : sev === 'L2' ? '#e67e22' : '#95a5a6';
+      document.getElementById('wm-updated').textContent = d.updated_at ? d.updated_at.slice(0, 16) : '未更新';
+      const badge = document.getElementById('wm-badge');
+      badge.textContent = d.updated_at ? '已同步' : '未同步';
+      badge.style.color = d.updated_at ? '#2ecc71' : '#e74c3c';
+    })
+    .catch(() => {
+      document.getElementById('wm-badge').textContent = '載入失敗';
+      document.getElementById('wm-badge').style.color = '#e74c3c';
+    });
+})();
+</script>
 <script>
 function showWatchlistBanner(message, type='success') {
   const el = document.getElementById('watchlist_banner');
