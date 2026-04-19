@@ -44,6 +44,10 @@ Data flow per SOUL.md alignment principle: **analysis** from stock-analysis + ta
 
 > **Intraday watch (independent cron)**: `sync_worldmonitor.py --mode watch` every 30 min during market hours — detects L2/L3 risk escalations and appends to `worldmonitor_alerts.jsonl`.
 
+> **Post-market review (independent cron, 15:05 weekday)**: `sync_decision_reviews.py` — scans provenance for T1/T3/T10 windows due, backfills prices and verdicts, finalizes `outcome_final`, updates `decision_quality_report.json` chain_breakdown.
+
+> **Weekly report (independent cron, 09:05 Saturday)**: `generate_decision_quality_weekly.py` — writes `wiki/decision-weekly-YYYY-WNN.md` and `wiki/decision-quality-latest.md`.
+
 ### AI Decision Bridge
 
 The bridge is at `scripts/ai_decision_bridge.py`. It follows a staged autonomy model:
@@ -148,6 +152,9 @@ cd ~/.hermes/profiles/etf_master/skills/ETF_TW
 | Version changelog | `skills/ETF_TW/CHANGELOG.md` |
 | Wiki knowledge base (profile) | `wiki/` (market-view, risk-signal, investment-strategies, undervalued-etf-ranking, entities/) |
 | Wiki knowledge base (skill) | `skills/ETF_TW/wiki/` (same structure, fallback source) |
+| Decision auto-review cron | `skills/ETF_TW/scripts/sync_decision_reviews.py` (15:05 weekday) |
+| Decision weekly report cron | `skills/ETF_TW/scripts/generate_decision_quality_weekly.py` (09:05 Saturday) |
+| Decision weekly wiki | `wiki/decision-weekly-YYYY-WNN.md` + `wiki/decision-quality-latest.md` |
 | Deployment health check | `scripts/verify_deployment.sh` |
 
 ## Naming Conventions
