@@ -54,6 +54,48 @@ def _load_worldmonitor_alerts(state_dir: Path, hours: int = 2) -> list[dict]:
     return results
 
 
+def _resolve_wiki_roots() -> list[Path]:
+    """回傳可用 wiki 根目錄（優先 profile wiki，再 fallback instance wiki）。"""
+    candidates = [
+        ROOT.parent.parent / 'wiki',
+        ROOT / 'instances' / 'etf_master' / 'wiki',
+    ]
+    return [p for p in candidates if p.exists()]
+
+
+def _read_first(paths: list[Path]) -> str:
+    for p in paths:
+        if p.exists():
+            try:
+                txt = p.read_text(encoding='utf-8').strip()
+                if txt:
+                    return txt
+            except Exception:
+                continue
+    return ''
+
+
+def _load_entity_wiki(entity_dirs: list[Path], symbol: str, limit: int = 800) -> str:
+    if not symbol:
+        return ''
+    # exact file first, then slug-prefixed variant (e.g. 0050-yuanta-taiwan-50.md)
+    for d in entity_dirs:
+        exact = d / f'{symbol}.md'
+        if exact.exists():
+            try:
+                return exact.read_text(encoding='utf-8')[:limit]
+            except Exception:
+                pass
+        for p in sorted(d.glob(f'{symbol}-*.md')):
+            try:
+                txt = p.read_text(encoding='utf-8')
+                if txt:
+                    return txt[:limit]
+            except Exception:
+                continue
+    return ''
+
+
 def generate_request_payload_from_state_dir(state_dir: Path, requested_by: str = 'system', mode: str = 'decision_only') -> dict:
     strategy = _load_json(state_dir / 'strategy_link.json')
     positions = _load_json(state_dir / 'positions.json')
@@ -69,8 +111,10 @@ def generate_request_payload_from_state_dir(state_dir: Path, requested_by: str =
     reconciliation = _load_json(state_dir / 'filled_reconciliation.json')
     stock_intelligence = _load_json(state_dir / 'stock_intelligence.json')
     
-    # 注入 Wiki 背景知識
-    wiki_path = ROOT.parent.parent / 'docs' / 'wiki' / 'shioaji'
+    # 注入 Wiki 背景知識（profile wiki + instance wiki fallback）
+    wiki_roots = _resolve_wiki_roots()
+    concept_dirs = [p / 'concepts' for p in wiki_roots] + wiki_roots
+    entity_dirs = [p / 'entities' for p in wiki_roots]
     
     # 計算持倉統計 (權重與成本)
     total_equity = float(portfolio_snapshot.get('total_equity', 0)) or 1.0
@@ -96,17 +140,20 @@ def generate_request_payload_from_state_dir(state_dir: Path, requested_by: str =
         if sym not in held_symbols:
             portfolio_context.append({"symbol": sym, "is_held": False, "note": "Watchlist only"})
 
-    market_view_wiki = ""
-    if (wiki_path / 'concepts' / 'market-view.md').exists():
-        market_view_wiki = (wiki_path / 'concepts' / 'market-view.md').read_text(encoding='utf-8')
+    market_view_wiki = _read_first([
+        d / 'market-view.md' for d in concept_dirs
+    ])
+    risk_signal_wiki = _read_first([
+        d / 'risk-signal.md' for d in concept_dirs
+    ])
     
     # 為持有標的獲取 Wiki 摘要
     entity_wiki_summaries = {}
     for p in positions.get('positions', []):
         symbol = p.get('symbol')
-        wiki_file = wiki_path / 'entities' / f"{symbol}.md"
-        if wiki_file.exists():
-            entity_wiki_summaries[symbol] = wiki_file.read_text(encoding='utf-8')[:500] # 限制長度
+        entity_txt = _load_entity_wiki(entity_dirs, symbol, limit=800)
+        if entity_txt:
+            entity_wiki_summaries[symbol] = entity_txt
 
     decision_memory_context = build_decision_memory_context(state_dir, limit=5)
     market_calendar_status = market_calendar_payload or get_today_market_status(datetime.now().astimezone(), market_calendar_payload)
@@ -139,6 +186,7 @@ def generate_request_payload_from_state_dir(state_dir: Path, requested_by: str =
     payload['portfolio_context'] = portfolio_context
     payload['wiki_context'] = {
         "market_view": market_view_wiki,
+        "risk_signal": risk_signal_wiki,
         "entities": entity_wiki_summaries
     }
     payload['stock_intelligence'] = stock_intelligence
