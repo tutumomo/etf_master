@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## v1.4.6 — 2026-04-20
+
+### Added
+- **決策自動復盤管線（Auto Decision Review Pipeline）**：完全自動化 T+N 價格回填 → verdict 判定 → 雙鏈統計 → 週報寫入 wiki 的整個循環，消除手動標記 `reviewed`/`superseded` 步驟。
+  - `sync_decision_reviews.py`：每天 15:05 盤後掃描到期 T1/T3/T10 窗口，自動填入 verdict（±1.5% 門檻），三窗口填滿後自動寫入 `outcome_final`。
+  - `generate_decision_quality_weekly.py`：每週六 09:05 產出 `wiki/decision-weekly-YYYY-WNN.md` 與 `wiki/decision-quality-latest.md`。
+  - `provenance_logger.py`：`build_provenance_record()` 新增 `chain_sources` 參數，記錄雙鏈仲裁來源（rule_engine/ai_bridge/tier）。
+  - `run_auto_decision_scan.py`：將 `consensus` dict 扁平化為 `chain_sources_payload` 傳入 provenance。
+  - `decision_quality_report.json` 新增 `chain_breakdown` 區塊（rule_engine/ai_bridge/tier1_consensus/unknown_source 四桶勝率）。
+- **Cron 新增 2 個 job**：`ETF 決策自動復盤`（15:05 平日）、`ETF 決策品質週報`（09:05 週六）。Job 數量 7→9。
+- **verify_deployment.sh**：cron 門檻從 ≥7 更新為 ≥9。
+
+### Validation
+- 15 新增測試全通：`test_sync_decision_reviews.py`（10 tests）、`test_generate_decision_quality_weekly.py`（5 tests）
+- 全套 364 tests passed，4 個既有失敗不變
+
 ## v1.4.5 — 2026-04-19
 
 ### Added
