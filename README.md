@@ -1,4 +1,4 @@
-# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.4.0)
+# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.4.1)
 
 `ETF_Master` 是一款專為台灣 ETF 投資者設計的 AI 輔助決策與資產管理系統。本專案秉持「**交易安全優先於功能完備**」的核心價值，透過「三層真相層級」治理與「雙鏈決策仲裁」機制，為投資者提供一個穩定、透明且具備深度洞察的投資工作台。
 
@@ -103,6 +103,14 @@ AGENT_ID=etf_master .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.
 ---
 
 ## 📦 版本紀錄
+
+### v1.4.1 (2026-04-19)
+- fix(verify): `verify_deployment.sh` 實測修正 — 移除 `set -e`、修正 `/api/positions` 端點（改讀 `/api/overview.positions`）、修正交易時段閘門測試指令（`validate-order`）
+- fix(verify): 新增 `DASHBOARD_PORT` 環境變數支援，可用於多實例測試
+- docs(deployment): 修正步驟順序（sync pipeline 移至 Dashboard 啟動前）、新增 Paper Mode 最小腳本表格、補充 worldmonitor cron 與 `enabled:false` 的關係說明
+- fix(security): `cron/jobs.json` 個人 Telegram chat_id/chat_name 移轉為 `${TELEGRAM_HOME_CHANNEL}`/`${TELEGRAM_CHAT_NAME}` env 佔位符
+- docs(env): `private/.env.example` 補齊所有變數的繁中說明（AGENT_ID、Telegram、Shioaji、worldmonitor）
+- chore(profile): 實測從 `etf_master` clone 建立 `etf_master_wife` 獨立 instance，9/9 健康巡檢全通（353 tests passed）
 
 ### v1.4.0 (2026-04-19)
 - feat(worldmonitor): 整合全球風險雷達 — `sync_worldmonitor.py` 雙模式（daily/watch）

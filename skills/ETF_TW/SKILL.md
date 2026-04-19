@@ -1,6 +1,6 @@
 ---
 name: ETF_TW
-version: v1.4.0
+version: v1.4.1
 description: 台灣 ETF 投資助理技能（包含 state-driven dashboard、orders_open lifecycle、callback/polling reconciliation、交易流程驗證、回測去重與報酬回補、worldmonitor 全球風險雷達整合）
 ---
 
@@ -846,6 +846,13 @@ cd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/refre
   - sync_ohlcv_history.py 新增：calc_momentum(), calc_sharpe(), 寫入 momentum_20d/sharpe_30d/return_1y
   - AI agent reasoning 重寫：多維評分取代「最低RSI」、填入實質市場判斷
   - 結果：00679B 不再壟斷候選，00892/006208/00923 依三原則分數正常競爭
+
+- **v1.4.1**（2026-04-19）：部署驗證與安全修正（實測 etf_master_wife clone 發現）
+  - `verify_deployment.sh`：移除 `set -e`（curl 失敗不再中斷整個腳本）；`/api/positions` → `/api/overview.positions`（端點不存在）；交易時段閘門改用 `validate-order` 子指令（`order` 不存在）；新增 `DASHBOARD_PORT` env var 支援多實例測試
+  - `DEPLOYMENT.md`：步驟七八對調（sync pipeline 先於 Dashboard 啟動）；新增 Paper Mode 最小腳本表格（5 支必要 vs 11 支完整）；補充 worldmonitor cron `enabled:false` 自動跳過說明
+  - `cron/jobs.json`：個人 Telegram chat_id/chat_name 移出 git 追蹤，改為 `${TELEGRAM_HOME_CHANNEL}`/`${TELEGRAM_CHAT_NAME}` 佔位符；真實值移入 `.env`
+  - `private/.env.example`：補齊 AGENT_ID、Telegram Bot（4 個變數）、Shioaji（5 個變數）、worldmonitor（2 個變數）的繁中說明
+  - 實測驗證：從 etf_master clone 建立 etf_master_wife 獨立 instance，**9/9 健康巡檢全通，353 tests passed**
 
 - **v1.4.0**（2026-04-19）：Worldmonitor 全球風險雷達整合
   - 新增 `sync_worldmonitor.py`：雙模式（daily 快照 / watch 事件監控），從 worldmonitor API 拉取全球風險信號
