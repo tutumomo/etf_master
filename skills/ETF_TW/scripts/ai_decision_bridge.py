@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-from datetime import datetime, timedelta
+import json
+from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 from zoneinfo import ZoneInfo
 
@@ -46,6 +47,8 @@ def build_ai_decision_request_from_state(
     market_calendar_status: dict,
     reconciliation: dict,
     decision_memory_context: dict | None = None,
+    worldmonitor_snapshot: dict | None = None,
+    worldmonitor_alerts: list[dict] | None = None,
     requested_by: str,
     mode: str,
     context_version: str,
@@ -64,6 +67,9 @@ def build_ai_decision_request_from_state(
         "market_calendar_status": market_calendar_status or {},
         "reconciliation": reconciliation or {},
         "decision_memory_context": decision_memory_context or {},
+        "worldmonitor_context": _build_worldmonitor_context(
+            worldmonitor_snapshot or {}, worldmonitor_alerts or []
+        ),
     }
     return build_ai_decision_request(
         requested_by=requested_by,
@@ -216,3 +222,31 @@ def build_agent_consumed_response_payload(
         "human_feedback": None,
     }
     return payload
+
+
+def _build_worldmonitor_context(snapshot: dict, alerts: list[dict]) -> dict:
+    """將 worldmonitor snapshot + alerts 整理成 AI 決策橋的第 13 個輸入源"""
+    level_rank = {'L1': 1, 'L2': 2, 'L3': 3}
+    highest = 'none'
+    affected_signals: dict[str, dict] = {}
+
+    for alert in alerts:
+        sev = alert.get('severity', 'L1')
+        if level_rank.get(sev, 0) > level_rank.get(highest, 0):
+            highest = sev
+        for etf in alert.get('affected_etfs', []):
+            if etf not in affected_signals:
+                affected_signals[etf] = {}
+            affected_signals[etf][alert.get('alert_type', 'unknown')] = alert.get('title', '')
+
+    sc = snapshot.get('supply_chain', {})
+    geo = snapshot.get('geopolitical', {})
+
+    return {
+        'supply_chain_stress': sc.get('global_stress_level', 'unknown'),
+        'geopolitical_risk': geo.get('global_risk_level', 'unknown'),
+        'taiwan_strait_risk': geo.get('taiwan_strait_risk', 'unknown'),
+        'active_alerts_count': len(alerts),
+        'highest_alert_severity': highest,
+        'affected_etf_signals': affected_signals,
+    }
