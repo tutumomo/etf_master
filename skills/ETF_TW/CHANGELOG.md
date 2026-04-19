@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v1.4.2 — 2026-04-19
+
+### Fixed
+- **審計口徑對齊（worldmonitor jobs 路徑）**：統一明確為 repo root 的 `cron/jobs.json`；`skills/ETF_TW/cron/jobs.json` 為錯誤路徑，不再使用。
+- **審計口徑對齊（commit 性質）**：釐清 `d7ac4c4` 雖採 `docs(v1.4.0)` 命名，但實際為 **文件 + 功能 + 測試 + wiki** 的混合提交（22 files changed），後續審計與回報以實際 diff 為準。
+
 ## v1.4.1 — 2026-04-19
 
 ### Fixed
