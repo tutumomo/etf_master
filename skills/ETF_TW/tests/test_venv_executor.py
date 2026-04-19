@@ -23,7 +23,6 @@ def test_venv_exists():
     print("測試 1: 檢查虛擬環境...")
     assert VENV_PYTHON.exists(), f"❌ 虛擬環境不存在：{VENV_PYTHON}"
     print(f"  ✓ 虛擬環境存在：{VENV_PYTHON}")
-    return True
 
 
 def test_shioaji_installed():
@@ -37,10 +36,8 @@ def test_shioaji_installed():
             text=True
         )
         print("  ✓ shioaji 已安裝")
-        return True
     except subprocess.CalledProcessError:
         print("  ⚠️  shioaji 未安裝 (可選，如需正式下單請安裝)")
-        return True  # 不強制要求
 
 
 def test_trading_hours_gate():
@@ -64,7 +61,6 @@ def test_trading_hours_gate():
 
     assert info['is_trading_hours'] == expected_trading, "交易時段判斷錯誤"
     print("  ✓ 交易時段閘門邏輯正確")
-    return True
 
 
 def test_venv_executor_script():
@@ -83,7 +79,6 @@ def test_venv_executor_script():
 
     assert "用法：" in result.stdout, "應該顯示使用說明"
     print("  ✓ venv_executor.py 執行正常")
-    return True
 
 
 def test_state_reconciliation_script():
@@ -104,7 +99,6 @@ def test_state_reconciliation_script():
     # 應該輸出對帳結果
     assert "狀態對帳檢查" in result.stdout or "對帳時間" in result.stdout, "應該輸出對帳結果"
     print("  ✓ state_reconciliation_enhanced.py 執行正常")
-    return True
 
 
 def main():

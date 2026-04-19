@@ -15,6 +15,9 @@
 - `tests/test_sync_worldmonitor.py`: 9 passed
 - `pytest tests/ -q`: 全綠（修復前 3 failed）
 
+### Maintenance
+- 測試警告清零：`tests/test_venv_executor.py` 移除 `return bool` 反模式，新增 `pytest.ini` 過濾第三方 `pydantic` 相容性警告，完整測試輸出 0 warnings。
+
 ## v1.3.2 — 2026-04-19
 
 ### Added
