@@ -146,6 +146,12 @@ def generate_request_payload_from_state_dir(state_dir: Path, requested_by: str =
     risk_signal_wiki = _read_first([
         d / 'risk-signal.md' for d in concept_dirs
     ])
+    investment_strategies_wiki = _read_first([
+        d / 'investment-strategies.md' for d in concept_dirs
+    ])
+    undervalued_ranking_wiki = _read_first([
+        d / 'undervalued-etf-ranking.md' for d in concept_dirs
+    ])
     
     # 為持有標的獲取 Wiki 摘要
     entity_wiki_summaries = {}
@@ -187,6 +193,8 @@ def generate_request_payload_from_state_dir(state_dir: Path, requested_by: str =
     payload['wiki_context'] = {
         "market_view": market_view_wiki,
         "risk_signal": risk_signal_wiki,
+        "investment_strategies": investment_strategies_wiki,
+        "undervalued_ranking": undervalued_ranking_wiki,
         "entities": entity_wiki_summaries
     }
     payload['stock_intelligence'] = stock_intelligence

@@ -1,6 +1,6 @@
 ---
 name: ETF_TW
-version: v1.4.1
+version: v1.4.5
 description: 台灣 ETF 投資助理技能（包含 state-driven dashboard、orders_open lifecycle、callback/polling reconciliation、交易流程驗證、回測去重與報酬回補、worldmonitor 全球風險雷達整合）
 ---
 

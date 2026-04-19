@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v1.4.5 — 2026-04-19
+
+### Added
+- **Wiki 投資策略知識注入決策鏈**：`generate_ai_decision_request.py` 新增 `wiki_context.investment_strategies` 與 `wiki_context.undervalued_ranking`，使 dashboard 建議決策能引用「投資策略十大實務」與「ETF 低估排行」知識。
+- **Wiki 知識庫新增 4 頁**：`skills/ETF_TW/wiki/investment-strategies.md`（十大策略+5陷阱+0407 Self-Check）、`undervalued-etf-ranking.md`（TOP10 低估排行）、`market-view.md`（風險升級）、`risk-signal.md`。
+- **P0 修復 market_value=0**：`sync_live_state.py` 在 Shioaji API 回傳 market_value=0 時，改從 positions 計算，total_equity 同步重算。
+
+### Validation
+- `generate_ai_decision_request.py` 產出 `wiki_context` 含 4 個非空欄位：`market_view`(1917字元)、`risk_signal`(2329字元)、`investment_strategies`(5184字元)、`undervalued_ranking`(2270字元)。
+
 ## v1.4.4 — 2026-04-19
 
 ### Fixed
