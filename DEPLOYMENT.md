@@ -164,7 +164,62 @@ AGENT_ID=etf_master .venv/bin/python3 scripts/etf_tw.py check --install-deps
 
 ---
 
-## 步驟七：啟動 Dashboard
+## 步驟七：初始資料同步
+
+> **必須在啟動 Dashboard 之前完成**，否則 Dashboard 所有欄位顯示為空。
+
+```bash
+cd ~/.hermes/profiles/etf_master/skills/ETF_TW
+BASE="AGENT_ID=etf_master .venv/bin/python3"
+```
+
+### Paper Mode 必要腳本（無需券商帳號）
+
+以下 5 支腳本為 paper mode 最小必要集，**按順序執行**：
+
+| 順序 | 腳本 | 說明 |
+|------|------|------|
+| 1 | `sync_strategy_link.py` | 建立策略連結（所有腳本的前提） |
+| 2 | `sync_paper_state.py` | 初始化 paper 帳戶持倉與帳戶快照 |
+| 3 | `sync_market_cache.py` | 拉取 ETF 即時報價快取 |
+| 4 | `generate_taiwan_market_context.py` | 產生台灣市場情境摘要 |
+| 5 | `sync_agent_summary.py` | 產生 Dashboard 用 Agent 摘要 |
+
+```bash
+$BASE scripts/sync_strategy_link.py
+$BASE scripts/sync_paper_state.py
+$BASE scripts/sync_market_cache.py
+$BASE scripts/generate_taiwan_market_context.py
+$BASE scripts/sync_agent_summary.py
+```
+
+### 完整 Refresh Pipeline（建議生產環境使用）
+
+若要取得完整市場情境與決策支援，繼續執行以下腳本（同樣按順序）：
+
+```bash
+$BASE scripts/generate_market_event_context.py
+$BASE scripts/check_major_event_trigger.py
+$BASE scripts/sync_portfolio_snapshot.py
+$BASE scripts/sync_ohlcv_history.py
+$BASE scripts/generate_intraday_tape_context.py
+```
+
+### Worldmonitor（選填，需 API Key）
+
+**前提**：`instance_config.json` 中 `worldmonitor.enabled` 已設為 `true` 且 `api_key` 已填入。
+
+```bash
+$BASE scripts/sync_worldmonitor.py --mode daily
+```
+
+> 若 `worldmonitor.enabled: false`，**略過此步驟**，cron 中的 `worldmonitor_daily` 與 `worldmonitor_watch` job 亦不會實際拉取資料（腳本內部會提早退出）。
+
+---
+
+## 步驟八：啟動 Dashboard
+
+State 檔案就緒後，啟動 Dashboard（背景執行）：
 
 ```bash
 cd ~/.hermes/profiles/etf_master/skills/ETF_TW
@@ -173,38 +228,11 @@ AGENT_ID=etf_master .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.
 
 開啟瀏覽器：`http://localhost:5055`
 
-驗證：
+驗證 Dashboard 已正確載入資料：
 
 ```bash
 curl -s http://localhost:5055/api/overview | python3 -m json.tool
 curl -s http://localhost:5055/health | python3 -m json.tool
-```
-
----
-
-## 步驟八：初始資料同步
-
-第一次啟動需手動跑一次 refresh pipeline，建立 state 檔案：
-
-```bash
-BASE="cd ~/.hermes/profiles/etf_master/skills/ETF_TW && AGENT_ID=etf_master .venv/bin/python3"
-
-$BASE scripts/sync_strategy_link.py
-$BASE scripts/sync_paper_state.py        # paper 模式；live 模式改用 sync_live_state.py
-$BASE scripts/sync_market_cache.py
-$BASE scripts/generate_market_event_context.py
-$BASE scripts/generate_taiwan_market_context.py
-$BASE scripts/check_major_event_trigger.py
-$BASE scripts/sync_portfolio_snapshot.py
-$BASE scripts/sync_ohlcv_history.py
-$BASE scripts/generate_intraday_tape_context.py
-$BASE scripts/sync_agent_summary.py
-```
-
-若 worldmonitor 已啟用：
-
-```bash
-$BASE scripts/sync_worldmonitor.py --mode daily
 ```
 
 ---
@@ -216,8 +244,11 @@ Cron 任務已定義在 `cron/jobs.json`（7 個 job，含 worldmonitor）。
 若使用 Hermes Agent 排程器：
 
 ```bash
+cd ~/.hermes/profiles/etf_master
 hermes cron start
 ```
+
+> **Worldmonitor Cron 注意**：`worldmonitor_daily` 與 `worldmonitor_watch` 兩個 job 已設為啟用，但腳本在 `instance_config.json` 的 `worldmonitor.enabled: false` 時會自動跳過，**不會產生錯誤**。若確定不使用 worldmonitor，亦可在 `cron/jobs.json` 將這兩個 job 的 `"enabled"` 設為 `false`。
 
 若不使用 Hermes，可手動加入系統 crontab：
 
@@ -225,10 +256,10 @@ hermes cron start
 # 早班準備（平日 08:45）
 45 8 * * 1-5 cd ~/.hermes/profiles/etf_master/skills/ETF_TW && AGENT_ID=etf_master .venv/bin/python3 scripts/sync_market_cache.py
 
-# worldmonitor 每日快照（平日 07:50）
+# worldmonitor 每日快照（平日 07:50，需 enabled: true）
 50 7 * * 1-5 cd ~/.hermes/profiles/etf_master/skills/ETF_TW && AGENT_ID=etf_master .venv/bin/python3 scripts/sync_worldmonitor.py --mode daily
 
-# worldmonitor 事件巡檢（盤中每 30 分鐘）
+# worldmonitor 事件巡檢（盤中每 30 分鐘，需 enabled: true）
 */30 9-13 * * 1-5 cd ~/.hermes/profiles/etf_master/skills/ETF_TW && AGENT_ID=etf_master .venv/bin/python3 scripts/sync_worldmonitor.py --mode watch
 ```
 
