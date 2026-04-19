@@ -1,4 +1,4 @@
-# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.4.1)
+# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.4.6)
 
 `ETF_Master` 是一款專為台灣 ETF 投資者設計的 AI 輔助決策與資產管理系統。本專案秉持「**交易安全優先於功能完備**」的核心價值，透過「三層真相層級」治理與「雙鏈決策仲裁」機制，為投資者提供一個穩定、透明且具備深度洞察的投資工作台。
 
@@ -62,14 +62,16 @@ uv run skills/stock-analysis-tw/scripts/analyze_stock.py 0050.TW
 ---
 
 ## 📅 自動化排程 (Cron Jobs)
-系統預設 **7 個**關鍵自動化任務（定義於 `cron/jobs.json`）：
+系統預設 **9 個**關鍵自動化任務（定義於 `cron/jobs.json`）：
 1. **早班準備 (08:45)**：盤前感知與復盤。
 2. **盤中智慧掃描 (每30分)**：動態刷新報價、量化診斷與決策共識。
 3. **盤後收工 (15:00)**：每日總結、決策品質評分與 Wiki 沉澱。
-4. **每週深度復盤 (週六)**：長線趨勢對齊與週報生成。
-5. **健康巡檢 (08:00)**：確保執行環境與 API 連線完好。
-6. **worldmonitor 每日快照 (07:50 平日)**：拉取全球供應鏈/地緣風險信號。
-7. **worldmonitor 事件巡檢 (盤中每30分)**：偵測 L2/L3 升級事件。
+4. **決策自動復盤 (15:05 平日)**：T+N 價格回填、verdict 判定、雙鏈勝率統計。
+5. **每週深度復盤 (週六 09:00)**：長線趨勢對齊與週報生成。
+6. **決策品質週報 (週六 09:05)**：產出雙鏈勝率 Wiki 供 AI Bridge 引用。
+7. **健康巡檢 (08:00)**：確保執行環境與 API 連線完好。
+8. **worldmonitor 每日快照 (07:50 平日)**：拉取全球供應鏈/地緣風險信號。
+9. **worldmonitor 事件巡檢 (盤中每30分)**：偵測 L2/L3 升級事件。
 
 ---
 
@@ -103,6 +105,13 @@ AGENT_ID=etf_master .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.
 ---
 
 ## 📦 版本紀錄
+
+### v1.4.6 (2026-04-20)
+- feat(reviews): 自動決策復盤管線 — `sync_decision_reviews.py`（15:05 盤後 T+N 回填 + ±1.5% verdict 判定 + outcome_final + chain_breakdown 統計）
+- feat(weekly): 決策品質週報 — `generate_decision_quality_weekly.py`（週六 09:05 產出 `wiki/decision-weekly-YYYY-WNN.md` + `decision-quality-latest.md`）
+- feat(provenance): `build_provenance_record()` 新增 `chain_sources` 參數，記錄雙鏈仲裁來源
+- feat(cron): 新增 2 個 job（ETF 決策自動復盤、ETF 決策品質週報），Job 數量 7→9
+- test: 15 新增測試全通，全套 364 tests passed
 
 ### v1.4.1 (2026-04-19)
 - fix(verify): `verify_deployment.sh` 實測修正 — 移除 `set -e`、修正 `/api/positions` 端點（改讀 `/api/overview.positions`）、修正交易時段閘門測試指令（`validate-order`）
