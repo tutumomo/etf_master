@@ -21,7 +21,8 @@ from etf_core import context
 TW_TZ = ZoneInfo('Asia/Taipei')
 
 # Profile-level wiki (preferred) — same location used by generate_ai_decision_request.py
-WIKI_DIR = Path(__file__).resolve().parents[2] / 'wiki'
+# Script at skills/ETF_TW/scripts/ → parents[0]=scripts, [1]=ETF_TW, [2]=skills, [3]=profile
+WIKI_DIR = Path(__file__).resolve().parents[3] / 'wiki'
 
 
 # ---------------------------------------------------------------------------
