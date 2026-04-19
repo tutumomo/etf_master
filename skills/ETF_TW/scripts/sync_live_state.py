@@ -49,11 +49,32 @@ def build_live_positions_payload(positions, updated_at: str) -> dict:
     }
 
 
-def build_live_account_snapshot(balance, position_count: int, updated_at: str) -> dict:
+def build_live_account_snapshot(balance, position_count: int, updated_at: str, positions=None) -> dict:
+    api_market_value = float(getattr(balance, "market_value", 0) or 0)
+    # Shioaji API returns 0 for market_value; compute from positions if available
+    if api_market_value == 0 and positions:
+        calculated_mv = sum(
+            float(getattr(p, "market_value", 0) or 0)
+            for p in positions
+        )
+        # If position-level market_value is also 0, fallback to qty × current_price
+        if calculated_mv == 0:
+            calculated_mv = sum(
+                float(getattr(p, "quantity", 0) or 0) * float(getattr(p, "current_price", 0) or 0)
+                for p in positions
+            )
+        api_market_value = round(calculated_mv, 2)
+
+    cash = float(getattr(balance, "cash_available", 0) or 0)
+    api_total_equity = float(getattr(balance, "total_value", 0) or 0)
+    # If API total_equity is 0 or only reflects cash, recompute from cash + market_value
+    if api_total_equity == 0 and api_market_value > 0:
+        api_total_equity = round(cash + api_market_value, 2)
+
     return {
-        "cash": float(getattr(balance, "cash_available", 0) or 0),
-        "market_value": float(getattr(balance, "market_value", 0) or 0),
-        "total_equity": float(getattr(balance, "total_value", 0) or 0),
+        "cash": cash,
+        "market_value": api_market_value,
+        "total_equity": api_total_equity,
         "updated_at": updated_at,
         "source": "live_broker",
         "position_count": position_count,
@@ -81,7 +102,7 @@ async def main() -> int:
     updated_at = datetime.now().isoformat()
 
     POSITIONS_STATE_PATH.write_text(json.dumps(build_live_positions_payload(positions, updated_at), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    ACCOUNT_STATE_PATH.write_text(json.dumps(build_live_account_snapshot(balance, len(positions), updated_at), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    ACCOUNT_STATE_PATH.write_text(json.dumps(build_live_account_snapshot(balance, len(positions), updated_at, positions=positions), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print("LIVE_STATE_SYNC_OK")
     return 0
 
