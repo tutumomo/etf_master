@@ -38,9 +38,11 @@ Data flow per SOUL.md alignment principle: **analysis** from stock-analysis + ta
 - Dashboard and sync scripts must both read/write instance state.
 - **Downstream summaries must NEVER overwrite upstream truth**: `agent_summary.json`, `intraday_tape_context.json` are display layer; they cannot overwrite `positions.json`, `account_snapshot.json`, `orders_open.json`.
 
-### Refresh Pipeline (10 scripts, sequential order matters)
+### Refresh Pipeline (11 scripts, sequential order matters)
 
-1. `sync_strategy_link.py` → 2. `sync_live_state.py` / `sync_paper_state.py` → 3. `sync_market_cache.py` → 4. `generate_market_event_context.py` → 5. `generate_taiwan_market_context.py` → 6. `check_major_event_trigger.py` → 7. `sync_portfolio_snapshot.py` → 8. `sync_ohlcv_history.py` → 9. `generate_intraday_tape_context.py` → 10. `sync_agent_summary.py`
+1. `sync_strategy_link.py` → 2. `sync_live_state.py` / `sync_paper_state.py` → 3. `sync_market_cache.py` → 4. `generate_market_event_context.py` → 5. `generate_taiwan_market_context.py` → 6. `check_major_event_trigger.py` → 7. `sync_portfolio_snapshot.py` → 8. `sync_ohlcv_history.py` → 9. `generate_intraday_tape_context.py` → 10. `sync_agent_summary.py` → 11. `sync_worldmonitor.py --mode daily`
+
+> **Intraday watch (independent cron)**: `sync_worldmonitor.py --mode watch` every 30 min during market hours — detects L2/L3 risk escalations and appends to `worldmonitor_alerts.jsonl`.
 
 ### AI Decision Bridge
 
@@ -172,6 +174,10 @@ In `execute_code`, `os.path.expanduser("~")` resolves correctly. But in `termina
 8. **Ghost order detection**: `broker_order_id: null` + `verified: false` + `order_id: ""` = phantom order — NEVER report as placed.
 9. **Credential reading**: `read_file()` masks API keys as `***`; must use Python `open()` + `line.split('=', 1)` to read `private/.env`.
 10. **Cron output**: all cron task output must be in Traditional Chinese.
+11. **worldmonitor API schema**: `chokepoints[].disruptionScore/status/warRiskTier` — NO `global_stress_level` field; derive it via `_derive_global_stress_level()`. Shipping stress fields are `stressScore`/`stressLevel`, not `shipping_stress_index`.
+12. **worldmonitor bot filter**: `middleware.ts` blocks `python-requests`/`curl` UA before auth. Always send `User-Agent: Mozilla/5.0 ETF-Master/1.0` header.
+13. **worldmonitor config**: lives in `instance_config.json` under `"worldmonitor": {"enabled": bool, "base_url": "...", "api_key": "..."}`. Template at `instance_config.json.example`. Set `enabled: false` if no API key.
+14. **`worldmonitor_alerts.jsonl` is append-only** — never overwrite; L3 alerts auto-trigger `check_major_event_trigger.py`.
 
 <!-- GSD:project-start source:PROJECT.md -->
 ## Project
