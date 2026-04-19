@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+MSG_FILE="$1"
+MSG=$(head -n1 "$MSG_FILE")
+
+if [[ "$MSG" =~ ^docs(\(|:).* ]]; then
+  CHANGED=$(git diff --cached --name-only)
+  if echo "$CHANGED" | grep -Ev '^(README\.md|DEPLOYMENT\.md|CHANGELOG\.md|skills/ETF_TW/CHANGELOG\.md|docs/|wiki/|\.github/|.*\.md$)' >/tmp/non_doc_files_local.txt; then
+    echo "❌ docs commit 不能包含程式碼路徑："
+    cat /tmp/non_doc_files_local.txt
+    echo "請改用 feat/fix/chore/test/refactor 等 type，或分拆 commit。"
+    exit 1
+  fi
+fi

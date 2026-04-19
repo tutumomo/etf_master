@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## v1.4.3 — 2026-04-19
+
+### Added
+- **GitHub 操作可追溯補強**：新增 `RELEASE_AUDIT.md`，固定記錄 `tag -> commit -> scope -> validation`。
+- **Commit scope guard**：新增 `.github/workflows/commit-scope-guard.yml`，當 commit message 為 `docs(...)` 或 `docs:` 時，禁止夾帶非文件路徑。
+- **Local hook guard**：新增 `.githooks/commit-msg`（可搭配 `git config core.hooksPath .githooks`）在本機預先阻擋 `docs` 混合 commit。
+- **Release tag audit**：新增 `v1.4.0-audit` annotated tag（對齊 `v1.4.0` 指向 commit），提升版本審計可讀性。
+
 ## v1.4.2 — 2026-04-19
 
 ### Fixed

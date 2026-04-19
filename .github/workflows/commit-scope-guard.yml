@@ -1,0 +1,59 @@
+name: Commit Scope Guard
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate docs commit scope
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+            HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+            RANGE="$BASE_SHA..$HEAD_SHA"
+          else
+            BEFORE="${{ github.event.before }}"
+            AFTER="${{ github.sha }}"
+            if [[ "$BEFORE" == "0000000000000000000000000000000000000000" ]]; then
+              RANGE="$AFTER^..$AFTER"
+            else
+              RANGE="$BEFORE..$AFTER"
+            fi
+          fi
+
+          echo "Checking range: $RANGE"
+
+          VIOLATION=0
+          while IFS= read -r COMMIT; do
+            MSG=$(git log -1 --pretty=%s "$COMMIT")
+            if [[ "$MSG" =~ ^docs(\(|:).* ]]; then
+              echo "Inspecting docs commit: $COMMIT | $MSG"
+              git diff-tree --no-commit-id --name-only -r "$COMMIT" > /tmp/changed_files.txt
+
+              # docs commit 允許路徑：文件與知識庫
+              if grep -Ev '^(README\.md|DEPLOYMENT\.md|CHANGELOG\.md|skills/ETF_TW/CHANGELOG\.md|docs/|wiki/|\.github/|.*\.md$)' /tmp/changed_files.txt >/tmp/non_doc_files.txt; then
+                echo "❌ docs commit contains non-doc paths:"
+                cat /tmp/non_doc_files.txt
+                VIOLATION=1
+              fi
+            fi
+          done < <(git rev-list "$RANGE")
+
+          if [[ $VIOLATION -ne 0 ]]; then
+            echo "Commit scope guard failed. Use feat/fix/chore/test/refactor for code changes."
+            exit 1
+          fi
+
+          echo "✅ Commit scope guard passed"
