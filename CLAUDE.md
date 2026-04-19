@@ -54,6 +54,13 @@ The bridge is at `scripts/ai_decision_bridge.py`. It follows a staged autonomy m
 
 Key contract files in instance state: `ai_decision_request.json`, `ai_decision_response.json`, `ai_decision_outcome.jsonl`, `ai_decision_review.jsonl`
 
+**`ai_decision_request.json` now aggregates 15 input sources** (as of v1.4.4/v1.4.5):
+- Sources 1–13: market cache, positions, strategy link, OHLCV, event context, Taiwan market context, intraday tape, portfolio snapshot, open orders, agent summary, quality report, event review state, daily order limits
+- Source 14: `worldmonitor_context` — global risk signals (supply chain / geopolitical / taiwan strait)
+- Source 15: `wiki_context` — 4 fields: `market_view`, `risk_signal`, `investment_strategies`, `undervalued_ranking`
+
+**Wiki path resolution** in `generate_ai_decision_request.py`: auto-discovers profile wiki at `~/.hermes/profiles/<profile>/wiki/` then falls back to instance wiki. Supports both `{SYMBOL}.md` and slug form (e.g. `0050-yuanta-taiwan-50.md`) for entity pages.
+
 ### Dual Decision Consensus
 
 Two parallel decision pipelines converge via `resolve_consensus()` in `run_auto_decision_scan.py`:
@@ -138,6 +145,10 @@ cd ~/.hermes/profiles/etf_master/skills/ETF_TW
 | Symbol normalization | `skills/ETF_TW/docs/SYMBOL_NORMALIZATION.md` |
 | Instance state (truth) | `skills/ETF_TW/instances/<agent_id>/state/` |
 | Private config (NEVER commit) | `skills/ETF_TW/instances/<agent_id>/instance_config.json` |
+| Version changelog | `skills/ETF_TW/CHANGELOG.md` |
+| Wiki knowledge base (profile) | `wiki/` (market-view, risk-signal, investment-strategies, undervalued-etf-ranking, entities/) |
+| Wiki knowledge base (skill) | `skills/ETF_TW/wiki/` (same structure, fallback source) |
+| Deployment health check | `scripts/verify_deployment.sh` |
 
 ## Naming Conventions
 
@@ -178,6 +189,10 @@ In `execute_code`, `os.path.expanduser("~")` resolves correctly. But in `termina
 12. **worldmonitor bot filter**: `middleware.ts` blocks `python-requests`/`curl` UA before auth. Always send `User-Agent: Mozilla/5.0 ETF-Master/1.0` header.
 13. **worldmonitor config**: lives in `instance_config.json` under `"worldmonitor": {"enabled": bool, "base_url": "...", "api_key": "..."}`. Template at `instance_config.json.example`. Set `enabled: false` if no API key.
 14. **`worldmonitor_alerts.jsonl` is append-only** — never overwrite; L3 alerts auto-trigger `check_major_event_trigger.py`.
+15. **Wiki knowledge base** (`skills/ETF_TW/wiki/` and profile-level `wiki/`): 4 standard pages injected into AI Decision Request — `market-view.md`, `risk-signal.md`, `investment-strategies.md`, `undervalued-etf-ranking.md`. Add new wiki pages here; they are auto-discovered by path prefix matching.
+16. **`sync_live_state.py` market_value fix**: Shioaji API may return `market_value=0` on positions; script now recalculates from `quantity × close_price` when this happens. `total_equity` is always recomputed as `cash + market_value`.
+17. **Multi-instance deployment**: New instances created via `hermes profile create <name> --clone-from etf_master`. Instance state lives under `skills/ETF_TW/instances/<name>/state/`. Use `AGENT_ID=<name> DASHBOARD_PORT=<port>` to run in parallel. Verify with `bash scripts/verify_deployment.sh`.
+18. **`verify_deployment.sh`**: Run from profile root with `AGENT_ID=<id> DASHBOARD_PORT=<port> bash scripts/verify_deployment.sh`. Positions check reads `/api/overview.positions` (not `/api/positions` which does not exist). Trading hours gate uses `validate-order` subcommand.
 
 <!-- GSD:project-start source:PROJECT.md -->
 ## Project
@@ -399,7 +414,7 @@ ETF_TW 是一個建構在 Hermes Agent 上的台灣 ETF 投資助理，核心功
 - Pattern: One JSONL record per decision with `inputs_digest` (compressed market context), `outputs` (action/symbol/confidence), and `review_lifecycle` (T1/T3/T10 back-fill slots); records are never deleted or overwritten
 - Purpose: Formal request/response protocol between dashboard/scripts and AI agent
 - Examples: `scripts/ai_decision_bridge.py` (`build_ai_decision_request()`, `build_ai_decision_response()`, `is_ai_decision_response_stale()`)
-- Pattern: Request artifact (`ai_decision_request.json`) aggregates 12 input sources; Response artifact (`ai_decision_response.json`) includes `expires_at`, `stale` flag, `confidence`, `uncertainty`, `strategy_alignment`, and `input_refs` for traceability; freshness tracked via ISO timestamps with `Asia/Taipei` timezone
+- Pattern: Request artifact (`ai_decision_request.json`) aggregates 15 input sources (market data, positions, strategy, worldmonitor, wiki × 4, etc.); Response artifact (`ai_decision_response.json`) includes `expires_at`, `stale` flag, `confidence`, `uncertainty`, `strategy_alignment`, and `input_refs` for traceability; freshness tracked via ISO timestamps with `Asia/Taipei` timezone
 - Purpose: Route all path resolution through instance-aware functions
 - Examples: `scripts/etf_core/context.py` (`get_instance_id()`, `get_state_dir()`, `get_instance_dir()`, `get_instance_config()`, `get_broker_config()`)
 - Pattern: All state paths derived from `AGENT_ID` env var; auto-creates directory structure; singleton warning for missing env var
