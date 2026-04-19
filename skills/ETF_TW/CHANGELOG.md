@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## v1.4.0 — 2026-04-19
+
+### Added
+- **worldmonitor 全球風險雷達整合**：新增 `sync_worldmonitor.py`（daily/watch 雙模式）、`worldmonitor_snapshot.json`、`worldmonitor_alerts.jsonl`、dashboard `/api/worldmonitor-status` 與 `/api/worldmonitor/refresh`。
+- **AI 決策輸入擴充**：`inputs.worldmonitor_context` 正式納入 `ai_decision_request.json`，作為第 14 個輸入源。
+
+### Fixed
+- 修正 `sync_worldmonitor.py` 在 watch 模式 L3 事件觸發時的錯誤路徑（`skills/ETF_TW/skills/ETF_TW/...`），確保 `check_major_event_trigger.py` 能正確被呼叫。
+- 修正 worldmonitor 輸入源描述不一致（第 13/14 個輸入源）為「第 14 個輸入源」。
+- 修正每日送單配額測試使用硬編碼日期造成的失敗（改為 Asia/Taipei 當日動態日期），恢復全套測試穩定性。
+
+### Validation
+- `tests/test_sync_worldmonitor.py`: 9 passed
+- `pytest tests/ -q`: 全綠（修復前 3 failed）
+
 ## v1.3.2 — 2026-04-19
 
 ### Added

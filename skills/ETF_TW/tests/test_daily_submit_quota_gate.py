@@ -1,12 +1,19 @@
 import json
 import sys
+from datetime import datetime
 from pathlib import Path
 from unittest.mock import patch
+
+from zoneinfo import ZoneInfo
 
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
 from scripts.pre_flight_gate import check_order
+
+TW_TZ = ZoneInfo("Asia/Taipei")
+TODAY = datetime.now(TW_TZ).date().isoformat()
+NOW_STR = datetime.now(TW_TZ).isoformat()
 
 
 def _write_daily_order_limits(
@@ -18,10 +25,10 @@ def _write_daily_order_limits(
     (tmp_path / "daily_order_limits.json").write_text(
         json.dumps(
             {
-                "date": "2026-04-17",
+                "date": TODAY,
                 "buy_submit_count": buy_submit_count,
                 "sell_submit_count": sell_submit_count,
-                "last_updated": "2026-04-17T09:00:00+08:00",
+                "last_updated": NOW_STR,
             }
         ),
         encoding="utf-8",

@@ -225,7 +225,7 @@ def build_agent_consumed_response_payload(
 
 
 def _build_worldmonitor_context(snapshot: dict, alerts: list[dict]) -> dict:
-    """將 worldmonitor snapshot + alerts 整理成 AI 決策橋的第 13 個輸入源"""
+    """將 worldmonitor snapshot + alerts 整理成 AI 決策橋的第 14 個輸入源"""
     level_rank = {'L1': 1, 'L2': 2, 'L3': 3}
     highest = 'none'
     affected_signals: dict[str, dict] = {}

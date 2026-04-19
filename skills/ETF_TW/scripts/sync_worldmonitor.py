@@ -44,7 +44,9 @@ RISK_DIMENSION_KEYWORDS: dict[str, list[str]] = {
 def _get_config() -> dict:
     """從 instance_config 讀取 worldmonitor 設定"""
     try:
-        cfg = get_instance_config()
+        import json as _json
+        cfg_path = get_instance_config()
+        cfg = _json.loads(cfg_path.read_text())
         return cfg.get('worldmonitor', {})
     except Exception:
         return {}
@@ -53,7 +55,10 @@ def _get_config() -> dict:
 def _fetch_endpoint(base_url: str, path: str, api_key: str = '') -> dict:
     """呼叫單一 worldmonitor endpoint，失敗時回傳空 dict"""
     try:
-        headers = {'Origin': base_url}
+        headers = {
+            'Origin': 'https://worldmonitor.app',
+            'User-Agent': 'Mozilla/5.0 ETF-Master/1.0 (market-monitor; +https://worldmonitor.app)',
+        }
         if api_key:
             headers['X-WorldMonitor-Key'] = api_key
         resp = requests.get(f'{base_url}{path}', headers=headers, timeout=10)
@@ -84,6 +89,53 @@ def _compute_affected_etfs(risk_type: str, watchlist: list[dict]) -> list[str]:
     return affected
 
 
+def _derive_global_stress_level(chokepoints: list[dict]) -> str:
+    """從 chokepoints disruptionScore 推算全球供應鏈壓力等級"""
+    if not chokepoints:
+        return 'unknown'
+    scores = [cp.get('disruptionScore', 0) for cp in chokepoints]
+    max_score = max(scores)
+    avg_score = sum(scores) / len(scores)
+    red_count = sum(1 for cp in chokepoints if cp.get('status') == 'red')
+    if max_score >= 70 or red_count >= 2:
+        return 'critical' if max_score >= 90 else 'high'
+    if max_score >= 40 or avg_score >= 20:
+        return 'elevated'
+    if max_score >= 20 or avg_score >= 10:
+        return 'moderate'
+    return 'low'
+
+
+def _derive_taiwan_strait_risk(chokepoints: list[dict]) -> str:
+    """從 taiwan_strait chokepoint 的 warRiskTier 推算台海風險"""
+    tier_map = {
+        'WAR_RISK_TIER_WAR_ZONE': 'critical',
+        'WAR_RISK_TIER_CRITICAL': 'high',
+        'WAR_RISK_TIER_HIGH': 'elevated',
+        'WAR_RISK_TIER_ELEVATED': 'moderate',
+        'WAR_RISK_TIER_NORMAL': 'low',
+    }
+    for cp in chokepoints:
+        if cp.get('id') == 'taiwan_strait':
+            tier = cp.get('warRiskTier', '')
+            return tier_map.get(tier, 'unknown')
+    return 'unknown'
+
+
+def _derive_taiwan_semiconductor_risk(minerals: list[dict]) -> str:
+    """從 critical minerals 找半導體相關礦物最高風險"""
+    semi_minerals = {'silicon', 'germanium', 'gallium', 'indium', 'rare earth', 'cobalt', 'lithium'}
+    risk_rank = {'critical': 4, 'high': 3, 'moderate': 2, 'elevated': 2, 'low': 1, 'unknown': 0}
+    highest = 'unknown'
+    for m in minerals:
+        name = m.get('mineral', '').lower()
+        if any(s in name for s in semi_minerals):
+            risk = m.get('riskRating', 'unknown').lower()
+            if risk_rank.get(risk, 0) > risk_rank.get(highest, 0):
+                highest = risk
+    return highest if highest != 'unknown' else 'low'
+
+
 def _build_snapshot(responses: dict, now_str: str) -> dict:
     """將各 endpoint 回應正規化成 snapshot 格式"""
     sc = responses.get('supply_chain_status', {})
@@ -91,22 +143,39 @@ def _build_snapshot(responses: dict, now_str: str) -> dict:
     sh = responses.get('shipping_stress', {})
     cm = responses.get('critical_minerals', {})
 
+    chokepoints = sc.get('chokepoints', [])
+    minerals = cm.get('minerals', [])
+
+    # 從 chokepoints 推算（API 無 global_stress_level 欄位）
+    global_stress_level = _derive_global_stress_level(chokepoints)
+    taiwan_strait_risk = _derive_taiwan_strait_risk(chokepoints)
+
+    # shipping-stress API 欄位名稱是 stressLevel / stressScore
+    shipping_stress_level = sh.get('stressLevel', 'unknown')
+    shipping_stress_score = sh.get('stressScore')
+
+    # conflict API 可能為空（需 ACLED key），fallback 到 chokepoint 推算
+    global_risk_level = cf.get('global_risk_level', 'unknown')
+    if global_risk_level == 'unknown' and chokepoints:
+        global_risk_level = global_stress_level  # 最佳 fallback
+
     return {
         'updated_at': now_str,
         'source': 'worldmonitor',
         'supply_chain': {
-            'global_stress_level': sc.get('global_stress_level', 'unknown'),
-            'chokepoints': sc.get('chokepoints', []),
-            'shipping_stress_index': sh.get('shipping_stress_index'),
+            'global_stress_level': global_stress_level,
+            'chokepoints': chokepoints,
+            'shipping_stress_level': shipping_stress_level,
+            'shipping_stress_score': shipping_stress_score,
             'critical_minerals': {
-                'taiwan_semiconductor_risk': cm.get('taiwan_semiconductor_risk', 'unknown'),
+                'taiwan_semiconductor_risk': _derive_taiwan_semiconductor_risk(minerals),
             },
         },
         'geopolitical': {
-            'global_risk_level': cf.get('global_risk_level', 'unknown'),
+            'global_risk_level': global_risk_level,
             'active_conflicts': cf.get('active_conflicts', 0),
             'highest_severity': cf.get('highest_severity', 'unknown'),
-            'taiwan_strait_risk': cf.get('taiwan_strait_risk', 'unknown'),
+            'taiwan_strait_risk': taiwan_strait_risk,
         },
         'macro': {
             'usd_index_trend': cf.get('usd_index_trend', 'unknown'),
@@ -227,11 +296,11 @@ def run_watch(watchlist_items: list[dict] | None = None) -> None:
 
     if any(a['severity'] == 'L3' for a in alerts):
         import subprocess
-        venv_python = ROOT / 'skills' / 'ETF_TW' / '.venv' / 'bin' / 'python'
-        trigger_script = ROOT / 'skills' / 'ETF_TW' / 'scripts' / 'check_major_event_trigger.py'
+        venv_python = ROOT / '.venv' / 'bin' / 'python3'
+        trigger_script = ROOT / 'scripts' / 'check_major_event_trigger.py'
         if not venv_python.exists():
             venv_python = Path(sys.executable)
-        subprocess.run([str(venv_python), str(trigger_script)], check=False)
+        subprocess.run([str(venv_python), str(trigger_script)], cwd=str(ROOT), check=False)
 
     return None
 

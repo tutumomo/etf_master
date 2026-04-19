@@ -1,12 +1,17 @@
 import json
 import os
 import importlib.util
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 
 ROOT = Path(__file__).resolve().parents[1]
 MODULE_PATH = ROOT / "dashboard" / "app.py"
 TEMPLATE_PATH = ROOT / "dashboard" / "templates" / "overview.html"
+TW_TZ = ZoneInfo("Asia/Taipei")
+TODAY = datetime.now(TW_TZ).date().isoformat()
+NOW_STR = datetime.now(TW_TZ).isoformat()
 
 
 def _load_dashboard_app():
@@ -60,10 +65,10 @@ def test_build_overview_model_exposes_daily_submit_quota_state(tmp_path):
         (tmp_path / "daily_order_limits.json").write_text(
             json.dumps(
                 {
-                    "date": "2026-04-17",
+                    "date": TODAY,
                     "buy_submit_count": 1,
                     "sell_submit_count": 0,
-                    "last_updated": "2026-04-17T09:00:00+08:00",
+                    "last_updated": NOW_STR,
                 }
             ),
             encoding="utf-8",

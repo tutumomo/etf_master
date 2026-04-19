@@ -1,4 +1,4 @@
-# ETF_TW：Hermes 版台灣 ETF 技能與 Dashboard (v1.3.2)
+# ETF_TW：Hermes 版台灣 ETF 技能與 Dashboard (v1.4.0)
 
 這是目前掛載在 Hermes profile (`etf_master`) 下的 ETF_TW 技能目錄。
 它提供台灣 ETF 的研究、風控、持倉監控、state-driven dashboard，以及與券商流程對齊的交易輔助能力。
@@ -39,6 +39,7 @@ AGENT_ID=etf_master .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.
 - 持倉與掛單監控
 - state-driven Dashboard
 - 決策引擎 / AI Bridge 對齊
+- worldmonitor 全球風險雷達（daily/watch 快照 + 事件警報）
 - 交易前 validate / preview / pre-flight 檢查
 
 ## 注意
