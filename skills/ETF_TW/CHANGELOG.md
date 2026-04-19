@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## v1.4.1 — 2026-04-19
+
+### Fixed
+- **Preview/Validate/Submit-Preview 風控鏈一致化**：`scripts/etf_tw.py` 的 `preview-account`、`validate-account`、`submit-preview` 全部接入 `evaluate_pre_flight_gate()`，統一使用 live account context（cash/positions）走 `pre_flight_gate.check_order()`。
+- **validate-account 真偽差異修補**：不再只看 adapter `validate_order()`；現在 `valid` 需同時滿足 `validate_order && pre_flight_gate.passed`，並輸出 `pre_flight_gate` 詳細阻擋原因。
+- **submit-preview 最終檢核補強**：`validation.valid` 併入 gate 結果，若 gate 阻擋會寫入 `validation.errors`，避免「可預覽但風控已拒絕」的假陽性。
+- **Bug 2 修復驗證入冊**：確認 `scripts/distill_to_wiki.py --help` 僅顯示說明，不再觸發 wiki 寫入。
+
+### Validation
+- `AGENT_ID=etf_master .venv/bin/python3 scripts/etf_tw.py preview-account --account sinopac_01 data/tmp_preview_risk_test.json` → `status=blocked_by_gate`（原因：`outside_trading_hours`，表示已成功走 gate）
+- `AGENT_ID=etf_master .venv/bin/python3 scripts/etf_tw.py validate-account --account sinopac_01 data/tmp_preview_risk_test.json` → `valid=false`，含 `pre_flight_gate` 與阻擋理由
+- `AGENT_ID=etf_master .venv/bin/python3 scripts/etf_tw.py submit-preview --account sinopac_01 data/tmp_preview_risk_test.json` → `validation.valid=false`，`errors` 含 gate 阻擋訊息
+- `AGENT_ID=etf_master .venv/bin/python3 -c "from scripts.pre_flight_gate import check_order; ... force_trading_hours=False ..."` → `reason=exceeds_sizing_limit`, `allowed=169`
+- `before/after stat + .venv/bin/python3 scripts/distill_to_wiki.py --help` → wiki mtime 不變（未寫入）
+- `AGENT_ID=etf_master .venv/bin/python3 -m pytest tests -q` → **353 passed**
+
 ## v1.4.0 — 2026-04-19
 
 ### Added

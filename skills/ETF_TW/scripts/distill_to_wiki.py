@@ -166,4 +166,13 @@ def main() -> int:
 
 
 if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser(
+        description='將最新市場數據沉澱至 llm-wiki 知識庫（更新 wiki entity 頁面的數據快照）'
+    )
+    parser.add_argument('--dry-run', action='store_true', help='模擬執行，不寫入 wiki')
+    args = parser.parse_args()
+    if args.dry_run:
+        print('[distill_to_wiki] dry-run 模式：不寫入 wiki')
+        raise SystemExit(0)
     raise SystemExit(main())

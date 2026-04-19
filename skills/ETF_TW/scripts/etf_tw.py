@@ -48,6 +48,8 @@ def _normalize_etf_item(symbol: str, item: dict) -> dict:
     # Map aliases for compatibility with code that uses different names
     if "description" in out and "summary" not in out:
         out["summary"] = out["description"]
+    if "summary" not in out:
+        out["summary"] = out.get("name", symbol)
     if "dividend_frequency" in out and "distribution_frequency" not in out:
         out["distribution_frequency"] = out["dividend_frequency"]
     if "index" in out and "focus" not in out:
@@ -123,6 +125,67 @@ def known_symbols() -> set[str]:
         return set(universe.keys())
     # Fallback: curated set only.
     return {etf["symbol"] for etf in load_etfs()}
+
+
+async def evaluate_pre_flight_gate(adapter, normalized_order: Order) -> dict:
+    """Run unified pre-flight gate using live account balance/positions context.
+
+    This keeps preview/validate/submit-preview consistent with the real submit path.
+    """
+    try:
+        from scripts.pre_flight_gate import check_order
+    except ImportError:
+        from pre_flight_gate import check_order
+
+    try:
+        from scripts.etf_core import context as etf_context
+    except ImportError:
+        from etf_core import context as etf_context
+
+    context = {
+        'cash': 0.0,
+        'max_concentration_pct': getattr(adapter, 'config', {}).get('max_concentration_pct', 0.3),
+        'max_single_limit_twd': getattr(adapter, 'config', {}).get('max_single_limit_twd', 500000.0),
+        'risk_temperature': getattr(adapter, 'config', {}).get('risk_temperature', 1.0),
+        'force_trading_hours': getattr(adapter, 'config', {}).get('force_trading_hours', True),
+        'inventory': {},
+        'current_holding_value': 0.0,
+        'total_portfolio_value': 0.0,
+        'state_dir': etf_context.get_state_dir(),
+    }
+
+    try:
+        account_id = normalized_order.account_id or ""
+        balance = await adapter.get_account_balance(account_id)
+        context['cash'] = float(getattr(balance, 'cash_available', 0) or 0)
+        context['total_portfolio_value'] = float(getattr(balance, 'total_value', 0) or 0)
+
+        positions = await adapter.get_positions(account_id)
+        context['inventory'] = {getattr(p, 'symbol', ''): float(getattr(p, 'quantity', 0) or 0) for p in positions}
+        for p in positions:
+            if getattr(p, 'symbol', '') == normalized_order.symbol:
+                context['current_holding_value'] = float(getattr(p, 'market_value', 0) or 0)
+                break
+    except Exception as e:
+        # Keep behavior safe: if account context retrieval fails, surface as gate failure.
+        return {
+            'passed': False,
+            'reason': 'preflight_context_unavailable',
+            'details': {'error': str(e)},
+        }
+
+    lot_type = 'board' if normalized_order.quantity >= 1000 else 'odd'
+    order_dict = {
+        'symbol': normalized_order.symbol,
+        'side': normalized_order.action,
+        'quantity': normalized_order.quantity,
+        'price': normalized_order.price or 0.0,
+        'order_type': normalized_order.order_type,
+        'lot_type': lot_type,
+        'is_submit': False,
+        'is_confirmed': False,
+    }
+    return check_order(order_dict, context)
 
 
 def cmd_universe_sync() -> int:
@@ -336,13 +399,15 @@ async def cmd_preview_account(args: argparse.Namespace) -> int:
             
             normalized_order = normalize_order_payload(order)
             
-            # Preview
+            # Preview + pre-flight gate（帳戶餘額/持倉風控）
             preview_result = await adapter.preview_order(normalized_order)
+            gate_result = await evaluate_pre_flight_gate(adapter, normalized_order)
             results.append({
                 "index": index,
                 "order": order,
                 "preview": preview_result.__dict__ if hasattr(preview_result, '__dict__') else preview_result,
-                "status": "previewed"
+                "pre_flight_gate": gate_result,
+                "status": "previewed" if gate_result.get("passed", False) else "blocked_by_gate"
             })
         
         # Output results
@@ -376,11 +441,17 @@ async def cmd_validate_account(args: argparse.Namespace) -> int:
         for index, order in enumerate(orders, start=1):
             normalized_order = normalize_order_payload(order)
             is_valid, warnings = await adapter.validate_order(normalized_order)
+            gate_result = await evaluate_pre_flight_gate(adapter, normalized_order)
+            combined_valid = bool(is_valid) and bool(gate_result.get("passed", False))
+            combined_warnings = list(warnings or [])
+            if not gate_result.get("passed", False):
+                combined_warnings.append(f"pre-flight gate blocked: {gate_result.get('reason')}")
             results.append({
                 "index": index,
                 "order": order,
-                "valid": is_valid,
-                "warnings": warnings
+                "valid": combined_valid,
+                "warnings": combined_warnings,
+                "pre_flight_gate": gate_result
             })
         
         print(json.dumps(results, ensure_ascii=False, indent=2, default=str))
@@ -414,11 +485,17 @@ async def cmd_submit_preview(args: argparse.Namespace) -> int:
             validation = validate_order(order, symbols, config)
             normalized_order = normalize_order_payload(order)
             preview = await adapter.preview_order(normalized_order)
+            gate_result = await evaluate_pre_flight_gate(adapter, normalized_order)
             order_value = float((normalized_order.price or getattr(preview, 'price', 0) or 0) * normalized_order.quantity)
             fee = float(getattr(preview, 'fee', 0) or 0)
             tax = float(getattr(preview, 'tax', 0) or 0)
             total_cost = order_value + fee + tax
             lot_unit = '張' if normalized_order.quantity % 1000 == 0 else '股'
+            validation_errors = list(validation.get('errors', []))
+            validation_warnings = list(validation.get('warnings', []))
+            if not gate_result.get('passed', False):
+                validation_errors.append(f"pre-flight gate blocked: {gate_result.get('reason')}")
+
             checklist = {
                 'account_alias': account.get('alias', account_alias),
                 'broker_id': account.get('broker_id'),
@@ -433,9 +510,14 @@ async def cmd_submit_preview(args: argparse.Namespace) -> int:
                 'fee': round(fee, 2),
                 'tax': round(tax, 2),
                 'total_cost': round(total_cost, 2),
-                'validation': validation,
+                'validation': {
+                    'valid': bool(validation.get('valid', False)) and bool(gate_result.get('passed', False)),
+                    'errors': validation_errors,
+                    'warnings': validation_warnings,
+                },
+                'pre_flight_gate': gate_result,
                 'preview_status': getattr(preview, 'status', 'preview'),
-                'warnings': validation.get('warnings', []),
+                'warnings': validation_warnings,
             }
             results.append({'index': index, 'submit_preview': checklist})
 
