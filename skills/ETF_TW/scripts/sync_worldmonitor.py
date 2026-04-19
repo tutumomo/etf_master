@@ -25,10 +25,10 @@ from etf_core.state_io import atomic_save_json, safe_load_json, safe_append_json
 TW_TZ = ZoneInfo('Asia/Taipei')
 
 ENDPOINTS = {
-    'supply_chain_status':  '/api/supply-chain/status',
-    'conflicts_active':     '/api/conflicts/active',
-    'shipping_stress':      '/api/shipping/stress',
-    'critical_minerals':    '/api/supply-chain/critical-minerals',
+    'supply_chain_status':  '/api/supply-chain/v1/get-chokepoint-status',
+    'conflicts_active':     '/api/conflict/v1/list-acled-events',
+    'shipping_stress':      '/api/supply-chain/v1/get-shipping-stress',
+    'critical_minerals':    '/api/supply-chain/v1/get-critical-minerals',
 }
 
 # 動態曝險映射關鍵字（掃描 ETF 的 focus/index/name/symbol）
@@ -50,10 +50,13 @@ def _get_config() -> dict:
         return {}
 
 
-def _fetch_endpoint(base_url: str, path: str) -> dict:
+def _fetch_endpoint(base_url: str, path: str, api_key: str = '') -> dict:
     """呼叫單一 worldmonitor endpoint，失敗時回傳空 dict"""
     try:
-        resp = requests.get(f'{base_url}{path}', timeout=10)
+        headers = {'Origin': base_url}
+        if api_key:
+            headers['X-WorldMonitor-Key'] = api_key
+        resp = requests.get(f'{base_url}{path}', headers=headers, timeout=10)
         resp.raise_for_status()
         return resp.json()
     except Exception as e:
@@ -176,9 +179,10 @@ def run_daily() -> None:
         print('[sync_worldmonitor] 未設定 base_url，跳過')
         return None
 
+    api_key = cfg.get('api_key', '')
     responses = {}
     for key, path in ENDPOINTS.items():
-        responses[key] = _fetch_endpoint(base_url, path)
+        responses[key] = _fetch_endpoint(base_url, path, api_key)
 
     now_str = datetime.now(TW_TZ).isoformat()
     snapshot = _build_snapshot(responses, now_str)
@@ -199,12 +203,13 @@ def run_watch(watchlist_items: list[dict] | None = None) -> None:
     if not base_url:
         return None
 
+    api_key = cfg.get('api_key', '')
     state_dir = get_state_dir()
     prev_snapshot = safe_load_json(state_dir / 'worldmonitor_snapshot.json', {})
 
     responses = {}
     for key, path in ENDPOINTS.items():
-        responses[key] = _fetch_endpoint(base_url, path)
+        responses[key] = _fetch_endpoint(base_url, path, api_key)
 
     now_str = datetime.now(TW_TZ).isoformat()
     new_snapshot = _build_snapshot(responses, now_str)

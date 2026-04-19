@@ -12,20 +12,20 @@ class TestSyncWorldmonitorDaily(unittest.TestCase):
 
     def _make_mock_responses(self):
         return {
-            '/api/supply-chain/status': {
+            '/api/supply-chain/v1/get-chokepoint-status': {
                 'global_stress_level': 'moderate',
                 'chokepoints': [{'name': 'Strait of Hormuz', 'status': 'disrupted', 'severity': 3}],
             },
-            '/api/conflicts/active': {
+            '/api/conflict/v1/list-acled-events': {
                 'global_risk_level': 'elevated',
                 'active_conflicts': 3,
                 'highest_severity': 'high',
                 'taiwan_strait_risk': 'low',
             },
-            '/api/shipping/stress': {
+            '/api/supply-chain/v1/get-shipping-stress': {
                 'shipping_stress_index': 0.72,
             },
-            '/api/supply-chain/critical-minerals': {
+            '/api/supply-chain/v1/get-critical-minerals': {
                 'taiwan_semiconductor_risk': 'elevated',
             },
         }
@@ -41,7 +41,7 @@ class TestSyncWorldmonitorDaily(unittest.TestCase):
             'enabled': True,
         }
         responses = self._make_mock_responses()
-        mock_fetch.side_effect = lambda base_url, path: responses[path]
+        mock_fetch.side_effect = lambda base_url, path, api_key='': responses[path]
 
         run_daily()
 
