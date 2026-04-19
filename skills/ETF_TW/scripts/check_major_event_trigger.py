@@ -2,7 +2,8 @@
 from __future__ import annotations
 
 import hashlib
-from datetime import datetime
+import json
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 import sys
@@ -37,6 +38,63 @@ def classify_level(anomalies: list[str], market_cache: dict, market_context: dic
     return 'L1', '單一異常事件'
 
 
+def _load_worldmonitor_alerts(state_dir: Path) -> list[dict]:
+    """讀取最近 2 小時的 worldmonitor alerts"""
+    alerts_path = state_dir / 'worldmonitor_alerts.jsonl'
+    if not alerts_path.exists():
+        return []
+    try:
+        cutoff = datetime.now(timezone.utc) - timedelta(hours=2)
+        alerts = []
+        for line in alerts_path.read_text(encoding='utf-8').splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                record = json.loads(line)
+                ts_str = record.get('timestamp', '')
+                ts = datetime.fromisoformat(ts_str.replace('Z', '+00:00'))
+                if ts.tzinfo is None:
+                    ts = ts.replace(tzinfo=timezone.utc)
+                if ts >= cutoff:
+                    alerts.append(record)
+            except Exception:
+                continue
+        return alerts
+    except Exception:
+        return []
+
+
+def classify_level_with_worldmonitor(
+    anomalies: list[str],
+    market_cache: dict,
+    market_context: dict,
+    worldmonitor_alerts: list[dict] | None = None,
+) -> tuple[str, str]:
+    """擴充版 classify_level：合併 worldmonitor alerts 的嚴重度"""
+    base_level, base_reason = classify_level(anomalies, market_cache, market_context)
+
+    if not worldmonitor_alerts:
+        return base_level, base_reason
+
+    level_rank = {'none': 0, 'L1': 1, 'L2': 2, 'L3': 3}
+    wm_max_severity = 'none'
+    wm_titles = []
+    for alert in worldmonitor_alerts:
+        sev = alert.get('severity', 'L1')
+        if level_rank.get(sev, 0) > level_rank.get(wm_max_severity, 0):
+            wm_max_severity = sev
+        wm_titles.append(alert.get('title', ''))
+
+    if level_rank.get(wm_max_severity, 0) > level_rank.get(base_level, 0):
+        combined_reason = 'worldmonitor 信號升級（{}）：{}'.format(
+            wm_max_severity, '；'.join(wm_titles[:2])
+        )
+        return wm_max_severity, combined_reason
+
+    return base_level, base_reason
+
+
 def event_hash(reason: str, level: str) -> str:
     return hashlib.sha1(f'{level}:{reason}'.encode('utf-8')).hexdigest()[:12]
 
@@ -54,7 +112,8 @@ def main() -> int:
 
     if external_event_context.get('global_risk_level') == 'elevated' or external_event_context.get('geo_political_risk') == 'high':
         market_context = {**market_context, 'risk_temperature': 'elevated', 'defensive_tilt': 'high'}
-    level, category = classify_level(anomalies, market_cache, market_context)
+    worldmonitor_alerts = _load_worldmonitor_alerts(STATE)
+    level, category = classify_level_with_worldmonitor(anomalies, market_cache, market_context, worldmonitor_alerts)
     triggered = bool(anomalies)
     reason = '；'.join(anomalies) if anomalies else '無重大事件'
     current_hash = event_hash(reason, level)
