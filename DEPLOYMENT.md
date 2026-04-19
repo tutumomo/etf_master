@@ -247,7 +247,14 @@ AGENT_ID=etf_master .venv/bin/python3 -m pytest tests/ -q
 
 ## 健康巡檢清單（9 項）
 
-部署完成後或每次重大變更後，依序驗證：
+部署完成後或每次重大變更後，可用自動化腳本一鍵巡檢：
+
+```bash
+cd ~/.hermes/profiles/etf_master
+bash scripts/verify_deployment.sh
+```
+
+或逐項手動驗證：
 
 - [ ] `.venv/bin/python3 -c "import yfinance, pandas, numpy, shioaji, fastapi, uvicorn"` — 無 ImportError
 - [ ] `curl -s http://localhost:5055/api/overview` — 回傳有效 JSON
