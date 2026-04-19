@@ -149,8 +149,14 @@ def build_provenance_record(
     scan_result: dict | None = None,
     source: str = 'unknown',
     tags: list[str] | None = None,
+    chain_sources: dict | None = None,
 ) -> dict:
-    """Build a complete provenance record from request + response + optional scan context."""
+    """Build a complete provenance record from request + response + optional scan context.
+
+    Args:
+        chain_sources: Dual-chain arbitration metadata from resolve_consensus().
+            Contains rule_engine_action, ai_bridge_action, consensus_tier, etc.
+    """
     strategy_snap = compress_inputs(request_payload)
     record = {
         'provenance_version': PROVENANCE_VERSION,
@@ -163,6 +169,7 @@ def build_provenance_record(
         },
         'inputs_digest': strategy_snap,
         'outputs': compress_outputs(response_payload, scan_result),
+        'chain_sources': chain_sources,
         'review_lifecycle': {
             'T1': None,
             'T3': None,

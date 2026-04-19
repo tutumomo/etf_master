@@ -878,11 +878,23 @@ def main(argv: list[str] | None = None) -> int:
             },
         }
         scan_result = result
+        # Build chain_sources from consensus dict for dual-chain stats
+        chain_sources_payload = {
+            'rule_engine_action': consensus.get('rule_engine'),
+            'rule_engine_symbol': consensus.get('rule_engine_symbol'),
+            'ai_bridge_action': consensus.get('ai_bridge'),
+            'ai_bridge_symbol': consensus.get('ai_bridge_symbol'),
+            'consensus_tier': consensus.get('tier'),
+            'consensus_resolved': consensus.get('resolved'),
+            'strategy_aligned_rule': (consensus.get('strategy_alignment_signal') or {}).get('rule'),
+            'strategy_aligned_ai': (consensus.get('strategy_alignment_signal') or {}).get('ai'),
+        }
         record = build_provenance_record(
             request_payload=request_payload,
             response_payload=response_payload,
             scan_result=scan_result,
             source='run_auto_decision_scan',
+            chain_sources=chain_sources_payload,
         )
         append_provenance(provenance_path, record)
     except Exception as e:
