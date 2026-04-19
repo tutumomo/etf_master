@@ -17,7 +17,7 @@
 |---|---|---|---|---|---|---|
 | v1.4.0 | `ea8b0b6ee2a748722b4e7fdb73676c034f15fe9d` | `82680c9..ea8b0b6` | worldmonitor 整合主線（code+docs+tests） | `tests/test_sync_worldmonitor.py`、`pytest tests/ -q`（依 CHANGELOG） | Hermes/Claude-Code | 2026-04-19 |
 | v1.4.0-docs-followup | `d7ac4c4b8b2b0008b16c5d96f752e7001e97d3f5` | `ea8b0b6..d7ac4c4` | 實際為混合提交（docs+code+tests+wiki），非純 docs | `git show --stat d7ac4c4` 檢視 22 files changed | Hermes ETF_Master | 2026-04-19 |
-| audit-hardening-2026-04-19 | `7721dc978a5fe3eaeafa347fdb692397757489e2` | `d7ac4c4..HEAD` | branch protection + tag/audit/hook/CI guard | branch protection API 回傳 + remote tag/commit 檢查 | Hermes ETF_Master | 2026-04-19 |
+| audit-hardening-2026-04-19 | `0e5b11481423087f8d85fddfe4e67db69a5f3fcf` | `d7ac4c4..0e5b114` | branch protection + tag/audit/hook/CI guard | branch protection API 回傳（protected=true）+ remote tag/commit 檢查 | Hermes ETF_Master | 2026-04-19 |
 
 ## 使用規範
 1. 每次 release / hotfix 推送後，必須新增一列。
