@@ -122,10 +122,10 @@ with open('$PROFILE_DIR/cron/jobs.json') as f:
 jobs = data if isinstance(data, list) else data.get('jobs', [])
 print(len(jobs))
 " 2>/dev/null || echo "0")
-if [[ "$JOB_COUNT" -ge 7 ]]; then
+if [[ "$JOB_COUNT" -ge 9 ]]; then
   ok "cron/jobs.json — $JOB_COUNT 個 job 存在"
 else
-  fail "cron/jobs.json job 數量不足（發現 $JOB_COUNT，預期 ≥ 7）"
+  fail "cron/jobs.json job 數量不足（發現 $JOB_COUNT，預期 ≥ 9）"
 fi
 
 # 9. 測試套件
