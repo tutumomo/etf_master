@@ -22,6 +22,39 @@ def _load_json(path: Path) -> dict:
         return {}
 
 
+def _resolve_entity_wiki_text(symbol: str, request_payload: dict, limit: int = 800) -> str:
+    """優先吃 request 內的 wiki_context，其次 fallback 到 profile/instance wiki 檔案。"""
+    if not symbol:
+        return ''
+
+    req_entities = ((request_payload.get('wiki_context') or {}).get('entities') or {})
+    if symbol in req_entities and req_entities.get(symbol):
+        return str(req_entities[symbol])[:limit]
+
+    dirs = [
+        ROOT.parent.parent / 'wiki' / 'entities',
+        ROOT / 'instances' / 'etf_master' / 'wiki' / 'entities',
+        ROOT / 'instances' / 'etf_master' / 'llm-wiki' / 'etf',
+    ]
+    for d in dirs:
+        if not d.exists():
+            continue
+        exact = d / f'{symbol}.md'
+        if exact.exists():
+            try:
+                return exact.read_text(encoding='utf-8')[:limit]
+            except Exception:
+                pass
+        for p in sorted(d.glob(f'{symbol}-*.md')):
+            try:
+                txt = p.read_text(encoding='utf-8')
+                if txt:
+                    return txt[:limit]
+            except Exception:
+                continue
+    return ''
+
+
 def _build_agent_reasoning(request_payload: dict, quality_state: dict | None = None) -> tuple[dict, dict, str, str, str]:
     inputs = request_payload.get('inputs', {})
     strategy = inputs.get('strategy') or {}
@@ -30,6 +63,10 @@ def _build_agent_reasoning(request_payload: dict, quality_state: dict | None = N
     intelligence = (inputs.get('market_intelligence') or {}).get('intelligence') or {}
     decision_memory_context = inputs.get('decision_memory_context') or {}
     tape_context = inputs.get('intraday_tape_context') or {}
+    worldmonitor_context = inputs.get('worldmonitor_context') or {}
+    wiki_context = request_payload.get('wiki_context') or {}
+    market_view_wiki = str(wiki_context.get('market_view') or '')
+    risk_signal_wiki = str(wiki_context.get('risk_signal') or '')
 
     risk_temperature = market_context.get('risk_temperature', 'unknown')
     market_regime = market_context.get('market_regime', 'unknown')
@@ -76,6 +113,8 @@ def _build_agent_reasoning(request_payload: dict, quality_state: dict | None = N
     if sma_struct.get('structure'):
         ctx_parts.append(f"均線{sma_struct['structure']}")
     market_context_summary = '；'.join(ctx_parts) if ctx_parts else '市場數據不足，無法形成判斷。'
+    if market_view_wiki:
+        market_context_summary += '；已載入 Wiki 市場觀點背景'
 
     # Group trend insight
     group_insights = []
@@ -95,13 +134,28 @@ def _build_agent_reasoning(request_payload: dict, quality_state: dict | None = N
         event_risk_parts.append(f"防守傾向 {defensive_bias}")
     if active_events:
         event_risk_parts.append(f"關注：{'、'.join(active_events[:3])}")
+    wm_sc = worldmonitor_context.get('supply_chain_stress', 'unknown')
+    wm_geo = worldmonitor_context.get('geopolitical_risk', 'unknown')
+    wm_tw = worldmonitor_context.get('taiwan_strait_risk', 'unknown')
+    wm_alerts = int(worldmonitor_context.get('active_alerts_count', 0) or 0)
+    wm_sev = worldmonitor_context.get('highest_alert_severity', 'none')
+    if any(v != 'unknown' for v in [wm_sc, wm_geo, wm_tw]):
+        event_risk_parts.append(f"worldmonitor:供應鏈={wm_sc}/地緣={wm_geo}/台海={wm_tw}")
+    if wm_alerts > 0:
+        event_risk_parts.append(f"worldmonitor 告警 {wm_alerts} 筆（最高 {wm_sev}）")
+    if risk_signal_wiki:
+        event_risk_parts.append("已載入 Wiki 風險訊號背景")
     risk_context_summary = '；'.join(event_risk_parts) if event_risk_parts else '外部事件風險數據不足。'
 
     if not intelligence:
+        market_summary_final = pre_reasoning.get('market_context_summary') or market_context_summary
+        risk_summary_final = pre_reasoning.get('risk_context_summary') or risk_context_summary
+        if 'worldmonitor:' in risk_context_summary and 'worldmonitor:' not in risk_summary_final:
+            risk_summary_final = f"{risk_summary_final}；{risk_context_summary}"
         reasoning = {
-            'market_context_summary': pre_reasoning.get('market_context_summary') or market_context_summary,
+            'market_context_summary': market_summary_final,
             'position_context_summary': pre_reasoning.get('position_context_summary') or group_summary,
-            'risk_context_summary': pre_reasoning.get('risk_context_summary') or risk_context_summary,
+            'risk_context_summary': risk_summary_final,
             'reasoning_source': pre_reasoning.get('source', 'inline'),
         }
         return {}, reasoning, '目前資料不足，先維持觀望。', 'hold', 'medium'
@@ -194,17 +248,12 @@ def _build_agent_reasoning(request_payload: dict, quality_state: dict | None = N
 
     scored.sort(key=lambda x: x[1], reverse=True)
 
-    # === Phase D: Load llm-wiki background for top candidates (if available) ===
-    WIKI_DIR = ROOT / 'instances' / 'etf_master' / 'llm-wiki' / 'etf'
+    # === Phase D: Load wiki background for top candidates ===
     wiki_context: dict[str, str] = {}
     for sym, _, _ in scored[:3]:
-        wiki_path = WIKI_DIR / f'{sym}.md'
-        if wiki_path.exists():
-            try:
-                wiki_text = wiki_path.read_text(encoding='utf-8')
-                wiki_context[sym] = wiki_text[:800]
-            except Exception:
-                pass
+        wiki_text = _resolve_entity_wiki_text(sym, request_payload, limit=800)
+        if wiki_text:
+            wiki_context[sym] = wiki_text
 
     if not scored:
         reasoning = {
@@ -293,10 +342,15 @@ def _build_agent_reasoning(request_payload: dict, quality_state: dict | None = N
     elif reviewed_hits >= 1 and confidence != 'low':
         summary += ' 最近反思顯示此方向可延續觀察。'
 
+    market_summary_final = pre_reasoning.get('market_context_summary') or market_context_summary
+    risk_summary_final = pre_reasoning.get('risk_context_summary') or risk_context_summary
+    if 'worldmonitor:' in risk_context_summary and 'worldmonitor:' not in risk_summary_final:
+        risk_summary_final = f"{risk_summary_final}；{risk_context_summary}"
+
     reasoning = {
-        'market_context_summary': pre_reasoning.get('market_context_summary') or market_context_summary,
+        'market_context_summary': market_summary_final,
         'position_context_summary': pre_reasoning.get('position_context_summary') or group_summary,
-        'risk_context_summary': pre_reasoning.get('risk_context_summary') or risk_context_summary,
+        'risk_context_summary': risk_summary_final,
         'reasoning_source': pre_reasoning.get('source', 'inline'),
     }
     return candidate, reasoning, summary, 'preview_buy', confidence, strategy_alignment

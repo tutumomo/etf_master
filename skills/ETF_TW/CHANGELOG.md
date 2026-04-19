@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## v1.4.4 — 2026-04-19
+
+### Fixed
+- **Wiki 背景鏈路修補（request 層）**：`generate_ai_decision_request.py` 改為自動解析 profile wiki (`~/.hermes/profiles/etf_master/wiki`) + instance wiki fallback，不再依賴錯誤路徑 `docs/wiki/shioaji`。
+- **Wiki 實體檔名對齊**：支援 `{symbol}.md` 與 slug 形式（如 `0050-yuanta-taiwan-50.md`），持倉標的可正確注入 `wiki_context.entities`。
+- **Wiki 風險概念注入**：新增 `wiki_context.risk_signal`，與 `market_view` 一起提供給後續推理鏈。
+- **智能體推理層接線**：`generate_ai_agent_response.py` 新增 wiki fallback 載入，並把 worldmonitor 指標（供應鏈/地緣/台海/告警）明確併入 `risk_context_summary`，避免「request 有資料、reasoning 沒使用」。
+
+### Validation
+- `AGENT_ID=etf_master .venv/bin/python3 scripts/generate_ai_decision_request.py`：`wiki_context.market_view/risk_signal/entities` 皆非空。
+- `AGENT_ID=etf_master .venv/bin/python3 scripts/generate_ai_agent_response.py`：`candidate.reason` 出現 Wiki 分類；`reasoning.risk_context_summary` 含 worldmonitor 欄位。
+- `pytest tests/test_ai_decision_bridge_contract.py -q`：3 passed
+- `pytest tests/test_sync_worldmonitor.py -q`：9 passed
+
 ## v1.4.3 — 2026-04-19
 
 ### Added
