@@ -12,9 +12,18 @@
 - **Cron 新增 2 個 job**：`ETF 決策自動復盤`（15:05 平日）、`ETF 決策品質週報`（09:05 週六）。Job 數量 7→9。
 - **verify_deployment.sh**：cron 門檻從 ≥7 更新為 ≥9。
 
+### Fixed
+- **AI 推理管線修復**：`refresh_decision_engine_state.py` 的 SCRIPTS 清單缺少 `generate_ai_agent_response.py`，導致 worldmonitor 信號「進 request、沒進推理」。修法：在 `run_auto_decision_scan.py` 之後加入該腳本，確保 `risk_context_summary` 正確生成。
+- **00679B yfinance 404 修復**：新增 `symbol_mappings.json` 的 `00679B` 條目，指定 `.TWO` 後綴，跳過 `.TW` 404。
+- **Cron wrapper 腳本**：新增 `scripts/sync_decision_reviews.py` 和 `scripts/generate_decision_quality_weekly.py` wrapper，修正 Hermes cron `script` 欄位從 `HERMES_HOME/scripts/` 解析的問題。
+- **WIKI_DIR 路徑修復**：`generate_decision_quality_weekly.py` 的 `WIKI_DIR` 從 `parents[2]` 修正為 `parents[3]`，指向正確的 `profile/wiki/`。
+
 ### Validation
 - 15 新增測試全通：`test_sync_decision_reviews.py`（10 tests）、`test_generate_decision_quality_weekly.py`（5 tests）
 - 全套 364 tests passed，4 個既有失敗不變
+- 4 個 cron wrapper 即時觸發全通過（worldmonitor daily/watch、decision review、weekly report）
+- `risk_context_summary` 驗證：包含 worldmonitor 信號，不再為空字串
+- `00679B` yfinance 驗證：成功取得 `26.91` 報價，source=`yfinance:00679B.TWO`
 
 ## v1.4.5 — 2026-04-19
 

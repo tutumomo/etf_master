@@ -111,6 +111,10 @@ AGENT_ID=etf_master .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.
 - feat(weekly): 決策品質週報 — `generate_decision_quality_weekly.py`（週六 09:05 產出 `wiki/decision-weekly-YYYY-WNN.md` + `decision-quality-latest.md`）
 - feat(provenance): `build_provenance_record()` 新增 `chain_sources` 參數，記錄雙鏈仲裁來源
 - feat(cron): 新增 2 個 job（ETF 決策自動復盤、ETF 決策品質週報），Job 數量 7→9
+- fix(ai-bridge): `refresh_decision_engine_state.py` 加入 `generate_ai_agent_response.py`，修復 `risk_context_summary` 永遠為空
+- fix(symbol): `symbol_mappings.json` 新增 `00679B` 條目，指定 `.TWO` 後綴避免 yfinance 404
+- fix(cron): 新增 wrapper 腳本解決 Hermes cron `script` 欄位路徑解析問題
+- fix(weekly): `WIKI_DIR` 路徑從 `parents[2]` 修正為 `parents[3]`
 - test: 15 新增測試全通，全套 364 tests passed
 
 ### v1.4.1 (2026-04-19)
