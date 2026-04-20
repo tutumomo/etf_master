@@ -24,6 +24,11 @@
       "yfinance_candidates": [
         "00694B.TWO"
       ]
+    },
+    "00679B": {
+      "yfinance_candidates": [
+        "00679B.TWO"
+      ]
     }
   }
 }
