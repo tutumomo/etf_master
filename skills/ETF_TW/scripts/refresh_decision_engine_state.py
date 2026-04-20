@@ -13,6 +13,7 @@ SCRIPTS = [
     'generate_intraday_tape_context.py',
     'check_major_event_trigger.py',
     'run_auto_decision_scan.py',
+    'generate_ai_agent_response.py',
     'update_decision_outcomes.py',
     'build_regime_bucket_stats.py',
     'update_context_weights.py',
