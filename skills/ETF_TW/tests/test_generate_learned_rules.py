@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
-from generate_learned_rules import build_stats_prompt, apply_rolling_logic
+from generate_learned_rules import build_stats_prompt, apply_rolling_logic, format_learned_rules_md, parse_llm_output
 
 
 def test_build_stats_prompt_includes_rule_engine_stats():
@@ -81,3 +81,49 @@ def test_max_15_rules_removes_oldest_stale():
     ids = [r["rule_id"] for r in result["rules"]]
     assert "RULE-001" not in ids   # oldest stale evicted
     assert any(r["rule_text"] == "新規則" for r in result["rules"])
+
+
+# ── Task 3: format_learned_rules_md + parse_llm_output ───────────────────────
+
+def test_format_learned_rules_md_contains_rule_text():
+    meta = {"rules": [{
+        "rule_id": "RULE-001", "rule_text": "高波動時延後買入",
+        "source_stats": "win_rate=32%", "count": 3,
+        "first_seen": "2026-W15", "last_confirmed": "2026-W17", "status": "active"
+    }]}
+    md = format_learned_rules_md(meta, generated_at="2026-04-22T09:05:00+08:00")
+    assert "RULE-001" in md
+    assert "高波動時延後買入" in md
+    assert "active" in md
+    assert "2026-W17" in md
+
+
+def test_format_learned_rules_md_excludes_stale():
+    meta = {"rules": [
+        {"rule_id": "RULE-001", "rule_text": "active rule", "source_stats": "",
+         "count": 2, "first_seen": "2026-W10", "last_confirmed": "2026-W16", "status": "active"},
+        {"rule_id": "RULE-002", "rule_text": "stale rule", "source_stats": "",
+         "count": 1, "first_seen": "2026-W05", "last_confirmed": "2026-W08", "status": "stale"},
+    ]}
+    md = format_learned_rules_md(meta, generated_at="2026-04-22T09:05:00+08:00")
+    assert "active rule" in md
+    assert "stale rule" not in md
+
+
+def test_parse_llm_output_valid():
+    raw = '[{"rule_text": "RSI > 70 不追高", "source_stats": "...", "is_existing_rule_id": null}]'
+    result = parse_llm_output(raw)
+    assert len(result) == 1
+    assert result[0]["rule_text"] == "RSI > 70 不追高"
+
+
+def test_parse_llm_output_invalid_returns_empty():
+    assert parse_llm_output("not json") == []
+    assert parse_llm_output('{"key": "val"}') == []  # dict not array
+    assert parse_llm_output("") == []
+
+
+def test_parse_llm_output_strips_markdown_fences():
+    raw = '```json\n[{"rule_text": "test", "source_stats": "", "is_existing_rule_id": null}]\n```'
+    result = parse_llm_output(raw)
+    assert len(result) == 1
