@@ -238,6 +238,14 @@ def main() -> int:
           f"new={week_stats['new_decisions']} "
           f"finalized={week_stats['finalized_this_week']} "
           f"dated={paths['dated'].name}")
+
+    # 週報完成後執行門檻校正
+    try:
+        from auto_calibrate_thresholds import run as calibrate
+        calibrate()
+    except Exception as exc:
+        print(f"[calibrate] 跳過（{exc}）")
+
     return 0
 
 

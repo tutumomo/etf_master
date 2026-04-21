@@ -20,7 +20,7 @@ ETF_Master is a "risk-first" financial assistant. Core rules from SOUL.md that a
 
 | Skill | Role | Has Tests? |
 |-------|------|-----------|
-| **ETF_TW** | Order management, monitoring, state truth, Shioaji API | Yes (144 files, ~247 tests) |
+| **ETF_TW** | Order management, monitoring, state truth, Shioaji API | Yes (164 files, 364 tests) |
 | **stock-analysis-tw** | 8-dimension quantitative diagnostics | No |
 | **stock-market-pro-tw** | Professional charts (RSI/MACD/BB/VWAP/ATR) | No |
 | **taiwan-finance** | DCF valuation, equity research, IB modeling, PE, wealth management | No |
@@ -129,6 +129,14 @@ cd ~/.hermes/profiles/etf_master/skills/ETF_TW
 .venv/bin/python3 scripts/etf_tw.py welcome     # Agent greeting
 .venv/bin/python3 scripts/etf_tw.py portfolio   # Portfolio report
 .venv/bin/python3 scripts/etf_tw.py check --install-deps  # Dependency check
+
+# Multi-instance (e.g. etf_master + etf_master_wife in parallel)
+AGENT_ID=etf_master      DASHBOARD_PORT=5055 .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.0 --port 5055
+AGENT_ID=etf_master_wife DASHBOARD_PORT=5056 .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.0 --port 5056
+
+# Verify a specific instance
+AGENT_ID=etf_master      DASHBOARD_PORT=5055 bash scripts/verify_deployment.sh
+AGENT_ID=etf_master_wife DASHBOARD_PORT=5056 bash scripts/verify_deployment.sh
 ```
 
 ## Key File Locations
@@ -150,8 +158,8 @@ cd ~/.hermes/profiles/etf_master/skills/ETF_TW
 | Instance state (truth) | `skills/ETF_TW/instances/<agent_id>/state/` |
 | Private config (NEVER commit) | `skills/ETF_TW/instances/<agent_id>/instance_config.json` |
 | Version changelog | `skills/ETF_TW/CHANGELOG.md` |
-| Wiki knowledge base (profile) | `wiki/` (market-view, risk-signal, investment-strategies, undervalued-etf-ranking, entities/) |
-| Wiki knowledge base (skill) | `skills/ETF_TW/wiki/` (same structure, fallback source) |
+| Wiki knowledge base (profile) | `wiki/` — **主寫層**，直接編輯這裡 |
+| Wiki knowledge base (skill) | `skills/ETF_TW/wiki/` — 4 個標準頁是 symlink，指向 profile wiki；`entities/` 為 skill-only |
 | Decision auto-review cron | `skills/ETF_TW/scripts/sync_decision_reviews.py` (15:05 weekday) |
 | Decision weekly report cron | `skills/ETF_TW/scripts/generate_decision_quality_weekly.py` (09:05 Saturday) |
 | Decision weekly wiki | `wiki/decision-weekly-YYYY-WNN.md` + `wiki/decision-quality-latest.md` |
