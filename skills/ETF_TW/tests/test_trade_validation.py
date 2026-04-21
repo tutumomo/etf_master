@@ -2,7 +2,7 @@ import pytest
 from scripts.pre_flight_gate import check_order
 
 def test_unit_and_odd_lot_validation():
-    context = {'cash': 10000000.0, 'force_trading_hours': False} # Provide enough cash for sizing_engine
+    context = {'cash': 10000000.0, 'force_trading_hours': False, '_skip_safety_redlines': True}
 
     # TEST-01: 驗證 Common 張數與 IntradayOdd 股數
     # 預期：board (Common) 需要是 1000 的倍數

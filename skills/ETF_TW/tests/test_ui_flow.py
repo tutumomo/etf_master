@@ -2,7 +2,7 @@ import pytest
 from scripts.pre_flight_gate import check_order
 
 def test_ui_flow_state_enforcement():
-    context = {'cash': 10000000.0, 'force_trading_hours': False}
+    context = {'cash': 10000000.0, 'force_trading_hours': False, '_skip_safety_redlines': True}
     
     # 模擬直接 submit (無 preview/confirm flag)
     order_direct_submit = {

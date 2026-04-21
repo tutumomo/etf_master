@@ -4,11 +4,12 @@ from scripts.pre_flight_gate import check_order
 def test_dynamic_sizing_policy():
     # 變更前：政策上限 30% 現金，單筆上限 50萬
     context_v1 = {
-        'cash': 1000000.0, 
+        'cash': 1000000.0,
         'max_concentration_pct': 0.3, # 最多 30萬
-        'max_single_limit_twd': 500000.0, 
+        'max_single_limit_twd': 500000.0,
         'risk_temperature': 1.0,
-        'force_trading_hours': False
+        'force_trading_hours': False,
+        '_skip_safety_redlines': True,
     }
 
     # 要買 150元 的股票，1張 (1000股) 要 15萬
@@ -25,11 +26,12 @@ def test_dynamic_sizing_policy():
 
     # 變更後：放寬政策，現金比例上限至 50%
     context_v2 = {
-        'cash': 1000000.0, 
+        'cash': 1000000.0,
         'max_concentration_pct': 0.5, # 最多 50萬
-        'max_single_limit_twd': 500000.0, 
+        'max_single_limit_twd': 500000.0,
         'risk_temperature': 1.0,
-        'force_trading_hours': False
+        'force_trading_hours': False,
+        '_skip_safety_redlines': True,
     }
     
     # 這次買 3張 = 45萬，不超過 50萬 (50%)

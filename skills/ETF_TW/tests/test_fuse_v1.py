@@ -10,7 +10,8 @@ class TestFuseV1(unittest.TestCase):
             'max_single_limit_twd': 200000.0,
             'risk_temperature': 1.0,
             'inventory': {'0050': 0, '006208': 0}, # 預設空倉，避免干擾買入測試
-            'force_trading_hours': False
+            'force_trading_hours': False,
+            '_skip_safety_redlines': True,  # 測試不依賴 instance state 的 safety_redlines.json
         }
 
     def test_invalid_quantity(self):
