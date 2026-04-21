@@ -127,3 +127,62 @@ def test_parse_llm_output_strips_markdown_fences():
     raw = '```json\n[{"rule_text": "test", "source_stats": "", "is_existing_rule_id": null}]\n```'
     result = parse_llm_output(raw)
     assert len(result) == 1
+
+
+# ── Task 4: run() ─────────────────────────────────────────────────────────────
+
+import json
+from generate_learned_rules import run, MIN_SAMPLES
+
+
+def test_run_skips_when_insufficient_samples(tmp_path):
+    """樣本不足時不寫任何檔案。"""
+    state_dir = tmp_path / "state"
+    state_dir.mkdir()
+    wiki_dir = tmp_path / "wiki"
+    wiki_dir.mkdir()
+    quality_report = {
+        "chain_breakdown": {
+            "rule_engine": {"total": 3, "win_rate": 0.5},
+        }
+    }
+    (state_dir / "decision_quality_report.json").write_text(
+        json.dumps(quality_report), encoding="utf-8"
+    )
+    result = run(state_dir=state_dir, wiki_dir=wiki_dir, dry_run=True)
+    assert result["skipped"] is True
+    assert result["reason"] == "insufficient_samples"
+    assert not (wiki_dir / "learned-rules.md").exists()
+
+
+def test_run_dry_run_does_not_write_wiki(tmp_path):
+    """dry_run=True 時不寫 wiki，但回傳 would_write。"""
+    state_dir = tmp_path / "state"
+    state_dir.mkdir()
+    wiki_dir = tmp_path / "wiki"
+    wiki_dir.mkdir()
+    quality_report = {
+        "chain_breakdown": {
+            "rule_engine": {"total": 10, "win": 6, "loss": 3, "flat": 1, "win_rate": 0.6},
+            "ai_bridge":   {"total": 8,  "win": 4, "loss": 3, "flat": 1, "win_rate": 0.5},
+            "tier1_consensus": {"total": 5, "win": 4, "loss": 1, "flat": 0, "win_rate": 0.8},
+        }
+    }
+    (state_dir / "decision_quality_report.json").write_text(
+        json.dumps(quality_report), encoding="utf-8"
+    )
+    # 模擬 ai_decision_response 已有 learned_rules
+    response = {
+        "reasoning": {
+            "learned_rules": json.dumps([
+                {"rule_text": "測試規則", "source_stats": "win_rate=60%", "is_existing_rule_id": None}
+            ])
+        }
+    }
+    (state_dir / "ai_decision_response.json").write_text(
+        json.dumps(response), encoding="utf-8"
+    )
+    result = run(state_dir=state_dir, wiki_dir=wiki_dir, dry_run=True)
+    assert result["skipped"] is False
+    assert "would_write" in result
+    assert not (wiki_dir / "learned-rules.md").exists()
