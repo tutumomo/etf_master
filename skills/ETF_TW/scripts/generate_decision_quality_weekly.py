@@ -246,6 +246,17 @@ def main() -> int:
     except Exception as exc:
         print(f"[calibrate] 跳過（{exc}）")
 
+    # 門檻校正完成後執行規則學習閉環
+    try:
+        from generate_learned_rules import run as gen_rules
+        result = gen_rules()
+        if result.get("skipped"):
+            print(f"[learned_rules] 跳過：{result.get('reason')}")
+        elif result.get("applied"):
+            print(f"[learned_rules] 完成：{result.get('rules_count')} 條規則")
+    except Exception as exc:
+        print(f"[learned_rules] 跳過（{exc}）")
+
     return 0
 
 
