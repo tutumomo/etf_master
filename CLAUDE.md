@@ -208,6 +208,7 @@ In `execute_code`, `os.path.expanduser("~")` resolves correctly. But in `termina
 16. **`sync_live_state.py` market_value fix**: Shioaji API may return `market_value=0` on positions; script now recalculates from `quantity × close_price` when this happens. `total_equity` is always recomputed as `cash + market_value`.
 17. **Multi-instance deployment**: New instances created via `hermes profile create <name> --clone-from etf_master`. Instance state lives under `skills/ETF_TW/instances/<name>/state/`. Use `AGENT_ID=<name> DASHBOARD_PORT=<port>` to run in parallel. Verify with `bash scripts/verify_deployment.sh`.
 18. **`verify_deployment.sh`**: Run from profile root with `AGENT_ID=<id> DASHBOARD_PORT=<port> bash scripts/verify_deployment.sh`. Positions check reads `/api/overview.positions` (not `/api/positions` which does not exist). Trading hours gate uses `validate-order` subcommand.
+19. **Wiki learned-rules 主寫層**：`wiki/learned-rules.md` 由 `generate_learned_rules.py` 自動產生，不要手動編輯。規則 metadata 在 `state/learned_rules_meta.json`。每週六週報後自動觸發，作為 AI Bridge 第 16 個輸入源。
 
 <!-- GSD:project-start source:PROJECT.md -->
 ## Project
