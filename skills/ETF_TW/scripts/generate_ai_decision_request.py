@@ -75,6 +75,12 @@ def _read_first(paths: list[Path]) -> str:
     return ''
 
 
+def _read_learned_rules(wiki_roots: list[Path]) -> str:
+    """讀取 wiki/learned-rules.md，不存在或空回傳空字串（不阻斷）。"""
+    paths = [root / "learned-rules.md" for root in wiki_roots]
+    return _read_first(paths)
+
+
 def _load_entity_wiki(entity_dirs: list[Path], symbol: str, limit: int = 800) -> str:
     if not symbol:
         return ''
@@ -195,7 +201,8 @@ def generate_request_payload_from_state_dir(state_dir: Path, requested_by: str =
         "risk_signal": risk_signal_wiki,
         "investment_strategies": investment_strategies_wiki,
         "undervalued_ranking": undervalued_ranking_wiki,
-        "entities": entity_wiki_summaries
+        "entities": entity_wiki_summaries,
+        "learned_rules": _read_learned_rules(wiki_roots),
     }
     payload['stock_intelligence'] = stock_intelligence
     (state_dir / 'ai_decision_request.json').write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding='utf-8')
