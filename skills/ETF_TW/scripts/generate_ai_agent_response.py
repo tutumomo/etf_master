@@ -67,6 +67,7 @@ def _build_agent_reasoning(request_payload: dict, quality_state: dict | None = N
     wiki_context = request_payload.get('wiki_context') or {}
     market_view_wiki = str(wiki_context.get('market_view') or '')
     risk_signal_wiki = str(wiki_context.get('risk_signal') or '')
+    learned_rules_draft = str(wiki_context.get('learned_rules_draft') or '')
 
     risk_temperature = market_context.get('risk_temperature', 'unknown')
     market_regime = market_context.get('market_regime', 'unknown')
@@ -157,6 +158,7 @@ def _build_agent_reasoning(request_payload: dict, quality_state: dict | None = N
             'position_context_summary': pre_reasoning.get('position_context_summary') or group_summary,
             'risk_context_summary': risk_summary_final,
             'reasoning_source': pre_reasoning.get('source', 'inline'),
+            'learned_rules': '',
         }
         return {}, reasoning, '目前資料不足，先維持觀望。', 'hold', 'medium'
 
@@ -260,6 +262,7 @@ def _build_agent_reasoning(request_payload: dict, quality_state: dict | None = N
             'market_context_summary': market_context_summary,
             'position_context_summary': group_summary,
             'risk_context_summary': risk_context_summary,
+            'learned_rules': '',
         }
         return {}, reasoning, '無可用候選，維持觀望。', 'hold', 'medium'
 
@@ -352,6 +355,7 @@ def _build_agent_reasoning(request_payload: dict, quality_state: dict | None = N
         'position_context_summary': pre_reasoning.get('position_context_summary') or group_summary,
         'risk_context_summary': risk_summary_final,
         'reasoning_source': pre_reasoning.get('source', 'inline'),
+        'learned_rules': learned_rules_draft,
     }
     return candidate, reasoning, summary, 'preview_buy', confidence, strategy_alignment
 
