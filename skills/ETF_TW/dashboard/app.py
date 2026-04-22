@@ -1291,12 +1291,20 @@ def _run_full_pipeline_helper() -> dict:
             path.unlink()
 
         # 3. 定義腳本路徑
+        sync_live_script = ROOT / "scripts" / "sync_live_state.py"
         refresh_script = ROOT / "scripts" / "refresh_monitoring_state.py"
         scan_script = ROOT / "scripts" / "run_auto_decision_scan.py"
         consensus_script = ROOT.parent.parent / "scripts" / "generate_decision_consensus.py"
 
         # 4. 組合指令串，完成後移除鎖 (不論成功與否都嘗試移除)
-        cmd = f"'{sys.executable}' '{refresh_script}' && '{sys.executable}' '{scan_script}' && '{sys.executable}' '{consensus_script}' ; rm -f '{PIPELINE_LOCK_PATH}'"
+        # sync_live_state.py 優先執行，確保持倉快照為最新券商資料
+        cmd = (
+            f"'{sys.executable}' '{sync_live_script}' && "
+            f"'{sys.executable}' '{refresh_script}' && "
+            f"'{sys.executable}' '{scan_script}' && "
+            f"'{sys.executable}' '{consensus_script}'"
+            f" ; rm -f '{PIPELINE_LOCK_PATH}'"
+        )
 
         # 5. 啟動背景執行
         subprocess.Popen(cmd, shell=True, cwd=str(ROOT))

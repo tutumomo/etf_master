@@ -37,3 +37,11 @@ sources: [docs/wiki/shioaji/entities/00922.md]
 ## 備註
 
 - 此頁面從 shioaji wiki 資料建立
+
+## 最新市場數據快照
+
+> 自動更新於 2026-04-22 15:07（來源：yfinance:00922.TW）
+
+| 欄位 | 數值 |
+|------|------|
+| 現價 | NT$ 32.50 |

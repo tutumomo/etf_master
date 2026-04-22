@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## v1.4.13 — 2026-04-22
+
+### Added
+- **Dashboard 全鏈路同步先對齊券商持倉**：`dashboard/app.py` 的 `_run_full_pipeline_helper()` 現在把 `sync_live_state.py` 放在 `refresh_monitoring_state.py` 之前，確保後續 monitoring / auto-decision / consensus 都建立在最新券商持倉與資產快照上。
+- **台灣 ETF 分析陷阱文件化**：`skills/stock-analysis-tw/SKILL.md` 新增 Taiwan ETF 專屬已知問題章節，集中說明 `dividendRate=None`、`quoteSummary 404`、`.TW/.TWO` suffix 差異與建議 fallback，避免後續代理重踩同一類 yfinance 誤判。
+
+### Changed
+- **Dashboard 使用者訊息與刷新節奏對齊真實耗時**：`overview.html` 成功 banner 改為明示「含券商持倉同步」，自動刷新從 5 秒延長至 15 秒，避免使用者在 `sync_live_state.py` 尚未完成時看到半套狀態。
+- **Profile runtime config 結構化**：root `config.yaml` 改為 `model.default/provider` 形式，啟用 `memory.provider: builtin`，並同步調整 `display.skin=etf-master`、`dashboard.theme=mono`、`busy_input_mode=queue` 等運行參數。
+
+### Docs
+- **Wiki 市場體制與風險頁更新**：`wiki/concepts/market-view.md`、`wiki/concepts/risk-signal.md` 更新為 2026-04-21 早班的 regime / rotation / risk readout，反映收益型延續強勢、核心權值分化與防守型持續落隊。
+- **ETF 實體頁快照刷新**：更新 10 檔既有 ETF 實體頁最新價格，並為 `00922-zhaoying-blue-chip-30.md` 新增市場數據快照區塊。
+
 ## v1.4.12 — 2026-04-22
 
 ### Added — Subsystem D: P6 事件驅動掃描觸發

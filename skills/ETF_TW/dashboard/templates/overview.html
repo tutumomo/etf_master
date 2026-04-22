@@ -1153,9 +1153,9 @@ async function runFullPipelineSync() {
     const res = await fetch('/api/decision/full-pipeline', { method: 'POST' });
     const data = await res.json();
     if (res.ok) {
-      showGlobalBanner('全鏈路管線已啟動，系統正在背景同步與對齊中，預計 10-30 秒完成。', 'success');
-      // 5 秒後自動刷新頁面看進度
-      setTimeout(() => window.location.reload(), 5000);
+      showGlobalBanner('全鏈路管線已啟動（含券商持倉同步），預計 15-30 秒完成後自動刷新。', 'success');
+      // 15 秒後自動刷新頁面（含 sync_live_state 需要額外時間抓券商持倉）
+      setTimeout(() => window.location.reload(), 15000);
     } else {
       if (res.status === 429) {
         showGlobalBanner('同步管線正在執行中，請勿重複點擊。', 'warn');

@@ -1,4 +1,4 @@
-# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.4.6)
+# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.4.13)
 
 `ETF_Master` 是一款專為台灣 ETF 投資者設計的 AI 輔助決策與資產管理系統。本專案秉持「**交易安全優先於功能完備**」的核心價值，透過「三層真相層級」治理與「雙鏈決策仲裁」機制，為投資者提供一個穩定、透明且具備深度洞察的投資工作台。
 
@@ -105,6 +105,13 @@ AGENT_ID=etf_master .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.
 ---
 
 ## 📦 版本紀錄
+
+### v1.4.13 (2026-04-22)
+- feat(dashboard): 「全鏈路同步」現在先執行 `sync_live_state.py`，再跑 monitoring / auto-decision / consensus，避免 dashboard 用舊持倉快照產生建議
+- ux(dashboard): 全鏈路同步成功提示改為明示「含券商持倉同步」，自動刷新延長為 15 秒，與實際券商拉取耗時對齊
+- docs(stock-analysis): `skills/stock-analysis-tw/SKILL.md` 補齊台灣 ETF 的 yfinance 已知陷阱，明確說明 `dividendRate=None`、`quoteSummary 404`、`.TW/.TWO` 後綴差異與建議 fallback
+- docs(wiki): 更新 `market-view.md`、`risk-signal.md` 與多檔 ETF 實體頁快照，補上 2026-04-21~2026-04-22 的市場體制、風險分化與最新價格
+- chore(profile): `config.yaml` 改為結構化 `model.default/provider` 設定，啟用 `memory.provider: builtin`，同步調整 `etf-master` skin、dashboard theme 與 busy-input queue 模式
 
 ### v1.4.6 (2026-04-20)
 - feat(reviews): 自動決策復盤管線 — `sync_decision_reviews.py`（15:05 盤後 T+N 回填 + ±1.5% verdict 判定 + outcome_final + chain_breakdown 統計）

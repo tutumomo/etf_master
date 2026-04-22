@@ -75,5 +75,25 @@ python3 skills/stock-analysis-tw/scripts/rumor_scanner.py
 - 適合在**開盤前 (08:30)** 執行 `rumor_scanner.py` 以捕捉前一晚美股與 ADR 的影響。
 - 適合在**盤中**針對關注標的執行 `analyze_stock.py` 進行即時診斷。
 
+## 已知陷阱與 Bug (Taiwan ETF Specific)
+
+### `dividends.py` — 對台灣 ETF 完全失效
+- **症狀**：所有 `.TW` / `.TWO` ETF 回報 "This stock does not pay a dividend"
+- **根因**：yfinance 的 `info['dividendRate']` 對台灣 ETF 回傳 `None`，腳本以此判定是否配息
+- **修復方向**：當 `dividendRate` 為 None 時，fallback 到 `stock.dividends` 時間序列自算 TTM 年配息
+- **額外問題**：`dividendYield` 欄位有時已是百分比（>1），腳本又乘 100 導致荒謬殖利率（780%）
+- **替代做法**：用 `yfinance` 的 `stock.dividends` 時間序列手動計算最近完整會計年度配息總額，除以當前價格
+
+### `analyze_stock.py` — 基本面資料缺漏
+- **症狀**：quoteSummary 端點回傳 404，EPS/基本面維度為空
+- **根因**：yfinance `quoteSummary` 不支援台灣 ETF（ETF 無傳統財報）
+- **影響**：8 維度分析信心度極低（1-22%），僅市場脈絡/動能維度有效
+- **替代做法**：對台灣 ETF 應改採 yfinance `.history()` + `.info` 的有限欄位（PE、殖利率、52W High/Low），自算 RSI/MACD/SMA
+
+### yfinance 台灣 ticker 格式
+- 一般 ETF/股票：`.TW`（如 0050.TW, 2330.TW）
+- 債券型 ETF（尾碼 B）：`.TWO`（如 00679B.TWO, 00687B.TWO）
+- `.TWO` 的 `info` 回傳欄位更少（無 PE/PB），需改用殖利率替代
+
 ---
 本技能由原 `stock-analysis` 套件在地化重構，修正了 TWD 計價邏輯與台股特有的漲跌幅限制感應。
