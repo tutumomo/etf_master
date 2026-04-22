@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import hashlib
 import json
 from datetime import datetime
 from pathlib import Path
@@ -24,6 +25,37 @@ def _load_json(path: Path) -> dict:
         return json.loads(text) if text else {}
     except Exception:
         return {}
+
+
+def _compute_input_fingerprint(payload: dict) -> str:
+    """Compute sha256 fingerprint of decision-critical market inputs.
+
+    Uses only market context, risk temperature, portfolio positions, and strategy —
+    NOT timestamps or request_id (which change every scan even with same market data).
+    This lets us detect if the AI produced different outputs for identical market inputs.
+    """
+    inputs = payload.get('inputs', {})
+    market_ctx = inputs.get('market_context_taiwan', {})
+    event_ctx = inputs.get('market_event_context', {})
+    tape_ctx = inputs.get('intraday_tape_context', {})
+    strategy = inputs.get('strategy', {})
+    positions = inputs.get('positions', {})
+
+    fingerprint_data = {
+        'market_regime': market_ctx.get('market_regime'),
+        'risk_temperature': market_ctx.get('risk_temperature'),
+        'global_risk_level': event_ctx.get('global_risk_level'),
+        'defensive_bias': event_ctx.get('defensive_bias'),
+        'tape_bias': tape_ctx.get('market_bias'),
+        'base_strategy': strategy.get('base_strategy'),
+        'scenario_overlay': strategy.get('scenario_overlay'),
+        'position_symbols': sorted([
+            p.get('symbol') for p in positions.get('positions', [])
+            if p.get('symbol')
+        ]),
+    }
+    serialized = json.dumps(fingerprint_data, sort_keys=True, ensure_ascii=False)
+    return hashlib.sha256(serialized.encode()).hexdigest()[:12]
 
 
 def _load_worldmonitor_alerts(state_dir: Path, hours: int = 2) -> list[dict]:
@@ -237,6 +269,7 @@ def generate_request_payload_from_state_dir(state_dir: Path, requested_by: str =
         "learned_rules_freshness": _read_learned_rules_freshness(state_dir, wiki_roots),
     }
     payload['stock_intelligence'] = stock_intelligence
+    payload['input_fingerprint'] = _compute_input_fingerprint(payload)
     (state_dir / 'ai_decision_request.json').write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding='utf-8')
     write_layered_review_plan(state_dir, payload.get('request_id', 'missing-request-id'))
     return payload

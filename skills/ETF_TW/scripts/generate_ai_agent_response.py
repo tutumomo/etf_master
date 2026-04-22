@@ -369,6 +369,7 @@ def generate_ai_agent_response_from_state_dir(state_dir: Path, agent_name: str =
         strategy_alignment = 'unknown / unknown'
     else:
         candidate, reasoning, summary, action, confidence, strategy_alignment = result
+    input_fingerprint = request_payload.get('input_fingerprint', '')
     payload = build_agent_consumed_response_payload(
         request_id=request_payload.get('request_id', 'missing-request-id'),
         summary=summary,
@@ -377,7 +378,7 @@ def generate_ai_agent_response_from_state_dir(state_dir: Path, agent_name: str =
         agent_name=agent_name,
         review_status='pending',
         reasoning=reasoning,
-        input_refs={'request': 'ai_decision_request.json'},
+        input_refs={'request': 'ai_decision_request.json', 'input_fingerprint': input_fingerprint},
         candidate=candidate,
         strategy_alignment=strategy_alignment,
         warnings=[],
