@@ -1,5 +1,47 @@
 # CHANGELOG
 
+## v1.4.12 — 2026-04-22
+
+### Added — Subsystem D: P6 事件驅動掃描觸發
+
+- **`event_driven_scan_trigger.py`（新腳本）**：讀取 `state/major_event_flag.json`，當 L2/L3 事件 `should_notify=True` 時立即觸發 `run_auto_decision_scan`，無需等待定時 cron（30 分鐘間隔）。純函數 `should_trigger_scan()` 負責去重邏輯（相同 `event_hash` 不重複觸發），並在觸發前更新 `event_review_state.json` 防止 race condition。
+- **`run_auto_decision_scan.py`（修改）**：讀取 `major_event_flag.json`，在 `chain_sources` 中新增 `event_triggered: bool` 與 `event_level: str | None`，讓 provenance 記錄清楚標示「例行 cron 掃描」vs「L2/L3 事件驅動掃描」，供事後分析查詢。
+- **7 個新測試**：`test_event_driven_scan_trigger.py` 覆蓋 `should_trigger_scan` 純函數的全部分支（no_event、level_too_low、already_notified、already_triggered、L2 trigger、L3 trigger、triggered=False 短路）。
+
+---
+
+## v1.4.11 — 2026-04-22
+
+### Added — Subsystem C: P1 知識迴圈衰減偵測 + P4 LLM 確定性稽核
+
+- **P1 — `_read_learned_rules_freshness()` in `generate_ai_decision_request.py`**：`wiki_context` 新增 `learned_rules_freshness` 欄位（`total_rules / active / tentative / stale / most_recent_update / knowledge_healthy`）。AI Bridge 現在能偵測知識庫是否衰退（所有規則 stale 或庫空）並在決策時調整信心。
+- **P4 — `_compute_input_fingerprint()` in `generate_ai_decision_request.py`**：計算 12 字元 SHA256 前綴（市場狀態 + 持倉 + 策略）寫入 `ai_decision_request.json`；`generate_ai_agent_response.py` 將 `input_fingerprint` 帶入 `input_refs`。相同市場輸入的兩次掃描可比對 fingerprint，量化 LLM 非確定性。
+- **7 個新測試**：`test_generate_ai_decision_request.py` 新增 freshness 空庫、健康庫、全 stale、fingerprint 穩定性、fingerprint 輸入敏感度、端對端 6 個測試。
+
+---
+
+## v1.4.10 — 2026-04-22
+
+### Added — Subsystem B: P2 衝突溯源 + P5 反事實計量
+
+- **P2 — `chain_sources` 新增衝突欄位**：`conflict_detail`（Tier 2/3 人類可讀原因）與 `ai_bridge_reasoning`（AI Bridge 決策摘要，僅 conflict=True 時填入）寫入 `decision_provenance.jsonl`，事後可查詢 AI 為何反對規則引擎。
+- **P5 — `tier2_rule_overruled_ai` 反事實桶**：`sync_decision_reviews.py` 的 `update_chain_breakdown()` 新增此桶，統計規則引擎在 AI 反對下仍執行的決策（Tier 2）勝率，量化 AI 異見是否為真實信號。週報 markdown 同步新增「Tier 2 規則強推」行。
+- **8 個新測試**：`test_sync_decision_reviews.py` 新增 conflict_detail 儲存、None 語意、tier2 桶計數、無 tier2 時桶為零 4 個測試。
+
+---
+
+## v1.4.9 — 2026-04-22
+
+### Added — Subsystem A: P3 感測器降級框架
+
+- **`sensor_health.py`（純函數核心）**：`CRITICAL_SENSORS`（portfolio/market_cache/market_context，任一失效管線中止）、`AUXILIARY_SENSORS`（event_context/tape_context/worldmonitor/central_bank_calendar，失效降級繼續），回傳 `SensorHealthResult` dataclass。
+- **`check_sensor_health.py`（CLI 診斷腳本）**：獨立執行，讀 `state/sensor_health.json` 輸出人類可讀報告，exit code 永遠 0（不影響生產）。
+- **`run_auto_decision_scan.py`（接入）**：關鍵感測器失效時寫 `lock_reason` + 輸出 `AUTO_DECISION_SCAN_CRITICAL_SENSOR_FAIL:*` + return 1；輔助感測器缺失時在 `context_summary` 前綴 `[資料不完整: ...]`，繼續執行。
+- **`state/sensor_health.json`**：每次掃描自動產生，try/except 防止寫入失敗阻斷管線。
+- **7 個新測試**：全部通過（happy path + 6 negative paths）。
+
+---
+
 ## v1.4.6 — 2026-04-20
 
 ### Added
