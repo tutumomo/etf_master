@@ -209,6 +209,7 @@ In `execute_code`, `os.path.expanduser("~")` resolves correctly. But in `termina
 17. **Multi-instance deployment**: New instances created via `hermes profile create <name> --clone-from etf_master`. Instance state lives under `skills/ETF_TW/instances/<name>/state/`. Use `AGENT_ID=<name> DASHBOARD_PORT=<port>` to run in parallel. Verify with `bash scripts/verify_deployment.sh`.
 18. **`verify_deployment.sh`**: Run from profile root with `AGENT_ID=<id> DASHBOARD_PORT=<port> bash scripts/verify_deployment.sh`. Positions check reads `/api/overview.positions` (not `/api/positions` which does not exist). Trading hours gate uses `validate-order` subcommand.
 19. **Wiki learned-rules 主寫層**：`wiki/learned-rules.md` 由 `generate_learned_rules.py` 自動產生，不要手動編輯。規則 metadata 在 `state/learned_rules_meta.json`。每週六週報後自動觸發，作為 AI Bridge 第 16 個輸入源。
+20. **感測器分層**：`sensor_health.py` 定義關鍵/輔助感測器清單（`CRITICAL_SENSORS` / `AUXILIARY_SENSORS`）。新增感測器時只需修改這兩個常數，無需改其他檔案。`state/sensor_health.json` 由 `run_auto_decision_scan` 自動產生，不要手動編輯。
 
 <!-- GSD:project-start source:PROJECT.md -->
 ## Project
