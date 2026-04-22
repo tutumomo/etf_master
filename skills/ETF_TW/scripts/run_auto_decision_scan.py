@@ -716,6 +716,15 @@ def main(argv: list[str] | None = None) -> int:
         'watchlist_signals': [],
     })
 
+    # Read event flag to annotate provenance records
+    _event_flag = safe_load_json(STATE / 'major_event_flag.json', {})
+    _event_triggered = (
+        _event_flag.get('triggered', False) and
+        _event_flag.get('level', 'none') in ('L2', 'L3') and
+        bool(_event_flag.get('should_notify'))
+    )
+    _event_level = _event_flag.get('level', 'none') if _event_triggered else None
+
     enabled = bool(config.get('enabled', False))
     market_open = is_tw_market_open(now)
     state.update({
@@ -913,6 +922,8 @@ def main(argv: list[str] | None = None) -> int:
             'strategy_aligned_ai': (consensus.get('strategy_alignment_signal') or {}).get('ai'),
             'conflict_detail': consensus['conflict_detail'],
             'ai_bridge_reasoning': ai_bridge_reasoning,
+            'event_triggered': _event_triggered,
+            'event_level': _event_level,
         }
         record = build_provenance_record(
             request_payload=request_payload,
