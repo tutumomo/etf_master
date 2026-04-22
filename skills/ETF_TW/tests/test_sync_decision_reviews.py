@@ -274,3 +274,132 @@ def test_run_backfill_fills_t1(tmp_path):
 
     # quality report should have been written
     assert quality_report_path.exists()
+
+
+# ---------------------------------------------------------------------------
+# B1/B2 tests: conflict_detail, ai_bridge_reasoning, tier2_rule_overruled_ai
+# ---------------------------------------------------------------------------
+
+def test_build_provenance_record_includes_conflict_detail_and_reasoning():
+    """build_provenance_record() stores conflict_detail and ai_bridge_reasoning in chain_sources."""
+    from provenance_logger import build_provenance_record
+
+    chain_sources = {
+        'rule_engine_action': 'buy',
+        'ai_bridge_action': 'hold',
+        'consensus_tier': 2,
+        'conflict_detail': 'Rule says buy but AI says hold — rule wins at Tier 2.',
+        'ai_bridge_reasoning': 'AI Bridge deferred to rule engine due to Tier 2 conflict.',
+    }
+
+    record = build_provenance_record(
+        request_payload={'request_id': 'b1-test-001'},
+        response_payload={'request_id': 'b1-test-001'},
+        chain_sources=chain_sources,
+    )
+
+    assert record['chain_sources']['conflict_detail'] == 'Rule says buy but AI says hold — rule wins at Tier 2.'
+    assert record['chain_sources']['ai_bridge_reasoning'] == 'AI Bridge deferred to rule engine due to Tier 2 conflict.'
+
+
+def test_build_provenance_record_conflict_detail_none_on_tier1():
+    """build_provenance_record() stores None for conflict_detail and ai_bridge_reasoning on Tier 1."""
+    from provenance_logger import build_provenance_record
+
+    chain_sources = {
+        'rule_engine_action': 'buy',
+        'ai_bridge_action': 'preview_buy',
+        'consensus_tier': 1,
+        'conflict_detail': None,
+        'ai_bridge_reasoning': None,
+    }
+
+    record = build_provenance_record(
+        request_payload={'request_id': 'b1-test-002'},
+        response_payload={'request_id': 'b1-test-002'},
+        chain_sources=chain_sources,
+    )
+
+    assert record['chain_sources']['conflict_detail'] is None
+    assert record['chain_sources']['ai_bridge_reasoning'] is None
+
+
+def test_update_chain_breakdown_tier2_rule_overruled_ai():
+    """update_chain_breakdown() tallies tier2_rule_overruled_ai for Tier 2 records only."""
+    from sync_decision_reviews import update_chain_breakdown
+
+    records = [
+        {
+            # Tier 1 win — should go into tier1_consensus, not tier2_rule_overruled_ai
+            'outcome_final': {'verdict': 'win'},
+            'chain_sources': {
+                'rule_engine_action': 'buy',
+                'ai_bridge_action': 'preview_buy',
+                'consensus_tier': 1,
+            },
+        },
+        {
+            # Tier 2 loss — should go into tier2_rule_overruled_ai
+            'outcome_final': {'verdict': 'loss'},
+            'chain_sources': {
+                'rule_engine_action': 'buy',
+                'ai_bridge_action': 'hold',
+                'consensus_tier': 2,
+            },
+        },
+        {
+            # Tier 2 win — should go into tier2_rule_overruled_ai
+            'outcome_final': {'verdict': 'win'},
+            'chain_sources': {
+                'rule_engine_action': 'buy',
+                'ai_bridge_action': 'hold',
+                'consensus_tier': 2,
+            },
+        },
+        {
+            # Tier 3 loss — should NOT go into tier2_rule_overruled_ai
+            'outcome_final': {'verdict': 'loss'},
+            'chain_sources': {
+                'rule_engine_action': 'buy',
+                'ai_bridge_action': 'hold',
+                'consensus_tier': 3,
+            },
+        },
+    ]
+
+    result = update_chain_breakdown(records, {})
+    cb = result['chain_breakdown']
+
+    assert cb['tier2_rule_overruled_ai']['total'] == 2
+    assert cb['tier2_rule_overruled_ai']['win'] == 1
+    assert cb['tier2_rule_overruled_ai']['loss'] == 1
+    assert cb['tier1_consensus']['total'] == 1
+
+
+def test_update_chain_breakdown_tier2_bucket_absent_when_no_tier2():
+    """tier2_rule_overruled_ai total is 0 when all records are Tier 1."""
+    from sync_decision_reviews import update_chain_breakdown
+
+    records = [
+        {
+            'outcome_final': {'verdict': 'win'},
+            'chain_sources': {
+                'rule_engine_action': 'buy',
+                'ai_bridge_action': 'preview_buy',
+                'consensus_tier': 1,
+            },
+        },
+        {
+            'outcome_final': {'verdict': 'loss'},
+            'chain_sources': {
+                'rule_engine_action': 'buy',
+                'ai_bridge_action': 'preview_buy',
+                'consensus_tier': 1,
+            },
+        },
+    ]
+
+    result = update_chain_breakdown(records, {})
+    cb = result['chain_breakdown']
+
+    assert cb['tier2_rule_overruled_ai']['total'] == 0
