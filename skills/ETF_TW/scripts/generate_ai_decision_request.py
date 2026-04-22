@@ -81,6 +81,37 @@ def _read_learned_rules(wiki_roots: list[Path]) -> str:
     return _read_first(paths)
 
 
+def _read_learned_rules_freshness(state_dir: Path, wiki_roots: list[Path]) -> dict:
+    """Read learned_rules_meta.json and return a freshness summary dict."""
+    meta_paths = [state_dir / 'learned_rules_meta.json']
+    meta = {}
+    for p in meta_paths:
+        if p.exists():
+            try:
+                meta = json.loads(p.read_text(encoding='utf-8'))
+                break
+            except Exception:
+                pass
+
+    rules = meta.get('rules', [])
+    total = len(rules)
+    active = sum(1 for r in rules if r.get('status') == 'active')
+    tentative = sum(1 for r in rules if r.get('status') == 'tentative')
+    stale = sum(1 for r in rules if r.get('status') == 'stale')
+
+    last_confirmed_dates = [r.get('last_confirmed', '') for r in rules if r.get('last_confirmed')]
+    most_recent_update = max(last_confirmed_dates) if last_confirmed_dates else None
+
+    return {
+        'total_rules': total,
+        'active': active,
+        'tentative': tentative,
+        'stale': stale,
+        'most_recent_update': most_recent_update,
+        'knowledge_healthy': total > 0 and stale < total,
+    }
+
+
 def _load_entity_wiki(entity_dirs: list[Path], symbol: str, limit: int = 800) -> str:
     if not symbol:
         return ''
@@ -203,6 +234,7 @@ def generate_request_payload_from_state_dir(state_dir: Path, requested_by: str =
         "undervalued_ranking": undervalued_ranking_wiki,
         "entities": entity_wiki_summaries,
         "learned_rules": _read_learned_rules(wiki_roots),
+        "learned_rules_freshness": _read_learned_rules_freshness(state_dir, wiki_roots),
     }
     payload['stock_intelligence'] = stock_intelligence
     (state_dir / 'ai_decision_request.json').write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding='utf-8')
