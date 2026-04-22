@@ -901,7 +901,7 @@ def main(argv: list[str] | None = None) -> int:
         }
         scan_result = result
         # Build chain_sources from consensus dict for dual-chain stats
-        ai_bridge_reasoning = result.get('summary') if consensus.get('conflict') else None
+        ai_bridge_reasoning = ai_response.get('decision', {}).get('summary') if consensus['conflict'] else None
         chain_sources_payload = {
             'rule_engine_action': consensus.get('rule_engine'),
             'rule_engine_symbol': consensus.get('rule_engine_symbol'),
@@ -911,7 +911,7 @@ def main(argv: list[str] | None = None) -> int:
             'consensus_resolved': consensus.get('resolved'),
             'strategy_aligned_rule': (consensus.get('strategy_alignment_signal') or {}).get('rule'),
             'strategy_aligned_ai': (consensus.get('strategy_alignment_signal') or {}).get('ai'),
-            'conflict_detail': consensus.get('conflict_detail'),
+            'conflict_detail': consensus['conflict_detail'],
             'ai_bridge_reasoning': ai_bridge_reasoning,
         }
         record = build_provenance_record(
