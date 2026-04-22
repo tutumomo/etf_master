@@ -27,3 +27,8 @@ def test_all_sensors_healthy(tmp_path):
     assert result.critical_failures == []
     assert result.auxiliary_missing == []
     assert result.warning_prefix == ""
+
+    # checked_at must be a timezone-aware ISO8601 string
+    from datetime import datetime
+    dt = datetime.fromisoformat(result.checked_at)
+    assert dt.tzinfo is not None

@@ -53,6 +53,8 @@ def _load_sensor(path: Path) -> dict | None:
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError):
+        # OSError also covers TOCTOU race: file existed at path.exists() but was
+        # deleted or truncated before read_text() completed.
         return None
     if not isinstance(data, dict) or not data:
         return None
@@ -66,6 +68,9 @@ def _is_critical_ok(data: dict, required_field: str | None) -> bool:
     val = data.get(required_field)
     if val is None:
         return False
+    # NOTE: val==0/False/"" would pass here — acceptable because all current
+    # required_field values are list/dict/str (risk_temperature, holdings, quotes).
+    # Add an explicit falsy check if a future sensor uses int/bool fields.
     # market_cache 的 quotes 不能是空 dict
     if isinstance(val, dict) and len(val) == 0:
         return False
