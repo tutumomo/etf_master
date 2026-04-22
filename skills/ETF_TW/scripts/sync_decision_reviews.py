@@ -165,6 +165,7 @@ def update_chain_breakdown(records: list[dict], existing_report: dict) -> dict:
         'rule_engine': {'total': 0, 'win': 0, 'loss': 0, 'flat': 0, 'skip': 0},
         'ai_bridge':   {'total': 0, 'win': 0, 'loss': 0, 'flat': 0, 'skip': 0},
         'tier1_consensus': {'total': 0, 'win': 0, 'loss': 0, 'flat': 0, 'skip': 0},
+        'tier2_rule_overruled_ai': {'total': 0, 'win': 0, 'loss': 0, 'flat': 0, 'skip': 0},
         'unknown_source':  {'total': 0, 'win': 0, 'loss': 0, 'flat': 0, 'skip': 0},
     }
     total_with_outcome = 0
@@ -205,6 +206,12 @@ def update_chain_breakdown(records: list[dict], existing_report: dict) -> dict:
         # Tier 1 consensus bucket
         if tier == 1:
             b = buckets['tier1_consensus']
+            b['total'] += 1
+            b[verdict] = b.get(verdict, 0) + 1
+
+        # Tier 2 counterfactual: rule engine overruled AI Bridge
+        if tier == 2:
+            b = buckets['tier2_rule_overruled_ai']
             b['total'] += 1
             b[verdict] = b.get(verdict, 0) + 1
 

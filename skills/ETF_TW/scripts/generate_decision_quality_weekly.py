@@ -154,6 +154,7 @@ def format_weekly_report(
     rule_b = rb.get('rule_engine', {})
     ai_b = rb.get('ai_bridge', {})
     tier1_b = rb.get('tier1_consensus', {})
+    t2_b = rb.get('tier2_rule_overruled_ai', {})
 
     wins_lines = '\n'.join(
         f"{i+1}. {w['symbol']} — {w['window']} win (+{w['return_pct']}%)"
@@ -185,6 +186,7 @@ def format_weekly_report(
         f'| 規則引擎 | {rule_b.get("total", 0)} | {fmt_rate(rule_b)} |',
         f'| AI Bridge | {ai_b.get("total", 0)} | {fmt_rate(ai_b)} |',
         f'| Tier 1 共識 | {tier1_b.get("total", 0)} | {fmt_rate(tier1_b)} |',
+        f'| Tier 2 規則強推 | {t2_b.get("total", 0)} | {fmt_rate(t2_b)} |',
         f'',
         f'## 本週最準確標的（Top 3）',
         wins_lines,
