@@ -68,7 +68,77 @@ def _fail(reason: str, details: dict = None) -> Dict[str, Any]:
 
 
 def _pass(details: dict = None) -> Dict[str, Any]:
-    return {'passed': True, 'reason': 'passed', 'details': details or {}}
+    return {'passed': True, 'reason': '', 'details': details or {}}
+
+
+def compute_investment_score(order: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    計算投資評分（-10 ~ +10），不影響通過/攔截邏輯，僅供 dashboard 參考顯示。
+
+    因子：
+      AI 信心 high +3 / medium +1 / low -2
+      策略對齊 strategy_aligned=True +2
+      規模合理 order_amount < cash * 0.15 +2
+      規模偏高 order_amount > cash * 0.25 -2
+      正常交易時段 +1
+      市場 regime cautious -2 / bullish +1
+    """
+    score = 0
+    breakdown: list[str] = []
+
+    # AI 信心
+    ai_conf = order.get('ai_confidence')
+    if ai_conf is not None:
+        conf_label = str(ai_conf).lower()
+        if conf_label == 'high':
+            score += 3
+            breakdown.append('AI信心:high +3')
+        elif conf_label == 'medium':
+            score += 1
+            breakdown.append('AI信心:medium +1')
+        elif conf_label == 'low':
+            score -= 2
+            breakdown.append('AI信心:low -2')
+
+    # 策略對齊
+    if context.get('strategy_aligned'):
+        score += 2
+        breakdown.append('策略對齊 +2')
+
+    # 規模比例
+    cash = context.get('cash', 0.0)
+    price = order.get('price', 0.0)
+    quantity = order.get('quantity', 0)
+    if cash > 0 and price > 0 and quantity > 0:
+        order_amount = quantity * price
+        ratio = order_amount / cash
+        if ratio < 0.15:
+            score += 2
+            breakdown.append(f'規模合理({ratio:.0%}<15%) +2')
+        elif ratio > 0.25:
+            score -= 2
+            breakdown.append(f'規模偏高({ratio:.0%}>25%) -2')
+
+    # 交易時段
+    try:
+        hours_info = get_trading_hours_info()
+        if hours_info.get('is_trading_hours'):
+            score += 1
+            breakdown.append('正常交易時段 +1')
+    except Exception:
+        pass
+
+    # 市場 regime
+    market_regime = context.get('market_regime', '')
+    if market_regime == 'cautious':
+        score -= 2
+        breakdown.append('市場cautious -2')
+    elif market_regime == 'bullish':
+        score += 1
+        breakdown.append('市場bullish +1')
+
+    score = max(-10, min(10, score))
+    return {'investment_score': score, 'score_breakdown': breakdown}
 
 
 def check_order(order: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
@@ -152,7 +222,11 @@ def check_order(order: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any
     # ── 7. Safety Redlines（安全紅線）────────────────────────────────────────
     # context 可設 _skip_safety_redlines=True 供測試環境跳過檔案紅線
     if context.get('_skip_safety_redlines'):
-        return _pass()
+        score_result = compute_investment_score(order, context)
+        result = _pass()
+        result['investment_score'] = score_result['investment_score']
+        result['score_breakdown'] = score_result['score_breakdown']
+        return result
 
     try:
         state_dir = context.get("state_dir")
@@ -217,4 +291,9 @@ def check_order(order: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any
     except Exception:
         pass  # safety redlines load failure is non-blocking
 
-    return _pass()
+    # Compute investment score (non-blocking, appended to pass result)
+    score_result = compute_investment_score(order, context)
+    result = _pass()
+    result['investment_score'] = score_result['investment_score']
+    result['score_breakdown'] = score_result['score_breakdown']
+    return result

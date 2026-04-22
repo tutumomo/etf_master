@@ -17,6 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from etf_core.state_io import safe_load_json, safe_load_jsonl
 from etf_core import context
+from strategy_audit import run_strategy_audit, format_strategy_audit_section
 
 TW_TZ = ZoneInfo('Asia/Taipei')
 
@@ -135,6 +136,7 @@ def format_weekly_report(
     week_date: date,
     week_stats: dict,
     chain_breakdown: dict,
+    strategy_audit: dict | None = None,
 ) -> str:
     period_start = _date_of_iso_week_start(week_key)
     period_end = period_start + timedelta(days=6)
@@ -195,6 +197,9 @@ def format_weekly_report(
         losses_lines,
     ]
 
+    if strategy_audit is not None:
+        lines.append(format_strategy_audit_section(strategy_audit))
+
     return '\n'.join(lines) + '\n'
 
 
@@ -232,7 +237,8 @@ def main() -> int:
     chain_breakdown = quality_report.get('chain_breakdown', {})
 
     week_stats = collect_week_stats(records, today)
-    content = format_weekly_report(week_key, today, week_stats, chain_breakdown)
+    strategy_audit = run_strategy_audit(provenance_path)
+    content = format_weekly_report(week_key, today, week_stats, chain_breakdown, strategy_audit)
     paths = write_weekly_report(content, week_key, wiki_dir=WIKI_DIR)
 
     print(f"GENERATE_DECISION_QUALITY_WEEKLY_OK:"

@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## v1.4.14 — 2026-04-23
+
+### Added
+- **`strategy_audit.py`（新腳本）**：稽核 `decision_provenance.jsonl` 中策略影響力的真實程度。計算策略分佈、per-strategy 對齊率、各策略實際選出的 ETF 群組、策略對齊 vs 非對齊勝率對比、策略切換次數、平均評分差異。`format_strategy_audit_section()` 輸出 Markdown 供週報直接嵌入。
+- **`generate_decision_quality_weekly.py`（修改）**：`format_weekly_report()` 新增可選 `strategy_audit` 參數，`main()` 自動執行稽核並嵌入「策略影響力稽核」段落至週報末尾。
+- **`pre_flight_gate.compute_investment_score()`（新函數）**：對下單候選計算 -10~+10 投資評分（不影響通過/攔截邏輯），因子包含 AI 信心（high/medium/low）、策略對齊、規模比例、交易時段、市場 regime。`check_order()` 通過時自動附加 `investment_score` 與 `score_breakdown`。
+- **`dashboard/app.py trade_preview`（修改）**：讀取 `market_context_taiwan.json` 與 `watchlist.json` 以填入 `market_regime` + `strategy_aligned`，回傳 `pre_flight.investment_score` 與 `score_breakdown` 給前端。
+- **`dashboard/templates/overview.html`（修改）**：預覽面板新增「投資評分」列，顯示數字 + 顏色 bar（≥6 綠/3–5 黃/≤2 紅）；PASS 時顯示「✓ 已通過所有風險檢查」，BLOCK 時才顯示「攔截原因：」（修正舊版 PASS 時誤顯示「攔截原因：passed」的 bug）。
+- **`pre_flight_gate._pass()`（修改）**：`reason` 由 `'passed'` 改為空字串，讓前端 `if (reason)` 判斷乾淨。
+- **24 個新測試**：`test_pre_flight_gate.py`（14 tests，覆蓋 _pass reason、compute_investment_score 各因子、check_order 附加評分）、`test_strategy_audit.py`（10 tests，覆蓋分佈統計、對齊率、切換計數、勝率、Markdown 格式）。
+
 ## v1.4.13 — 2026-04-22
 
 ### Added

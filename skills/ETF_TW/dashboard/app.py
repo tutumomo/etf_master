@@ -1114,11 +1114,36 @@ def trade_preview(payload: TradeRequest):
     overview = build_overview_model()
     account = overview["account"]
     positions = overview["positions"]
-    
+
     # Context for pre_flight_gate
     # Use actual inventory if available
     inventory = {p["symbol"]: p["quantity"] for p in positions.get("positions", [])}
-    
+
+    # Enrich context with market regime + strategy alignment for investment_score
+    state_dir = _ctx.get_state_dir()
+    market_ctx = safe_load_json(state_dir / "market_context_taiwan.json", default={})
+    strategy_link = safe_load_json(STATE_STRATEGY_LINK_PATH, default={})
+    market_regime = market_ctx.get("market_regime", "")
+
+    # strategy_aligned: True when candidate's group matches base_strategy preference
+    # For the preview endpoint we use a simple proxy: strategy has an active base_strategy
+    base_strategy = strategy_link.get("base_strategy", "")
+    symbol_upper = payload.symbol.upper() if payload.symbol else ""
+    # Look up the symbol's group from watchlist to determine strategy alignment
+    try:
+        wl = safe_load_json(state_dir / "watchlist.json", default={})
+        wl_items = wl.get("watchlist", []) if isinstance(wl, dict) else []
+        wl_map = {str(item.get("symbol", "")).upper(): item for item in wl_items}
+        group = wl_map.get(symbol_upper, {}).get("group", "")
+        strategy_group_map = {
+            "核心累積": "core", "收益優先": "income",
+            "防守保守": "defensive", "平衡配置": "core",
+        }
+        preferred_group = strategy_group_map.get(base_strategy, "")
+        strategy_aligned = bool(preferred_group and group == preferred_group)
+    except Exception:
+        strategy_aligned = False
+
     context_data = {
         "cash": account.get("cash", 0.0),
         "inventory": inventory,
@@ -1126,8 +1151,10 @@ def trade_preview(payload: TradeRequest):
         "max_single_limit_twd": 1000000.0,
         "risk_temperature": 1.0,
         "force_trading_hours": False,  # Manual dashboard allows preview anytime
+        "market_regime": market_regime,
+        "strategy_aligned": strategy_aligned,
     }
-    
+
     order = {
         "symbol": payload.symbol,
         "side": payload.side,
@@ -1136,9 +1163,9 @@ def trade_preview(payload: TradeRequest):
         "order_type": "limit",
         "lot_type": "board" if payload.quantity >= 1000 else "odd",
     }
-    
+
     check_res = pre_flight.check_order(order, context_data)
-    
+
     return {
         "ok": True,
         "symbol": payload.symbol,
@@ -1148,8 +1175,10 @@ def trade_preview(payload: TradeRequest):
         "estimated_total": round(payload.quantity * payload.price, 2),
         "pre_flight": {
             "ok": check_res.get("passed", False),
-            "reason": check_res.get("reason", "unknown_error"),
-            "details": check_res.get("details", {})
+            "reason": check_res.get("reason", ""),
+            "details": check_res.get("details", {}),
+            "investment_score": check_res.get("investment_score"),
+            "score_breakdown": check_res.get("score_breakdown", []),
         }
     }
 
