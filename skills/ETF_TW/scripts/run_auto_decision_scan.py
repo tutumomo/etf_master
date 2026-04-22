@@ -17,6 +17,8 @@ from etf_core.state_schema import validate_state_payload
 from trading_hours import is_tw_market_open
 from provenance_logger import build_provenance_record, append_provenance
 from ai_decision_bridge import is_ai_decision_response_stale
+from dataclasses import asdict
+from sensor_health import check_sensor_health
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.append(str(ROOT))
@@ -736,6 +738,26 @@ def main(argv: list[str] | None = None) -> int:
         atomic_save_json(STATE_PATH, state)
         print('AUTO_DECISION_SCAN_OK:LOCKED')
         return 0
+
+    # ── 感測器健康檢查 ──────────────────────────────────────────────────────
+    health = check_sensor_health(STATE)
+    try:
+        atomic_save_json(STATE / 'sensor_health.json', asdict(health))
+    except Exception as _e:
+        print(f'[sensor_health] sensor_health.json 寫入失敗（{_e}），繼續執行')
+
+    if not health.healthy:
+        state['lock_reason'] = f'關鍵感測器失效：{", ".join(health.critical_failures)}'
+        atomic_save_json(STATE_PATH, state)
+        print(f'AUTO_DECISION_SCAN_CRITICAL_SENSOR_FAIL:{",".join(health.critical_failures)}')
+        return 1
+
+    if health.warning_prefix:
+        market_context = dict(market_context)
+        market_context['context_summary'] = (
+            health.warning_prefix + str(market_context.get('context_summary') or '')
+        )
+    # ───────────────────────────────────────────────────────────────────────
 
     result = decide_action(strategy, watchlist, market_cache, portfolio, market_context, event_context, tape_context)
     candidate = result.get('candidate')
