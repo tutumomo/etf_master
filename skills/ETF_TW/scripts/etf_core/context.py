@@ -28,8 +28,10 @@ def get_instance_id():
             import sys
 
             print(
-                "WARN: AGENT_ID missing; fallback to legacy OPENCLAW_AGENT_NAME also not found; defaulting instance_id=etf_master. "
-                "Set AGENT_ID=<instance_id> to avoid cross-instance state contamination.",
+                "WARN: current process env missing AGENT_ID; legacy OPENCLAW_AGENT_NAME also not found. "
+                "This does not necessarily mean your interactive shell is unset (for example, ~/.zshrc exports may not reach non-interactive subprocesses). "
+                "Dedicated family launcher scripts already export AGENT_ID explicitly; ad hoc scripts and tests must do the same. "
+                "Defaulting instance_id=etf_master for this process only.",
                 file=sys.stderr,
             )
         except Exception:

@@ -195,22 +195,22 @@ def _infer_ai_confidence_from_market_intelligence(state_dir: Path, symbol: str) 
         if rsi <= 45:
             score += 2
         elif rsi >= 70:
-            score -= 1
+            score -= 2
         else:
-            score += 1
+            score += 0
 
     momentum = metrics.get("momentum_20d")
     if isinstance(momentum, (int, float)):
-        if momentum >= 5:
+        if momentum >= 8:
             score += 1
         elif momentum < 0:
             score -= 1
 
     sharpe = metrics.get("sharpe_30d")
     if isinstance(sharpe, (int, float)):
-        if sharpe >= 2.5:
+        if sharpe >= 3.0:
             score += 1
-        elif sharpe < 0:
+        elif sharpe < -0.5:
             score -= 1
 
     macd = metrics.get("macd")
@@ -229,7 +229,7 @@ def _infer_ai_confidence_from_market_intelligence(state_dir: Path, symbol: str) 
         elif sma5 < sma20:
             score -= 1
 
-    if score >= 4:
+    if score >= 5 and not (isinstance(rsi, (int, float)) and rsi >= 70):
         return "high", "ai_bridge_heuristic"
     if score >= 2:
         return "medium", "ai_bridge_heuristic"

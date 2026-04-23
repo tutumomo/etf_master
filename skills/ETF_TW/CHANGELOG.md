@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## v1.4.16 — 2026-04-24
+
+### Fixed
+- **Preview API 500 修復**：`dashboard/app.py` 的 `trade_preview()` 補齊 `context.get_state_dir()` 與 `safe_load_json` 接線，修復預覽交易路徑會因 `NameError` 直接炸成 `500 Internal Server Error` 的問題。
+- **投資評分鏈路恢復有效**：`watchlist.json` 同時支援 `watchlist` / `items` 結構，`market_regime` 改為支援 `balanced_bullish` / `*_cautious` 這類複合值，不再讓策略對齊與市場 regime 因子靜默失效。
+
+### Added
+- **Preview 評分接入 AI 信心來源**：`trade_preview()` 現在會先使用 `ai_decision_response.json` 的真 AI 信心；若當前標的不是 AI 候選，則退回 per-symbol `ai_bridge_heuristic`，讓所有 preview 標的都有可追溯的信心來源。
+- **Preview 面板透明化**：`overview.html` 新增「評分因子」與「AI 信心來源」顯示，清楚區分真 AI 與 heuristic。
+- **回歸測試**：新增 `tests/test_dashboard_trade_preview.py`，覆蓋 preview payload、watchlist `items` 相容、AI 信心直接來源與 heuristic fallback。
+
+### Changed
+- **Heuristic AI 信心改保守**：per-symbol fallback 對過熱 RSI 採扣分處理，提升 `high` 門檻，避免把過熱標的輕易顯示成高信心。
+- **AGENT_ID warning 文案修正**：`scripts/etf_core/context.py` 現在明確說明缺的是「current process env」，避免把非互動 subprocess 的 env 缺失誤解成整台機器未設定。
+
 ## v1.4.15 — 2026-04-24
 
 ### Added

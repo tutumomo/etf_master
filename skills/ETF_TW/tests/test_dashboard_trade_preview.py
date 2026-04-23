@@ -123,8 +123,8 @@ def test_trade_preview_falls_back_to_heuristic_ai_confidence_for_other_symbols()
             "passed": True,
             "reason": "",
             "details": {},
-            "investment_score": 6,
-            "score_breakdown": ["AI信心:high +3", "策略對齊 +2", "市場bullish +1"],
+            "investment_score": 4,
+            "score_breakdown": ["AI信心:medium +1", "策略對齊 +2", "市場bullish +1"],
         }
 
     def fake_safe_load_json(path, default=None):
@@ -166,6 +166,6 @@ def test_trade_preview_falls_back_to_heuristic_ai_confidence_for_other_symbols()
          patch.object(dashboard_app.pre_flight, "check_order", side_effect=fake_check_order):
         result = dashboard_app.trade_preview(payload)
 
-    assert captured["order"]["ai_confidence"] == "high"
-    assert result["pre_flight"]["ai_confidence"] == "high"
+    assert captured["order"]["ai_confidence"] == "medium"
+    assert result["pre_flight"]["ai_confidence"] == "medium"
     assert result["pre_flight"]["ai_confidence_source"] == "ai_bridge_heuristic"

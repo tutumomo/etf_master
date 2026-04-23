@@ -1,4 +1,4 @@
-# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.4.15)
+# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.4.16)
 
 `ETF_Master` 是一款專為台灣 ETF 投資者設計的 AI 輔助決策與資產管理系統。本專案秉持「**交易安全優先於功能完備**」的核心價值，透過「三層真相層級」治理與「雙鏈決策仲裁」機制，為投資者提供一個穩定、透明且具備深度洞察的投資工作台。
 
@@ -47,6 +47,7 @@
   - 反應式 (Reactive) 策略切換：套用策略後自動重生決策建議。
   - 摺疊式區塊：在維持監控頂部看板的同時保持介面簡潔。
   - 內嵌式交易票據：流暢的三段式下單體驗。
+  - 預覽交易評分會顯示評分因子與 AI 信心來源，區分直接 AI 輸出與 per-symbol heuristic fallback。
 
 ### 命令行工具 (CLI)
 ```bash
@@ -106,6 +107,12 @@ AGENT_ID=etf_master .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.
 ---
 
 ## 📦 版本紀錄
+
+### v1.4.16 (2026-04-24)
+- fix(dashboard): 修復 `預覽交易` API 500，補齊 `trade_preview()` 缺失的 state context / JSON loader 接線
+- feat(dashboard): 預覽交易評分接入 AI 信心來源；當前 AI 候選標的使用 `ai_decision_response`，其他標的使用透明的 per-symbol `ai_bridge_heuristic`
+- ux(dashboard): 預覽面板新增「評分因子」與「AI 信心來源」顯示，避免把 heuristic 誤看成真 AI 判斷
+- chore(context): `AGENT_ID` warning 改為 process-local 說明，明確區分互動 shell 已設與非互動 subprocess 未帶入的情況
 
 ### v1.4.15 (2026-04-24)
 - feat(knowledge): 完成 `graphify + llm-wiki` 整合收斂，Codex 現在可透過專案 `AGENTS.md` 與 `.codex/hooks.json` 在回答程式碼庫問題前優先讀取知識圖譜
