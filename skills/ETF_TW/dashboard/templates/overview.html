@@ -1435,6 +1435,16 @@ async function previewTrade(symbol, cleanId) {
                 </span></div>`;
             })() : ''}
         `;
+        if (Array.isArray(data.pre_flight.score_breakdown) && data.pre_flight.score_breakdown.length > 0) {
+            html += `<div style="margin-top:10px; color:var(--muted); font-size:12px; line-height:1.5;">
+                <strong>評分因子：</strong>${data.pre_flight.score_breakdown.join(' / ')}
+            </div>`;
+        }
+        if (data.pre_flight.ai_confidence) {
+            html += `<div style="margin-top:6px; color:var(--muted); font-size:12px; line-height:1.5;">
+                <strong>AI 信心來源：</strong>${data.pre_flight.ai_confidence}（${data.pre_flight.ai_confidence_source || 'unknown'}）
+            </div>`;
+        }
         if (!data.pre_flight.ok && data.pre_flight.reason) {
             html += `<div style="margin-top:12px; padding:10px; border-radius:8px; background:rgba(255,193,7,0.1); border:1px solid rgba(255,193,7,0.2); color:#ffd166; font-size:13px;">
                 <strong>攔截原因：</strong>${data.pre_flight.reason}

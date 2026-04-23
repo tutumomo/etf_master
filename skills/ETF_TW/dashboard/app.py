@@ -23,6 +23,7 @@ SCRIPTS_DIR = ROOT / "scripts"
 sys.path.append(str(ROOT))
 sys.path.append(str(SCRIPTS_DIR))
 from scripts.etf_core import context
+from scripts.etf_core.state_io import safe_load_json
 import scripts.pre_flight_gate as pre_flight
 from state_reconciliation import reconciliation_summary
 from dashboard_health import build_health_summary_payload
@@ -118,6 +119,7 @@ class LiveUnlockRequest(BaseModel):
     confirm_2: str
 
 
+TradeRequest.model_rebuild()
 TradingModeRequest.model_rebuild()
 AIDecisionReviewRequest.model_rebuild()
 AIDecisionOutcomeRequest.model_rebuild()
@@ -176,6 +178,62 @@ def write_watchlist_state(payload: dict) -> None:
 
 
 import os
+
+
+def _infer_ai_confidence_from_market_intelligence(state_dir: Path, symbol: str) -> tuple[str | None, str | None]:
+    request_payload = safe_load_json(state_dir / "ai_decision_request.json", default={})
+    inputs = request_payload.get("inputs") or {}
+    intelligence = ((inputs.get("market_intelligence") or {}).get("intelligence")) or {}
+    metrics = intelligence.get(symbol.upper()) or intelligence.get(symbol) or {}
+    if not isinstance(metrics, dict) or not metrics:
+        return None, None
+
+    score = 0
+
+    rsi = metrics.get("rsi")
+    if isinstance(rsi, (int, float)):
+        if rsi <= 45:
+            score += 2
+        elif rsi >= 70:
+            score -= 1
+        else:
+            score += 1
+
+    momentum = metrics.get("momentum_20d")
+    if isinstance(momentum, (int, float)):
+        if momentum >= 5:
+            score += 1
+        elif momentum < 0:
+            score -= 1
+
+    sharpe = metrics.get("sharpe_30d")
+    if isinstance(sharpe, (int, float)):
+        if sharpe >= 2.5:
+            score += 1
+        elif sharpe < 0:
+            score -= 1
+
+    macd = metrics.get("macd")
+    macd_signal = metrics.get("macd_signal")
+    if isinstance(macd, (int, float)) and isinstance(macd_signal, (int, float)):
+        if macd > macd_signal:
+            score += 1
+        elif macd < macd_signal:
+            score -= 1
+
+    sma5 = metrics.get("sma5")
+    sma20 = metrics.get("sma20")
+    if isinstance(sma5, (int, float)) and isinstance(sma20, (int, float)):
+        if sma5 > sma20:
+            score += 1
+        elif sma5 < sma20:
+            score -= 1
+
+    if score >= 4:
+        return "high", "ai_bridge_heuristic"
+    if score >= 2:
+        return "medium", "ai_bridge_heuristic"
+    return "low", "ai_bridge_heuristic"
 
 def refresh_monitoring_state() -> dict:
     script = ROOT / "scripts" / "refresh_monitoring_state.py"
@@ -1120,7 +1178,7 @@ def trade_preview(payload: TradeRequest):
     inventory = {p["symbol"]: p["quantity"] for p in positions.get("positions", [])}
 
     # Enrich context with market regime + strategy alignment for investment_score
-    state_dir = _ctx.get_state_dir()
+    state_dir = context.get_state_dir()
     market_ctx = safe_load_json(state_dir / "market_context_taiwan.json", default={})
     strategy_link = safe_load_json(STATE_STRATEGY_LINK_PATH, default={})
     market_regime = market_ctx.get("market_regime", "")
@@ -1132,7 +1190,9 @@ def trade_preview(payload: TradeRequest):
     # Look up the symbol's group from watchlist to determine strategy alignment
     try:
         wl = safe_load_json(state_dir / "watchlist.json", default={})
-        wl_items = wl.get("watchlist", []) if isinstance(wl, dict) else []
+        wl_items = []
+        if isinstance(wl, dict):
+            wl_items = wl.get("watchlist") or wl.get("items") or []
         wl_map = {str(item.get("symbol", "")).upper(): item for item in wl_items}
         group = wl_map.get(symbol_upper, {}).get("group", "")
         strategy_group_map = {
@@ -1143,6 +1203,19 @@ def trade_preview(payload: TradeRequest):
         strategy_aligned = bool(preferred_group and group == preferred_group)
     except Exception:
         strategy_aligned = False
+
+    ai_response = safe_load_json(state_dir / "ai_decision_response.json", default={})
+    ai_confidence = None
+    ai_confidence_source = None
+    if isinstance(ai_response, dict) and ai_response.get("stale") is not True:
+        ai_candidate = ai_response.get("candidate") or {}
+        ai_decision = ai_response.get("decision") or {}
+        if str(ai_candidate.get("symbol", "")).upper() == symbol_upper:
+            ai_confidence = ai_decision.get("confidence")
+            if ai_confidence:
+                ai_confidence_source = "ai_decision_response"
+    if not ai_confidence:
+        ai_confidence, ai_confidence_source = _infer_ai_confidence_from_market_intelligence(state_dir, symbol_upper)
 
     context_data = {
         "cash": account.get("cash", 0.0),
@@ -1160,6 +1233,7 @@ def trade_preview(payload: TradeRequest):
         "side": payload.side,
         "quantity": payload.quantity,
         "price": payload.price,
+        "ai_confidence": ai_confidence,
         "order_type": "limit",
         "lot_type": "board" if payload.quantity >= 1000 else "odd",
     }
@@ -1179,6 +1253,8 @@ def trade_preview(payload: TradeRequest):
             "details": check_res.get("details", {}),
             "investment_score": check_res.get("investment_score"),
             "score_breakdown": check_res.get("score_breakdown", []),
+            "ai_confidence": ai_confidence,
+            "ai_confidence_source": ai_confidence_source,
         }
     }
 

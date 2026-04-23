@@ -129,11 +129,11 @@ def compute_investment_score(order: Dict[str, Any], context: Dict[str, Any]) -> 
         pass
 
     # 市場 regime
-    market_regime = context.get('market_regime', '')
-    if market_regime == 'cautious':
+    market_regime = str(context.get('market_regime', '')).lower()
+    if 'cautious' in market_regime:
         score -= 2
         breakdown.append('市場cautious -2')
-    elif market_regime == 'bullish':
+    elif 'bullish' in market_regime:
         score += 1
         breakdown.append('市場bullish +1')
 
