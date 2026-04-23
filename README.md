@@ -1,4 +1,4 @@
-# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.4.13)
+# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.4.15)
 
 `ETF_Master` 是一款專為台灣 ETF 投資者設計的 AI 輔助決策與資產管理系統。本專案秉持「**交易安全優先於功能完備**」的核心價值，透過「三層真相層級」治理與「雙鏈決策仲裁」機制，為投資者提供一個穩定、透明且具備深度洞察的投資工作台。
 
@@ -31,7 +31,8 @@
 - **`stock-market-pro-tw`**：產生高品質技術線圖與 ASCII 趨勢報告。
 - **`taiwan-finance`**：投行級估值框架（DCF, Comps）與法說會分析。
 
-### 3. 自動化知識沉澱 (llm-wiki)
+### 3. 自動化知識沉澱 (graphify + llm-wiki)
+- **圖譜先行**：`graphify` 已整合進 Codex 工作流，可在回答程式碼庫與知識庫問題前先利用 `graphify-out/graph.json` 與 `GRAPH_REPORT.md` 對齊社群結構與關鍵節點。
 - **廣度背景**：內建全台灣 330 支 ETF 的基礎百科。
 - **深度蒸餾**：Cron 任務自動將每日診斷結論與市場體制轉化為結構化的 Markdown 知識，供 AI 隨時調閱。
 
@@ -105,6 +106,11 @@ AGENT_ID=etf_master .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.
 ---
 
 ## 📦 版本紀錄
+
+### v1.4.15 (2026-04-24)
+- feat(knowledge): 完成 `graphify + llm-wiki` 整合收斂，Codex 現在可透過專案 `AGENTS.md` 與 `.codex/hooks.json` 在回答程式碼庫問題前優先讀取知識圖譜
+- chore(knowledge): 專案層接入 `graphify` hook 與知識圖譜讀取規則，讓圖譜探索與 wiki 沉澱工作流在同一個 repo 內收斂
+- docs(readme): 更新知識工作流說明，明確標示圖譜查詢與 wiki 沉澱的分工
 
 ### v1.4.13 (2026-04-22)
 - feat(dashboard): 「全鏈路同步」現在先執行 `sync_live_state.py`，再跑 monitoring / auto-decision / consensus，避免 dashboard 用舊持倉快照產生建議

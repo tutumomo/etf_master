@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## v1.4.15 — 2026-04-24
+
+### Added
+- **Codex graphify hook 接線完成**：新增 repo-local `AGENTS.md` 與 `.codex/hooks.json`，讓 Codex 在回答程式碼庫問題前先檢查 `graphify-out/GRAPH_REPORT.md` / `graphify-out/graph.json`，並在程式碼變更後保留圖譜更新入口。
+
+### Changed
+- **知識工作流收斂**：將 `graphify` 的圖譜探索與 `llm-wiki` 的長期沉澱角色在專案層文件中明確區分，避免後續代理把兩者混成同一條流程。
+
+### Docs
+- **README 對齊知識工作流**：更新 root `README.md` 與 `skills/ETF_TW/README.md`，明確區分 `graphify` 的圖譜探索角色與 `llm-wiki` 的長期知識沉澱角色。
+
 ## v1.4.14 — 2026-04-23
 
 ### Added
