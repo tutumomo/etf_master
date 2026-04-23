@@ -1,0 +1,11 @@
+{
+  "agent_id": "etf_daughter",
+  "agent_name": "ETF_Daughter",
+  "role": "daughter",
+  "title": "千金的專屬理財助理",
+  "call_name": "千金",
+  "family_group": "etf_family",
+  "master_profile": "etf_master",
+  "mode": "paper",
+  "created_at": "2026-04-23T16:39:49.884097+08:00"
+}

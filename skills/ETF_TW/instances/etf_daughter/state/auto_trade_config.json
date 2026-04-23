@@ -1,0 +1,8 @@
+{
+  "mode": "paper",
+  "broker": "paper",
+  "auto_submit": false,
+  "daily_order_limit": 3,
+  "max_single_trade_pct": 0.5,
+  "updated_at": "2026-04-23T16:39:49.884097+08:00"
+}

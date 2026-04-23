@@ -1,0 +1,11 @@
+{
+  "agent_id": "etf_wife",
+  "agent_name": "ETF_Wife",
+  "role": "wife",
+  "title": "太太的專屬理財助理",
+  "call_name": "太太",
+  "family_group": "etf_family",
+  "master_profile": "etf_master",
+  "mode": "paper",
+  "created_at": "2026-04-23T16:39:49.884097+08:00"
+}

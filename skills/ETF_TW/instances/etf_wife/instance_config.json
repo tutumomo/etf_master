@@ -1,0 +1,28 @@
+{
+  "agent_id": "etf_wife",
+  "accounts": {
+    "paper_wife": {
+      "alias": "paper_wife",
+      "broker_id": "paper",
+      "account_id": "etf_wife_paper",
+      "mode": "paper",
+      "credentials": {
+        "api_key": "paper_internal"
+      }
+    }
+  },
+  "default_account": "paper_wife",
+  "port": 5056,
+  "watchlist": [
+    "0050.TW",
+    "006208.TW",
+    "00878.TW",
+    "0056.TW",
+    "00919.TW"
+  ],
+  "worldmonitor": {
+    "enabled": true,
+    "base_url": "https://worldmonitor-gamma-mocha.vercel.app",
+    "api_key": "${WORLDMONITOR_API_KEY}"
+  }
+}
