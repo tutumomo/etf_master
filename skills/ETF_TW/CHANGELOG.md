@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## v1.4.17 — 2026-04-24
+
+### Added
+- **Dashboard 現金/交割安全金額同步顯示**：`sync_live_state.py` 在 live-ready Full Sync 時一併查詢 `api.settlements(api.stock_account)`，寫入 T+1/T+2 淨交割款與 `settlement_safe_cash`，讓「現金 / 追蹤數」卡片同時顯示帳面現金與交割安全金額。
+
+### Changed
+- **現金卡片透明化**：`overview.html` 顯示「交割安全」與 T+1/T+2 淨額，避免只看帳面現金誤判可動用金額。
+
+### Tests
+- **回歸測試**：`tests/test_sync_live_state.py` 新增交割安全金額計算測試，覆蓋 T+1/T+2 淨額與負數安全金額 floor 顯示值。
+
 ## v1.4.16 — 2026-04-24
 
 ### Fixed
