@@ -836,6 +836,14 @@ cd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/refre
 
 ---
 
+## 版本發布規範（強制）
+
+- bump 版本號前，必須先 `git fetch --tags origin`，再以 `git tag --sort=-v:refname | head` 與 `CHANGELOG.md` 最上方版本共同確認目前最新版本。
+- 不可只看 `SKILL.md` frontmatter 的 `version:`，該值可能落後於 GitHub tag / CHANGELOG。
+- 使用者要求「版本號 +0.0.1」時，意思是從目前最新正式版本做 patch bump：例如最新 `v1.4.16` → `v1.4.17`，不是建立 `v0.0.1` tag，也不是從 stale frontmatter `v1.4.5` bump 到 `v1.4.6`。
+- 發布流程：更新 `SKILL.md` frontmatter → 更新 `CHANGELOG.md` 最上方條目 → 測試 → commit → push main → 建立正確版本 tag → push tag → `git ls-remote --tags origin <tag>` 驗證。
+- 若誤建 tag，必須同輪刪除本地與遠端錯誤 tag：`git tag -d <bad>` + `git push origin :refs/tags/<bad>`，再建立正確 tag。
+
 ## 版本歷史
 
 - **v1.3.3**（2026-04-13）：F1斷層修復 + 決策鏈重檢 + 推薦引擎修正
