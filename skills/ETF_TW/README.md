@@ -1,4 +1,4 @@
-# ETF_TW：Hermes 版台灣 ETF 技能與 Dashboard (v1.4.15)
+# ETF_TW：Hermes 版台灣 ETF 技能與 Dashboard (v1.4.17)
 
 這是目前掛載在 Hermes profile (`etf_master`) 下的 ETF_TW 技能目錄。
 它提供台灣 ETF 的研究、風控、持倉監控、state-driven dashboard，以及與券商流程對齊的交易輔助能力。
@@ -42,6 +42,20 @@ AGENT_ID=etf_master .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.
 - graphify 知識圖譜查詢 + llm-wiki 長期沉澱
 - worldmonitor 全球風險雷達（daily/watch 快照 + 事件警報）
 - 交易前 validate / preview / pre-flight 檢查
+
+## 版本紀錄
+
+### v1.4.17 (2026-04-24)
+- feat(dashboard): 「現金 / 追蹤數」卡片新增交割安全金額顯示
+- feat(live-state): Full Sync 同步時一併查詢 `api.settlements(api.stock_account)`，寫入 T+1/T+2 淨交割款與 `settlement_safe_cash`
+- ux(dashboard): 現金卡片顯示 T+1/T+2 淨額，避免只看帳面現金誤判可動用金額
+- test(live-state): 補交割安全金額計算回歸測試
+
+### v1.4.16 (2026-04-24)
+- fix(dashboard): 修復預覽交易 API 500，補齊 `trade_preview()` 缺失的 state context / JSON loader 接線
+- feat(dashboard): 預覽交易評分接入 AI 信心來源；當前 AI 候選標的使用 `ai_decision_response`，其他標的使用透明的 per-symbol `ai_bridge_heuristic`
+- ux(dashboard): 預覽面板新增「評分因子」與「AI 信心來源」顯示，避免把 heuristic 誤看成真 AI 判斷
+- chore(context): AGENT_ID warning 改為 process-local 說明，明確區分互動 shell 已設與非互動 subprocess 未帶入的情況
 
 ## 注意
 如果你發現：
