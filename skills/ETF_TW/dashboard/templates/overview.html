@@ -810,15 +810,24 @@
       {% set g_pnl   = group_rows | sum(attribute='unrealized_pnl') %}
 
       <!-- Group header -->
-      <div style="display:flex; align-items:center; gap:10px; margin: 18px 0 8px 0; padding-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.07);">
-        <span style="font-size:16px;">{{ g_icon }}</span>
-        <span style="font-weight:700; color:{{ g_color }}; font-size:14px; letter-spacing:0.04em;">{{ g_label }}</span>
-        <span class="tag" style="border-color:{{ g_color }}33; color:{{ g_color }}; background:{{ g_color }}11;">{{ group_rows|length }} 檔</span>
-        <span style="color:var(--muted); font-size:12px; margin-left:auto;">
-          市值 <span class="mono" style="color:{{ g_color }};">{{ '%.0f'|format(g_mv) }}</span>
-          &nbsp;|&nbsp;損益
-          <span class="mono" style="color:{{ '#35d49a' if g_pnl >= 0 else '#ff6b81' }};">{{ '%+.0f'|format(g_pnl) }}</span>
-        </span>
+      {% set total_mv = account.get('market_value', 0) %}
+      {% set g_mv_pct = ((g_mv / total_mv * 100) | round(1)) if total_mv > 0 else 0 %}
+      <div style="margin: 18px 0 8px 0;">
+        <div style="display:flex; align-items:center; gap:10px; padding-bottom:4px;">
+          <span style="font-size:16px;">{{ g_icon }}</span>
+          <span style="font-weight:700; color:{{ g_color }}; font-size:14px; letter-spacing:0.04em;">{{ g_label }}</span>
+          <span class="tag" style="border-color:{{ g_color }}33; color:{{ g_color }}; background:{{ g_color }}11;">{{ group_rows|length }} 檔</span>
+          <span style="color:var(--muted); font-size:12px; margin-left:auto;">
+            市值 <span class="mono" style="color:{{ g_color }};">{{ '%.0f'|format(g_mv) }}</span>
+            &nbsp;|&nbsp;損益
+            <span class="mono" style="color:{{ '#35d49a' if g_pnl >= 0 else '#ff6b81' }};">{{ '%+.0f'|format(g_pnl) }}</span>
+            &nbsp;|&nbsp;<span class="mono" style="color:{{ g_color }}; font-weight:700;">{{ g_mv_pct }}%</span>
+          </span>
+        </div>
+        <!-- Allocation bar -->
+        <div style="position:relative; height:6px; background:rgba(255,255,255,0.07); border-radius:3px; overflow:hidden; margin-bottom:6px;">
+          <div style="position:absolute; left:0; top:0; height:100%; width:{{ g_mv_pct }}%; background:{{ g_color }}; border-radius:3px; transition:width 0.5s ease; opacity:0.75;"></div>
+        </div>
       </div>
 
       <table style="margin-bottom:4px;">
