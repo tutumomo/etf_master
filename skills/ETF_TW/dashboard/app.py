@@ -839,6 +839,28 @@ def build_overview_model() -> dict:
         if not account.get("updated_at"):
             account["updated_at"] = portfolio_snapshot.get("updated_at")
     position_rows = build_position_view(positions, market_cache, portfolio_snapshot.get("holdings", []), watchlist.get("items", []))
+
+    # Enrich position rows with group info from watchlist
+    _wl_group_map = {
+        str(item.get("symbol", "")).upper(): item.get("group", "other")
+        for item in watchlist.get("items", [])
+        if item.get("symbol")
+    }
+    _group_labels = {"core": "核心型", "income": "收益型", "defensive": "防守型", "other": "其他"}
+    _group_order = ["core", "income", "defensive", "other"]
+    for row in position_rows:
+        sym = str(row.get("symbol", "")).upper()
+        grp = _wl_group_map.get(sym, "other")
+        row["group"] = grp
+        row["group_label"] = _group_labels.get(grp, "其他")
+
+    # Build grouped positions dict (ordered)
+    _position_groups: dict[str, list] = {g: [] for g in _group_order}
+    for row in position_rows:
+        _position_groups.setdefault(row["group"], []).append(row)
+    # Remove empty groups to keep template clean
+    position_groups = {g: rows for g, rows in _position_groups.items() if rows}
+
     trading_mode_summary = build_trading_mode_summary(trading_mode)
     trading_mode_warnings = build_trading_mode_warnings(trading_mode, positions, position_rows)
     market_calendar_payload = load_state("market_calendar_tw.json")
@@ -951,6 +973,7 @@ def build_overview_model() -> dict:
         },
         "positions": positions,
         "position_rows": position_rows,
+        "position_groups": position_groups,
         "strategy": strategy,
         "trading_mode": trading_mode,
         "trading_mode_summary": trading_mode_summary,
