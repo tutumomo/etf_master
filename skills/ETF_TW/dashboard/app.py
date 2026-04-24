@@ -971,6 +971,17 @@ def build_overview_model() -> dict:
     filled_reconciliation = load_reconciliation_report(FILLED_RECONCILIATION_PATH)
     reconciliation_warnings.extend(build_reconciliation_warnings(filled_reconciliation))
 
+    # Sensor health — load from state file (written by run_auto_decision_scan)
+    _sensor_health_raw = safe_load_json(STATE / "sensor_health.json", default={})
+    sensor_health = {
+        "healthy": _sensor_health_raw.get("healthy", True),
+        "critical_failures": _sensor_health_raw.get("critical_failures", []),
+        "auxiliary_missing": _sensor_health_raw.get("auxiliary_missing", []),
+        "warning_prefix": _sensor_health_raw.get("warning_prefix", ""),
+        "checked_at": _sensor_health_raw.get("checked_at", ""),
+        "recommended_actions": _sensor_health_raw.get("recommended_actions", []),
+    }
+
     decision_engine_health = build_health_summary_payload(
         market_event_context=market_event_context,
         market_context_taiwan=market_context_taiwan,
@@ -1082,6 +1093,7 @@ def build_overview_model() -> dict:
         "provenance_summary": prov,
         "conflict_history": conflict_history,
         "strategy_audit": strategy_audit,
+        "sensor_health": sensor_health,
     }
 
 

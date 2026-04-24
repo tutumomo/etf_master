@@ -1001,6 +1001,46 @@
           </div>
         </details>
 
+        <!-- 感測器健康指引 -->
+        <details {% if not sensor_health.get('healthy', True) %}open{% endif %} style="background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid {{ 'rgba(255,107,129,0.25)' if not sensor_health.get('healthy', True) else 'rgba(255,255,255,0.08)' }};">
+          <summary style="padding: 12px; color: {{ '#ff6b81' if not sensor_health.get('healthy', True) else '#7cd6ff' }}; font-weight: 600; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+            <span>感測器健康 / 降級指引</span>
+            <span class="tag" style="{{ 'background:rgba(255,107,129,0.15); color:#ff6b81; border-color:rgba(255,107,129,0.3);' if not sensor_health.get('healthy', True) else '' }}">
+              {{ '🔴 降級' if not sensor_health.get('healthy', True) else '🟢 正常' }}
+            </span>
+          </summary>
+          <div style="padding: 0 16px 16px 16px;">
+            <div class="status-list" style="margin-top:0; margin-bottom: 8px;">
+              <div class="status-item">
+                <span class="muted">感測器狀態</span>
+                <span class="{{ 'good' if sensor_health.get('healthy', True) else 'bad' }}">{{ '全部正常' if sensor_health.get('healthy', True) else '關鍵感測器失效' }}</span>
+              </div>
+              {% if sensor_health.get('checked_at') %}
+              <div class="status-item"><span class="muted">最後檢查</span><span class="mono">{{ sensor_health.get('checked_at', '')[:19] }}</span></div>
+              {% endif %}
+              {% if sensor_health.get('critical_failures') %}
+              <div class="status-item"><span class="muted">關鍵失效</span><span class="bad">{{ sensor_health.get('critical_failures', []) | join(', ') }}</span></div>
+              {% endif %}
+              {% if sensor_health.get('auxiliary_missing') %}
+              <div class="status-item"><span class="muted">輔助缺失</span><span class="warn">{{ sensor_health.get('auxiliary_missing', []) | join(', ') }}</span></div>
+              {% endif %}
+            </div>
+            {% if sensor_health.get('recommended_actions') %}
+            <div style="font-size:0.82em; margin-top:8px;">
+              <div style="color:rgba(255,255,255,0.4); margin-bottom:6px; font-size:0.9em;">行動指引：</div>
+              {% for action in sensor_health.get('recommended_actions', []) %}
+              <div style="display:flex; gap:8px; margin-bottom:5px; padding:6px 10px; border-radius:8px; background:{{ 'rgba(255,107,129,0.07)' if '關鍵' in action else 'rgba(255,209,102,0.07)' }}; border-left:2px solid {{ '#ff6b81' if '關鍵' in action else '#ffd166' }};">
+                <span style="color:{{ '#ff6b81' if '關鍵' in action else '#ffd166' }}; flex-shrink:0;">{{ '⛔' if '關鍵' in action else '⚠️' }}</span>
+                <span style="color:rgba(255,255,255,0.75);">{{ action }}</span>
+              </div>
+              {% endfor %}
+            </div>
+            {% else %}
+            <div class="muted" style="font-size:0.85em;">所有感測器正常，無需行動。</div>
+            {% endif %}
+          </div>
+        </details>
+
         <details style="background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
           <summary style="padding: 12px; color: #7cd6ff; font-weight: 600; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center;">
             <span>決策品質校正</span>

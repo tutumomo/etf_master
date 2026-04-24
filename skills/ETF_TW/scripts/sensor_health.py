@@ -44,6 +44,22 @@ class SensorHealthResult:
     auxiliary_missing: list[str] = field(default_factory=list)   # e.g. ["event_context"]
     warning_prefix: str = ""               # "[資料不完整: event_context] " 或 ""
     checked_at: str = ""                   # ISO8601
+    recommended_actions: list[str] = field(default_factory=list)  # 人工可執行的修復指引
+
+
+# ── 感測器修復指引映射 ─────────────────────────────────────────────────────────
+_CRITICAL_ACTIONS: dict[str, str] = {
+    "portfolio":      "執行 run_auto_decision_scan 或手動更新 portfolio_snapshot.json（確認持倉資料）",
+    "market_cache":   "執行市價快取更新腳本或確認網路連線，重新抓取 market_cache.json",
+    "market_context": "執行 market_context_updater 腳本，確保 risk_temperature 欄位存在",
+}
+
+_AUXILIARY_ACTIONS: dict[str, str] = {
+    "event_context":         "執行事件掃描腳本（run_event_scan）補充 market_event_context.json",
+    "tape_context":          "執行盤中膠帶更新腳本補充 intraday_tape_context.json（非交易時段可忽略）",
+    "worldmonitor":          "執行 worldmonitor_fetch 補充全球市場快照（worldmonitor_snapshot.json）",
+    "central_bank_calendar": "手動下載央行行事曆或執行 fetch_cb_calendar.py（central_bank_calendar.json）",
+}
 
 
 def _load_sensor(path: Path) -> dict | None:
@@ -101,10 +117,22 @@ def check_sensor_health(state_dir: Path) -> SensorHealthResult:
         missing_str = ", ".join(auxiliary_missing)
         warning_prefix = f"[資料不完整: {missing_str}] "
 
+    # Build recommended_actions: critical failures first (blocking), then auxiliary (advisory)
+    recommended_actions: list[str] = []
+    for name in critical_failures:
+        action = _CRITICAL_ACTIONS.get(name)
+        if action:
+            recommended_actions.append(f"【關鍵】{action}")
+    for name in auxiliary_missing:
+        action = _AUXILIARY_ACTIONS.get(name)
+        if action:
+            recommended_actions.append(f"【輔助】{action}")
+
     return SensorHealthResult(
         healthy=healthy,
         critical_failures=critical_failures,
         auxiliary_missing=auxiliary_missing,
         warning_prefix=warning_prefix,
         checked_at=datetime.now(tz=TW_TZ).isoformat(),
+        recommended_actions=recommended_actions,
     )
