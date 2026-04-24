@@ -78,21 +78,28 @@ def calc_sharpe(close: pd.Series, window: int = 30, risk_free_annual: float = 0.
     return round(sharpe_annual, 4)
 
 def calc_yield_from_close(close: pd.Series, window: int = 252) -> float | None:
-    """Estimate dividend yield from 1y price appreciation.
+    """Estimate 1-year price return from OHLCV close series.
 
     NOTE: This is a proxy. Real yield data comes from yfinance .info['dividendYield']
     or from watchlist yield_pct. We compute it as a fallback only.
-    Returns None if insufficient data.
+
+    Uses however many days are available (min 20), annualizes to 252 days
+    so that symbols with slightly fewer trading days (e.g. 243 in a year
+    with extra holidays) still get a valid estimate.
     """
-    if len(close) < window:
+    available = len(close)
+    if available < 20:
         return None
+    # Use full available history up to `window` days
+    actual_window = min(window, available - 1)
     latest = float(close.iloc[-1])
-    year_ago = float(close.iloc[-window])
-    if year_ago <= 0:
+    start = float(close.iloc[-actual_window])
+    if start <= 0:
         return None
-    # Total return (price appreciation only, ignores dividends)
-    total_return = (latest - year_ago) / year_ago
-    return round(total_return * 100, 2)
+    raw_return = (latest - start) / start
+    # Annualize to 252 trading days so short histories are comparable
+    annualized = (1 + raw_return) ** (252 / actual_window) - 1
+    return round(annualized * 100, 2)
 
 def canonicalize_symbol(symbol: str) -> str:
     value = (symbol or "").strip().upper()
