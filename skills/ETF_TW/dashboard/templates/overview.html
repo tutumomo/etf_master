@@ -593,6 +593,133 @@
       <div class="muted">尚無決策溯源記錄。</div>
       {% endif %}
     </div>
+
+    <!-- 決策衝突記錄 Conflict History -->
+    <div style="margin-top:16px; padding:14px; border-radius:16px; background:rgba(255,107,129,0.07); border:1px solid rgba(255,107,129,0.2);">
+      <div class="label" style="margin-bottom:8px;"><span>決策衝突記錄</span><span class="tag" style="background:rgba(255,107,129,0.15); color:#ff6b81;">Conflicts</span></div>
+      {% if conflict_history %}
+      <div style="font-size:0.78em; color:rgba(255,255,255,0.5); margin-bottom:6px;">規則引擎與 AI Bridge 出現分歧時才記錄（Tier 2/3）</div>
+      <div style="max-height:240px; overflow-y:auto; font-size:0.81em;">
+        <table style="width:100%; border-collapse:collapse;">
+          <thead>
+            <tr style="border-bottom:1px solid rgba(255,107,129,0.2);">
+              <th style="text-align:left; padding:4px 6px; color:rgba(255,107,129,0.85);">時間</th>
+              <th style="text-align:left; padding:4px 6px; color:rgba(255,107,129,0.85);">Tier</th>
+              <th style="text-align:left; padding:4px 6px; color:rgba(255,107,129,0.85);">規則</th>
+              <th style="text-align:left; padding:4px 6px; color:rgba(255,107,129,0.85);">AI</th>
+              <th style="text-align:left; padding:4px 6px; color:rgba(255,107,129,0.85);">決議</th>
+              <th style="text-align:left; padding:4px 6px; color:rgba(255,107,129,0.85);">結果</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for c in conflict_history %}
+            {% set tier_color = '#ffd166' if c.tier == 2 else '#ff6b81' %}
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.04); vertical-align:top;" title="{{ c.conflict_detail }}">
+              <td style="padding:4px 6px; color:rgba(255,255,255,0.5); white-space:nowrap;">{{ (c.created_at or '')[:16] }}</td>
+              <td style="padding:4px 6px;">
+                <span style="background:{{ tier_color }}22; color:{{ tier_color }}; border-radius:4px; padding:1px 5px; font-weight:600;">T{{ c.tier }}</span>
+              </td>
+              <td style="padding:4px 6px;">
+                <span style="color:{{ '#35d49a' if c.rule_action == 'buy' else ('#ff6b81' if c.rule_action == 'sell' else '#aaa') }}">{{ c.rule_action|upper }}</span>
+                {% if c.rule_symbol %}<span class="mono" style="margin-left:4px; color:rgba(255,255,255,0.7);">{{ c.rule_symbol }}</span>{% endif %}
+              </td>
+              <td style="padding:4px 6px;">
+                <span style="color:rgba(255,255,255,0.55);">{{ c.ai_action or '—' }}</span>
+                {% if c.ai_symbol and c.ai_symbol != c.rule_symbol %}<span class="mono" style="margin-left:4px; color:rgba(255,255,255,0.45);">{{ c.ai_symbol }}</span>{% endif %}
+              </td>
+              <td style="padding:4px 6px; font-weight:600; color:#7cd6ff;">{{ c.consensus_resolved or '—' }}</td>
+              <td style="padding:4px 6px;">
+                {% if c.outcome_verdict == 'win' %}<span style="color:#35d49a;">✓ 勝</span>
+                {% elif c.outcome_verdict == 'loss' %}<span style="color:#ff6b81;">✗ 虧</span>
+                {% elif c.outcome_verdict == 'flat' %}<span style="color:#aaa;">— 平</span>
+                {% else %}<span style="color:rgba(255,255,255,0.3);">⏳</span>{% endif %}
+              </td>
+            </tr>
+            {% if c.conflict_detail or c.ai_reasoning %}
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+              <td colspan="6" style="padding:2px 6px 6px 6px; color:rgba(255,255,255,0.4); font-size:0.92em;">
+                {% if c.conflict_detail %}<span style="color:rgba(255,107,129,0.6);">⚡</span> {{ c.conflict_detail }}{% endif %}
+                {% if c.ai_reasoning %}<br><span style="color:rgba(147,112,219,0.6);">🤖</span> {{ c.ai_reasoning }}{% if c.ai_reasoning|length >= 120 %}…{% endif %}{% endif %}
+              </td>
+            </tr>
+            {% endif %}
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="muted">尚無 Tier 2/3 衝突記錄（規則引擎與 AI 皆一致）。</div>
+      {% endif %}
+    </div>
+
+    <!-- 策略影響力摘要 Strategy Influence -->
+    <div style="margin-top:16px; padding:14px; border-radius:16px; background:rgba(53,212,154,0.07); border:1px solid rgba(53,212,154,0.18);">
+      <div class="label" style="margin-bottom:8px;"><span>策略影響力摘要</span><span class="tag" style="background:rgba(53,212,154,0.15); color:#35d49a;">Strategy Audit</span></div>
+      {% if strategy_audit and strategy_audit.get('total_records', 0) > 0 %}
+      {% set sa = strategy_audit %}
+      <div class="status-list" style="margin-top:0; margin-bottom:8px;">
+        <div class="status-item"><span class="muted">決策記錄數</span><span>{{ sa.get('total_records', 0) }}</span></div>
+        <div class="status-item"><span class="muted">策略切換次數</span><span>{{ sa.get('strategy_switch_count', 0) }}</span></div>
+      </div>
+
+      <!-- Per-strategy alignment rates -->
+      {% if sa.get('strategy_distribution') %}
+      <div style="font-size:0.8em; margin-bottom:8px;">
+        {% for strat, count in sa.strategy_distribution.items() %}
+        {% set rate = sa.alignment_rate_by_strategy.get(strat) %}
+        {% set rate_pct = (rate * 100)|int if rate is not none else 0 %}
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:5px;">
+          <span style="flex:0 0 80px; color:rgba(255,255,255,0.7); font-size:0.9em; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="{{ strat }}">{{ strat }}</span>
+          <span style="flex:0 0 30px; text-align:right; color:rgba(255,255,255,0.45);">{{ count }}</span>
+          <div style="flex:1; background:rgba(255,255,255,0.08); border-radius:4px; height:8px; overflow:hidden;">
+            <div style="width:{{ rate_pct }}%; height:100%; background:#35d49a; border-radius:4px; transition:width 0.4s;"></div>
+          </div>
+          <span style="flex:0 0 36px; text-align:right; color:#35d49a; font-weight:600; font-size:0.9em;">{{ rate_pct }}%</span>
+        </div>
+        {% endfor %}
+        <div style="color:rgba(255,255,255,0.3); font-size:0.82em; margin-top:2px;">條形 = 策略對齊率（strategy_aligned=True 比例）</div>
+      </div>
+      {% endif %}
+
+      <!-- Win rate by alignment -->
+      {% set wr_aligned = sa.win_rate_by_alignment.get('aligned', {}) %}
+      {% set wr_not = sa.win_rate_by_alignment.get('not_aligned', {}) %}
+      {% if wr_aligned.get('total', 0) > 0 or wr_not.get('total', 0) > 0 %}
+      <div style="font-size:0.8em;">
+        <div style="color:rgba(255,255,255,0.4); margin-bottom:4px;">對齊 vs 未對齊 勝率</div>
+        <table style="width:100%; border-collapse:collapse;">
+          <thead>
+            <tr style="border-bottom:1px solid rgba(53,212,154,0.15);">
+              <th style="text-align:left; padding:3px 6px; color:rgba(53,212,154,0.7);">狀態</th>
+              <th style="text-align:right; padding:3px 6px; color:rgba(53,212,154,0.7);">樣本</th>
+              <th style="text-align:right; padding:3px 6px; color:rgba(53,212,154,0.7);">勝率</th>
+              <th style="text-align:right; padding:3px 6px; color:rgba(53,212,154,0.7);">均分</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for key, label in [('aligned','策略對齊'), ('not_aligned','未對齊')] %}
+            {% set wr = sa.win_rate_by_alignment.get(key, {}) %}
+            {% set avg_sc = sa.avg_score_by_alignment.get(key) %}
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+              <td style="padding:3px 6px; color:{{ '#35d49a' if key == 'aligned' else '#aaa' }};">{{ label }}</td>
+              <td style="padding:3px 6px; text-align:right; color:rgba(255,255,255,0.6);">{{ wr.get('total', 0) }}</td>
+              <td style="padding:3px 6px; text-align:right; font-weight:600; color:{{ '#35d49a' if (wr.get('win_rate') or 0) >= 0.5 else '#ff6b81' }};">
+                {{ '%.0f%%'|format((wr.get('win_rate') or 0) * 100) if wr.get('total', 0) > 0 else 'N/A' }}
+              </td>
+              <td style="padding:3px 6px; text-align:right; color:rgba(255,255,255,0.55);">
+                {{ '%.1f'|format(avg_sc) if avg_sc is not none else '—' }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+
+      {% else %}
+      <div class="muted">尚無足夠決策記錄進行策略影響力分析。</div>
+      {% endif %}
+    </div>
   </div>
 </div>
   <div class="card card-strong kpi" id="card_total_equity">

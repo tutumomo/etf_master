@@ -34,6 +34,7 @@ from ai_outcome_lifecycle import record_outcome
 from ai_auto_reflection import auto_reflect_if_ready
 from auto_quality_refresh import auto_refresh_quality_state
 from provenance_logger import provenance_summary as get_provenance_summary
+from strategy_audit import run_strategy_audit
 
 # Multi-tenant Context
 STATE = context.get_state_dir()
@@ -772,6 +773,66 @@ def display_market_bias(bias: str) -> str:
     return mapping.get(bias, bias or "中性")
 
 
+def build_conflict_history(provenance_path, limit: int = 10) -> list:
+    """
+    Extract Tier 2 / Tier 3 conflict records from decision_provenance.jsonl.
+    Returns a list of compact conflict digests (newest first).
+    """
+    import json as _json
+    conflicts = []
+    if not provenance_path.exists():
+        return conflicts
+    try:
+        with open(provenance_path, "r", encoding="utf-8") as f:
+            lines = f.readlines()
+    except Exception:
+        return conflicts
+
+    for line in reversed(lines):
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            rec = _json.loads(line)
+        except Exception:
+            continue
+        cs = rec.get("chain_sources") or {}
+        tier = cs.get("consensus_tier")
+        if tier is None or tier < 2:
+            continue
+
+        # outcome verdict (best available)
+        outcome_verdict = None
+        final = rec.get("outcome_final") or {}
+        if final.get("verdict"):
+            outcome_verdict = final["verdict"]
+        else:
+            lc = rec.get("review_lifecycle") or {}
+            for w in ("T10", "T3", "T1"):
+                entry = lc.get(w) or {}
+                if entry.get("verdict") and entry["verdict"] not in ("skip", "observed"):
+                    outcome_verdict = entry["verdict"]
+                    break
+
+        conflicts.append({
+            "decision_id": rec.get("decision_id", ""),
+            "created_at": rec.get("created_at", ""),
+            "tier": tier,
+            "rule_action": cs.get("rule_engine_action", ""),
+            "rule_symbol": cs.get("rule_engine_symbol", ""),
+            "ai_action": cs.get("ai_bridge_action", ""),
+            "ai_symbol": cs.get("ai_bridge_symbol", ""),
+            "consensus_resolved": cs.get("consensus_resolved", ""),
+            "conflict_detail": cs.get("conflict_detail", ""),
+            "ai_reasoning": (cs.get("ai_bridge_reasoning") or "")[:120],
+            "outcome_verdict": outcome_verdict,
+        })
+        if len(conflicts) >= limit:
+            break
+
+    return conflicts
+
+
 def build_overview_model() -> dict:
     portfolio_snapshot = load_state("portfolio_snapshot.json")
     account = load_state("account_snapshot.json")
@@ -961,6 +1022,15 @@ def build_overview_model() -> dict:
     provenance_path = STATE / "decision_provenance.jsonl"
     prov = get_provenance_summary(provenance_path, limit=10)
 
+    # Conflict history — Tier 2/3 rule-vs-AI disagreements
+    conflict_history = build_conflict_history(provenance_path, limit=10)
+
+    # Strategy influence audit — alignment rate, win rate by strategy
+    try:
+        strategy_audit = run_strategy_audit(provenance_path)
+    except Exception:
+        strategy_audit = {}
+
     return {
         "account": {
             **account,
@@ -1010,6 +1080,8 @@ def build_overview_model() -> dict:
         "state_reconciliation_warnings": reconciliation_warnings,
         "filled_reconciliation": filled_reconciliation,
         "provenance_summary": prov,
+        "conflict_history": conflict_history,
+        "strategy_audit": strategy_audit,
     }
 
 
