@@ -662,7 +662,14 @@ def classify_freshness_market_aware(iso_ts: str | None) -> dict:
         return {"label": "invalid", "level": "bad"}
 
 
-def build_risk_signals(position_rows: list[dict], market_cache: dict, orders_open: dict) -> list[dict]:
+def build_risk_signals(
+    position_rows: list[dict],
+    market_cache: dict,
+    orders_open: dict,
+    market_event_context: dict | None = None,
+    major_event_flag: dict | None = None,
+    event_review_state: dict | None = None,
+) -> list[dict]:
     signals = []
     freshness = classify_freshness(market_cache.get("updated_at"))
     signals.append({
@@ -701,6 +708,39 @@ def build_risk_signals(position_rows: list[dict], market_cache: dict, orders_ope
             "title": "最大持倉集中度",
             "detail": f"{max_row.get('symbol')} / {weight:.2f}%",
             "level": "warn" if weight >= 60 else "good",
+        })
+
+    # ── 事件堆積警報 ──────────────────────────────────────────────────────────
+    # 1. 全球風險水位
+    mec = market_event_context or {}
+    global_risk = mec.get("global_risk_level", "")
+    if global_risk in ("elevated", "high", "critical"):
+        level_map = {"elevated": "warn", "high": "bad", "critical": "bad"}
+        signals.append({
+            "title": "全球風險水位",
+            "detail": f"{global_risk.upper()} — {mec.get('event_regime', '')}",
+            "level": level_map.get(global_risk, "warn"),
+        })
+
+    # 2. 重大事件觸發
+    mef = major_event_flag or {}
+    if mef.get("triggered"):
+        evt_level = mef.get("level", "unknown")
+        signals.append({
+            "title": "重大事件觸發",
+            "detail": f"[{evt_level.upper()}] {mef.get('reason', '—')}",
+            "level": "bad",
+        })
+
+    # 3. 未審核合併事件
+    ers = event_review_state or {}
+    merged_count = int(ers.get("merged_events_count") or 0)
+    last_level = ers.get("last_event_level", "none")
+    if merged_count > 0 and last_level not in ("none", None, ""):
+        signals.append({
+            "title": "未審核事件堆積",
+            "detail": f"{merged_count} 筆 ({last_level}) 等待人工確認",
+            "level": "warn" if last_level in ("L1", "l1") else "bad",
         })
 
     return signals
@@ -955,7 +995,12 @@ def build_overview_model() -> dict:
             "quote_updated_at": quote.get("updated_at"),
         })
     freshness = classify_freshness(market_cache.get("updated_at"))
-    risk_signals = build_risk_signals(position_rows, market_cache, orders_open)
+    risk_signals = build_risk_signals(
+        position_rows, market_cache, orders_open,
+        market_event_context=market_event_context,
+        major_event_flag=major_event_flag,
+        event_review_state=event_review_state,
+    )
     watchlist_groups = build_watchlist_groups(watchlist_rows)
     reconciliation = reconciliation_summary(positions, portfolio_snapshot, orders_open)
 
