@@ -1,4 +1,4 @@
-# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.4.16)
+# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.4.17)
 
 `ETF_Master` 是一款專為台灣 ETF 投資者設計的 AI 輔助決策與資產管理系統。本專案秉持「**交易安全優先於功能完備**」的核心價值，透過「三層真相層級」治理與「雙鏈決策仲裁」機制，為投資者提供一個穩定、透明且具備深度洞察的投資工作台。
 
@@ -107,6 +107,12 @@ AGENT_ID=etf_master .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.
 ---
 
 ## 📦 版本紀錄
+
+### v1.4.17 (2026-04-24)
+- feat(dashboard): 「現金 / 追蹤數」模塊在 Full Sync 後同步顯示帳面現金與交割安全金額
+- feat(live-state): `sync_live_state.py` 接入 `api.settlements(api.stock_account)`，寫入 T+1/T+2 淨交割款與 `settlement_safe_cash`
+- ux(dashboard): 現金卡片新增 T+1/T+2 淨額，避免把永豐帳面現金誤判為可動用現金
+- test(live-state): 新增交割安全金額計算回歸測試
 
 ### v1.4.16 (2026-04-24)
 - fix(dashboard): 修復 `預覽交易` API 500，補齊 `trade_preview()` 缺失的 state context / JSON loader 接線
