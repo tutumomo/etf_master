@@ -1,6 +1,6 @@
 ---
 name: ETF_TW
-version: v1.4.5
+version: v1.4.6
 description: 台灣 ETF 投資助理技能（包含 state-driven dashboard、orders_open lifecycle、callback/polling reconciliation、交易流程驗證、回測去重與報酬回補、worldmonitor 全球風險雷達整合）
 ---
 
@@ -588,10 +588,13 @@ decision_log   orders_open  trade_logs  trade_journal/{date}.json
 
 ### Dashboard 啟動流程
 - 路徑：`~/.hermes/profiles/etf_master/skills/ETF_TW/`
-- 啟動前先 `lsof -i :5055` 殺舊進程
-- 指令：`cd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.0 --port 5055`
-- 驗證：`curl -s -o /dev/null -w "%{http_code}" http://localhost:5055/` 應回 200
-- **多餘進程清理**：啟動前務必檢查有無殘留的其他 port 進程（如 5050），用 `lsof -i :5050 -i :5055` 全盤檢查，殺掉非 5055 的重複 dashboard
+- 啟動前先清理舊進程：`for p in 5050 5051 5055; do lsof -ti tcp:$p | xargs -r kill; done`
+- 官方 port 固定使用 `5055`；`5050/5051` 是舊殘留實例，看到要清掉，不可把它們當成有效 dashboard 驗證。
+- 一般啟動指令：`cd ~/.hermes/profiles/etf_master/skills/ETF_TW && AGENT_ID=etf_master DASHBOARD_PORT=5055 .venv/bin/python3 -m uvicorn dashboard.app:app --host 127.0.0.1 --port 5055`
+- **Hermes 工具坑**：用 `terminal(background=true)` 直接跑 uvicorn / `scripts/start_dashboard.sh` 可能在工具 session 收尾時收到 SIGTERM，出現「Application startup complete」後又 `exit 143` 關掉；不可只看 watch pattern 就宣稱 dashboard 已啟動。
+- 若要在 agent 工具環境中穩定啟動 dashboard，應用 `execute_code` 內的 `subprocess.Popen(..., stdin=DEVNULL, stdout=log, stderr=STDOUT, start_new_session=True)` detached 啟動，並寫 log 到 `skills/ETF_TW/logs/dashboard-detached.log`。
+- 驗證必須用實際 HTTP 回應與 port 檢查：`GET /`、`GET /api/overview`、`GET /api/worldmonitor-status` 回 200，且 `5055 OPEN`、`5050/5051 closed` 才算通過。
+- **多餘進程清理**：啟動前務必檢查有無殘留的其他 port 進程（如 5050/5051），用 `lsof -i :5050 -i :5051 -i :5055` 全盤檢查，殺掉非 5055 的重複 dashboard
 
 ### State 對齊檢查
 - 策略：`instances/etf_master/state/strategy_link.json`
