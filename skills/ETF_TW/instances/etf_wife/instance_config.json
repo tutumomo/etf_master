@@ -9,6 +9,17 @@
       "credentials": {
         "api_key": "paper_internal"
       }
+    },
+    "cathay_wife": {
+      "alias": "cathay_wife",
+      "broker_id": "cathay",
+      "account_id": "etf_wife_cathay_pending",
+      "mode": "research_only",
+      "live_enabled": false,
+      "credentials": {
+        "status": "pending_user_setup",
+        "storage": "profile_private_env_or_instance_secret_only"
+      }
     }
   },
   "default_account": "paper_wife",
@@ -24,5 +35,23 @@
     "enabled": true,
     "base_url": "https://worldmonitor-gamma-mocha.vercel.app",
     "api_key": "${WORLDMONITOR_API_KEY}"
+  },
+  "preferred_broker": {
+    "broker_id": "cathay",
+    "broker_name": "國泰證券",
+    "account_alias": "cathay_wife",
+    "status": "research_only_pending_api_credentials",
+    "live_enabled": false,
+    "notes": "使用者指定之家庭券商；正式 API 接入前保留 paper default_account，禁止 live trading。"
+  },
+  "api_onboarding": {
+    "status": "research_started",
+    "owner_action_required": true,
+    "no_live_trading_until": [
+      "api_permission_approved",
+      "credentials_configured",
+      "sandbox_or_readonly_verified",
+      "explicit_user_authorization"
+    ]
   }
 }

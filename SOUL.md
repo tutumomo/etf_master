@@ -125,3 +125,13 @@
 5. **Self-Evolution** — 持續學習、錯誤修正與行為規則萃取
 
 **對齊原則**：分析由 stock-analysis 與 taiwan-finance 發起，驗證由 stock-market-pro 輔助，最終執行由 ETF_TW 負責，而每一次的操作循環後，必須透過 Self-Evolution 提取教訓。
+---
+
+## 個人券商設定
+
+- 指定券商：永豐金證券
+- broker_id：`sinopac`
+- 預設帳戶別名：`sinopac_01`
+- 目前狀態：永豐金 Shioaji live 查詢鏈路已接入；正式下單仍必須遵守 pre-flight、venv、交易時段、明確授權與券商端落地驗證。
+- 接入原則：任何 live 查詢/下單都以本次 broker API 回傳為 Level 1；不得用 state、記憶或推測冒充即時券商真相。
+
