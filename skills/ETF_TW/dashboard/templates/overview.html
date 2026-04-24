@@ -762,7 +762,9 @@
     </div>
     <div class="card-content">
       <div class="value mono">NT$ {{ '%.2f'|format(account.get('cash', 0)) }}</div>
-      <div class="subvalue">追蹤標的 {{ account.get('tracked_count', 0) }} 檔</div>
+      <div class="subvalue">交割安全 NT$ {{ '%.2f'|format(account.get('settlement_safe_cash', account.get('cash', 0))) }}</div>
+      <div class="subvalue">追蹤標的 {{ account.get('tracked_count', 0) }} 檔{% if account.get('future_settlement_net_t1_t2') is not none %}｜T+1/T+2 淨額 NT$ {{ '%.2f'|format(account.get('future_settlement_net_t1_t2', 0)) }}{% endif %}</div>
+      {% if account.get('settlements_error') %}<div class="subvalue" style="color:#ffb3b3;">交割資料讀取失敗：{{ account.get('settlements_error') }}</div>{% endif %}
     </div>
   </div>
 

@@ -49,7 +49,31 @@ def build_live_positions_payload(positions, updated_at: str) -> dict:
     }
 
 
-def build_live_account_snapshot(balance, position_count: int, updated_at: str, positions=None) -> dict:
+def normalize_settlement_row(row) -> dict:
+    return {
+        "date": str(getattr(row, "date", "")),
+        "T": int(getattr(row, "T", 0) or 0),
+        "amount": float(getattr(row, "amount", 0) or 0),
+        "source": "live_broker_settlements",
+    }
+
+
+def build_settlement_safety(cash: float, settlements: list[dict] | None) -> dict:
+    rows = settlements or []
+    future_rows = [row for row in rows if int(row.get("T", 0) or 0) in (1, 2)]
+    future_net = round(sum(float(row.get("amount", 0) or 0) for row in future_rows), 2)
+    safe_cash = round(float(cash or 0) + future_net, 2)
+    return {
+        "settlements": rows,
+        "future_settlement_net_t1_t2": future_net,
+        "settlement_safe_cash": safe_cash,
+        "settlement_safe_cash_floor": max(0, safe_cash),
+        "settlement_safe_cash_formula": "cash + T1/T2 settlement net",
+        "settlement_safe_cash_note": "扣除未來 T+1/T+2 淨交割款後的交割安全金額；未扣額外安全緩衝。",
+    }
+
+
+def build_live_account_snapshot(balance, position_count: int, updated_at: str, positions=None, settlements=None, settlements_error: str | None = None) -> dict:
     api_market_value = float(getattr(balance, "market_value", 0) or 0)
     # Shioaji API returns 0 for market_value; compute from positions if available
     if api_market_value == 0 and positions:
@@ -71,6 +95,10 @@ def build_live_account_snapshot(balance, position_count: int, updated_at: str, p
     if api_total_equity == 0 and api_market_value > 0:
         api_total_equity = round(cash + api_market_value, 2)
 
+    settlement_payload = build_settlement_safety(cash, settlements)
+    if settlements_error:
+        settlement_payload["settlements_error"] = settlements_error
+
     return {
         "cash": cash,
         "market_value": api_market_value,
@@ -78,6 +106,7 @@ def build_live_account_snapshot(balance, position_count: int, updated_at: str, p
         "updated_at": updated_at,
         "source": "live_broker",
         "position_count": position_count,
+        **settlement_payload,
     }
 
 
@@ -97,12 +126,24 @@ async def main() -> int:
         raise RuntimeError("live adapter authentication failed")
 
     balance = await adapter.get_account_balance(account.get("account_id"))
+    settlements = []
+    settlements_error = None
+    try:
+        api = getattr(adapter, "api", None)
+        stock_account = getattr(adapter, "stock_account", None) or getattr(api, "stock_account", None)
+        if api is not None and stock_account is not None:
+            settlements = [normalize_settlement_row(row) for row in api.settlements(stock_account)]
+        else:
+            settlements_error = "live adapter does not expose Shioaji settlements API"
+    except Exception as e:
+        settlements_error = str(e)
+
     # 直接呼叫適配器的標準介面，內部的 SinopacAdapter 已處理完畢 Unit.Share 參數
     positions = await adapter.get_positions(account.get("account_id"))
     updated_at = datetime.now().isoformat()
 
     POSITIONS_STATE_PATH.write_text(json.dumps(build_live_positions_payload(positions, updated_at), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    ACCOUNT_STATE_PATH.write_text(json.dumps(build_live_account_snapshot(balance, len(positions), updated_at, positions=positions), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    ACCOUNT_STATE_PATH.write_text(json.dumps(build_live_account_snapshot(balance, len(positions), updated_at, positions=positions, settlements=settlements, settlements_error=settlements_error), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print("LIVE_STATE_SYNC_OK")
     return 0
 
