@@ -1369,11 +1369,19 @@ def trade_preview(payload: TradeRequest):
     if not ai_confidence:
         ai_confidence, ai_confidence_source = _infer_ai_confidence_from_market_intelligence(state_dir, symbol_upper)
 
+    # 讀取 safety_redlines 的 max_buy_amount_pct 作為 max_concentration_pct
+    _redlines = safe_load_json(state_dir / "safety_redlines.json", default={})
+    _max_conc_pct = _redlines.get("max_buy_amount_pct")
+    if _max_conc_pct is None or not (0 < _max_conc_pct <= 1):
+        _max_conc_pct = 0.5  # fallback
+
     context_data = {
         "cash": account.get("cash", 0.0),
+        # 可交割金額：扣除 T+1/T+2 淨額後的安全金額，用於 sizing limit 計算
+        "settlement_safe_cash": account.get("settlement_safe_cash"),
         "inventory": inventory,
-        "max_concentration_pct": 0.5,  # Slightly more relaxed for manual
-        "max_single_limit_twd": 1000000.0,
+        "max_concentration_pct": _max_conc_pct,
+        "max_single_limit_twd": _redlines.get("max_buy_amount_twd", 1000000.0),
         "risk_temperature": 1.0,
         "force_trading_hours": False,  # Manual dashboard allows preview anytime
         "market_regime": market_regime,
@@ -1423,15 +1431,22 @@ def trade_submit(payload: TradeRequest):
     mode = str(trading_mode.get("effective_mode") or "paper").lower()
     if mode == "live-ready": mode = "live"
     
+    _redlines_submit = safe_load_json(STATE / "safety_redlines.json", default={})
+    _max_conc_submit = _redlines_submit.get("max_buy_amount_pct")
+    if _max_conc_submit is None or not (0 < _max_conc_submit <= 1):
+        _max_conc_submit = 0.5
+
     context_data = {
         "cash": account.get("cash", 0.0),
+        # 可交割金額：扣除 T+1/T+2 淨額後的安全金額
+        "settlement_safe_cash": account.get("settlement_safe_cash"),
         "inventory": inventory,
-        "max_concentration_pct": 0.5,
-        "max_single_limit_twd": 1000000.0,
+        "max_concentration_pct": _max_conc_submit,
+        "max_single_limit_twd": _redlines_submit.get("max_buy_amount_twd", 1000000.0),
         "risk_temperature": 1.0,
         "force_trading_hours": True, # Force trading hours for actual submission
     }
-    
+
     order = {
         "symbol": payload.symbol,
         "side": payload.side,

@@ -149,10 +149,22 @@
         
         <div class="form-group">
           <div class="label" style="font-size:12px; margin-bottom:4px;">
-            <span>單筆金額上限 (Cash %)</span>
-            <div class="tooltip">? <span class="tooltiptext">單筆訂單佔可用現金的最大百分比。</span></div>
+            <span>單筆金額上限 (可交割 %)</span>
+            <div class="tooltip">? <span class="tooltiptext">單筆訂單佔「可交割金額」的最大百分比。可交割金額 = 現金 − T+1/T+2 淨交割款，比帳面現金更保守。</span></div>
           </div>
           <input type="number" id="redline_max_amount_pct" value="{{ safety_redlines.get('max_buy_amount_pct') }}" style="width:100%; padding:10px; border-radius:8px; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.1); color:#fff;">
+          {% set ssc = account.get('settlement_safe_cash') %}
+          {% set cash = account.get('cash', 0) %}
+          {% set pct = safety_redlines.get('max_buy_amount_pct') %}
+          <div style="margin-top:5px; font-size:11px; color:rgba(255,255,255,0.4); line-height:1.6;">
+            帳面現金 <span class="mono" style="color:rgba(255,255,255,0.6);">{{ '%.0f'|format(cash) }}</span>
+            　→　可交割
+            <span class="mono" style="color:#ffd166; font-weight:600;">{{ '%.0f'|format(ssc) if ssc is not none else '—' }}</span>
+            {% if ssc is not none and pct %}
+            　上限額度
+            <span class="mono" style="color:#35d49a; font-weight:600;">≈ {{ '%.0f'|format(ssc * pct) }}</span>
+            {% endif %}
+          </div>
         </div>
 
         <div class="form-group">
