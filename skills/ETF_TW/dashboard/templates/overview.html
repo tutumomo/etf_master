@@ -981,15 +981,57 @@ function phase2RefreshAll() {
     </div>
   </div>
 
+  {% set _cash_total = account.get('cash', 0) %}
+  {% set _ssc = account.get('settlement_safe_cash', _cash_total) %}
+  {% set _t1t2 = account.get('future_settlement_net_t1_t2') %}
+  {# 待交割 = 帳面 - 可交割（一般是淨流出，正值代表會被扣走的金額）#}
+  {% set _pending_settle = _cash_total - _ssc %}
   <div class="card kpi" id="card_cash">
     <div class="card-header" onclick="toggleCard('card_cash')">
-      <div class="label" style="margin-bottom:0;"><span>現金 / 追蹤數</span><span class="tag">Liquidity</span></div>
+      <div class="label" style="margin-bottom:0;">
+        <span>現金 / 追蹤數</span>
+        <span class="tag">Liquidity</span>
+        <div class="tooltip">?
+          <span class="tooltiptext">
+            <strong>帳面現金</strong>：券商帳上的現金數字，但其中包含 T+1/T+2 待交割買進款（會被扣走）。<br>
+            <strong>可交割</strong>：扣除 T+1/T+2 淨流出後，今日真正能下單的金額（pre_flight_gate 用此計算上限）。<br>
+            <strong>待交割</strong>：未來 T+1/T+2 會被扣的買進款。對應的股票已記在「持倉市值」中。<br>
+            ⚠️ 「總資產 = 帳面現金 + 持倉市值」未漏算，因為待交割款的對應股票價值已含在市值裡。
+          </span>
+        </div>
+      </div>
       <span class="collapse-icon">▼</span>
     </div>
     <div class="card-content">
-      <div class="value mono">NT$ {{ '%.2f'|format(account.get('cash', 0)) }}</div>
-      <div class="subvalue">交割安全 NT$ {{ '%.2f'|format(account.get('settlement_safe_cash', account.get('cash', 0))) }}</div>
-      <div class="subvalue">追蹤標的 {{ account.get('tracked_count', 0) }} 檔{% if account.get('future_settlement_net_t1_t2') is not none %}｜T+1/T+2 淨額 NT$ {{ '%.2f'|format(account.get('future_settlement_net_t1_t2', 0)) }}{% endif %}</div>
+      <!-- 主數值：帳面現金（保留為「Liquidity」卡的 headline，避免破壞既有總資產公式）-->
+      <div class="value mono">NT$ {{ '%.2f'|format(_cash_total) }}</div>
+      <div class="subvalue" style="color:rgba(255,255,255,0.4); font-size:0.85em;">帳面現金（含待交割）</div>
+
+      <!-- 三層拆解 -->
+      <div style="margin-top:10px; padding:10px; border-radius:10px; background:rgba(0,0,0,0.18); font-size:0.88em;">
+        <!-- 可交割 -->
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 0;">
+          <span style="display:flex; align-items:center; gap:6px;">
+            <span style="color:#35d49a; font-weight:700;">●</span>
+            <span style="color:rgba(255,255,255,0.75);">可交割</span>
+            <span style="color:rgba(255,255,255,0.35); font-size:0.85em;">今日可下單</span>
+          </span>
+          <span class="mono" style="color:#35d49a; font-weight:700;">NT$ {{ '%.0f'|format(_ssc) }}</span>
+        </div>
+        <!-- 待交割 -->
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-top:1px dashed rgba(255,255,255,0.06);">
+          <span style="display:flex; align-items:center; gap:6px;">
+            <span style="color:{{ '#ffd166' if _pending_settle > 0 else '#aaa' }}; font-weight:700;">●</span>
+            <span style="color:rgba(255,255,255,0.75);">待交割</span>
+            <span style="color:rgba(255,255,255,0.35); font-size:0.85em;">T+1/T+2 將扣</span>
+          </span>
+          <span class="mono" style="color:{{ '#ffd166' if _pending_settle > 0 else 'rgba(255,255,255,0.55)' }};">
+            {% if _pending_settle > 0 %}−{% endif %}NT$ {{ '%.0f'|format(_pending_settle) }}
+          </span>
+        </div>
+      </div>
+
+      <div class="subvalue" style="margin-top:8px;">追蹤標的 {{ account.get('tracked_count', 0) }} 檔</div>
       {% if account.get('settlements_error') %}<div class="subvalue" style="color:#ffb3b3;">交割資料讀取失敗：{{ account.get('settlements_error') }}</div>{% endif %}
     </div>
   </div>
