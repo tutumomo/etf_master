@@ -1,7 +1,7 @@
-# ETF_TW：Hermes 版台灣 ETF 技能與 Dashboard (v1.4.17)
+# ETF_TW：Hermes 版台灣 ETF 技能與 Dashboard (v1.5.0)
 
 這是目前掛載在 Hermes profile (`etf_master`) 下的 ETF_TW 技能目錄。
-它提供台灣 ETF 的研究、風控、持倉監控、state-driven dashboard，以及與券商流程對齊的交易輔助能力。
+它提供台灣 ETF 的研究、風控、持倉監控、state-driven dashboard、Phase 2 半自動交易，以及與券商流程對齊的交易輔助能力。
 
 ## 目前定位
 - 主系統：Hermes Agent
@@ -36,12 +36,36 @@ AGENT_ID=etf_master .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.
 
 ## 核心功能
 - ETF 查詢 / 比較 / 風險解讀
-- 持倉與掛單監控
-- state-driven Dashboard
-- 決策引擎 / AI Bridge 對齊
+- 持倉與掛單監控（含分群配置比例視覺化、現金三層揭露）
+- state-driven Dashboard（衝突歷史、策略影響力、感測器降級指引）
+- 決策引擎 / AI Bridge 對齊（Tier 1/2/3 共識）
 - graphify 知識圖譜查詢 + llm-wiki 長期沉澱
 - worldmonitor 全球風險雷達（daily/watch 快照 + 事件警報）
-- 交易前 validate / preview / pre-flight 檢查
+- 交易前 validate / preview / pre-flight 檢查（以「可交割金額」管控 sizing）
+- **Phase 2 半自動交易**：09:30/11:00/13:00 VWAP 跌幅階梯買入 + 13:15 trailing stop 賣出 → 訊號入 pending queue → 使用者 ack 才下單
+
+## Phase 2 半自動交易
+
+訊號掃描排程（macOS launchd，每分鐘執行）：
+
+| 觸發時點 | 動作 |
+|---------|------|
+| 09:30 / 11:00 / 13:00 ± 5min | 對 watchlist 算前 30 分鐘 VWAP，跌幅階梯（−1%→2k / −2%→4k / −3%→6k / −4%→8k / ≥−5%→10k TWD）→ pre_flight_gate → pending queue |
+| 13:15 ± 5min | 持倉 trailing stop（core 6% / income 5% / defensive 4% / other 8%；報酬 ≥20% 鎖利收緊到 3%）→ pending queue（市價單）|
+| 13:30 ± 5min | 同步 peak_tracker（每日收盤後）|
+| 每分鐘 | 過期清理（TTL 15 分鐘） |
+
+7 項 Circuit Breaker 熔斷檢查（任一失敗即擋下）：
+master_switch / market_risk / major_event / sensor_health / weekly_loss / consecutive_buy_days / daily_buy_amount
+
+**啟動方式**：
+1. 載入 launchd job：`launchctl load ~/Library/LaunchAgents/com.etf_master.{sync_intraday,auto_trade_scan}.plist`
+2. 在 dashboard「Phase 2 自動交易」卡片打開 master switch
+3. 訊號出現時 → 按「✅ 確認下單」或「❌ 拒絕」，否則 15 分鐘自動作廢
+
+**緊急停止**：dashboard 直接關 master switch（cron 仍跑但所有掃描跳過），或 `launchctl unload`。
+
+詳見 `scripts/auto_trade/CRON_SETUP.md`。
 
 ## 版本紀錄
 
