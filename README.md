@@ -1,4 +1,4 @@
-# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.5.1)
+# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.6.0)
 
 `ETF_Master` 是一款專為台灣 ETF 投資者設計的 AI 輔助決策與資產管理系統。本專案秉持「**交易安全優先於功能完備**」的核心價值，透過「三層真相層級」治理與「雙鏈決策仲裁」機制，為投資者提供一個穩定、透明且具備深度洞察的投資工作台。
 
@@ -108,6 +108,14 @@ AGENT_ID=etf_master .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.
 ---
 
 ## 📦 版本紀錄
+
+### v1.6.0 (2026-04-26)
+- feat(auto_trade): Phase 2 買入掃描導入策略感知調整，依 `base_strategy`、`scenario_overlay`、市場風險與 defensive tilt 調整原始 VWAP 階梯金額。
+- safety(auto_trade): `buy_scanner` 實際讀取賣出後 `position_cooldown.json`，避免 trailing stop 賣出後短期又自動買回；pre-flight 檢查改用當前 instance `state_dir`。
+- feat(risk): growth / smart_beta 在 cautious 或 elevated 風險情境下加嚴觸發門檻，並補齊 `growth=8%`、`smart_beta=7%` trailing stop 類別。
+- ux(dashboard): Phase 2 pending card 顯示原始階梯金額、策略/情境、群組與乘數，讓自動交易訊號更可解釋。
+- chore(graphify): 將 `graphifyy==0.4.23` 納入 ETF_TW venv 依賴，並刷新 graphify 圖譜輸出。
+- test(auto_trade): 補齊 cooldown、策略乘數、growth 風險攔截、平衡配置 preview 對齊、trailing 類別與 4 標的隔離模擬驗證。
 
 ### v1.5.1 (2026-04-26)
 - docs(readme): 收斂為 root `README.md` 單一主文件，移除重複的 `skills/ETF_TW/README.md`，避免版本與操作說明分岔。

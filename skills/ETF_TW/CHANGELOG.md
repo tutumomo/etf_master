@@ -1,5 +1,24 @@
 # CHANGELOG
 
+## v1.6.0 — 2026-04-26
+
+### Added
+- **Phase 2 策略感知買入**：`buy_scanner.py` 在 VWAP 跌幅階梯後套用 `base_strategy`、`scenario_overlay`、`risk_temperature` 與 `defensive_tilt` 乘數，讓自動買入不再只是固定跌幅觸發。
+- **Phase 2 訊號可解釋化**：pending card 顯示原始階梯金額、調整後金額、策略/情境、群組與乘數，方便人工 ack 前判斷訊號來源。
+- **growth / smart_beta trailing stop**：`peak_tracker.py` 新增 growth 8%、smart_beta 7% 類別，避免 fallback 成 core 6%。
+- **graphify venv 依賴**：`graphifyy==0.4.23` 納入 ETF_TW requirements，讓 repo 規範的 graphify rebuild 可用 `.venv/bin/python3` 執行。
+
+### Changed
+- **賣出後 cooldown 真正生效**：`buy_scanner.py` 現在會讀 `position_cooldown.json`，賣出冷卻期間不再自動買回同一檔。
+- **平衡配置 preview 對齊修正**：Dashboard preview 將 core / income / defensive 都視為平衡配置可對齊群組，不再只認 core。
+- **Instance state 對齊**：Phase 2 買入 pre-flight gate 現在傳入當前 `state_dir`，避免測試或多 instance 場景誤讀全域紅線。
+- **VWAP 階梯邊界修正**：修正剛好 -3.00% 可能因浮點誤差落到較低階梯的問題。
+
+### Tests
+- **策略感知買入回歸**：新增 cooldown、策略/overlay 金額調整、cautious/elevated growth 攔截與 ladder 浮點邊界測試。
+- **隔離模擬**：使用臨時 state 跑 2 個持倉賣出、2 個關注買入掃描；`0050`/`00878` 賣出入 pending，`00679B` 買入入 pending，`00830` 依 growth 風險門檻被策略攔截。
+- **驗證**：核心測試集 569 passed；graphify rebuild 成功產出 3498 nodes / 6456 edges / 213 communities。
+
 ## v1.5.1 — 2026-04-26
 
 ### Added

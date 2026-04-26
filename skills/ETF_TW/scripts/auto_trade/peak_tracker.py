@@ -18,8 +18,8 @@ state 檔案：position_peak_tracker.json
   }
 }
 
-群組對應的 trailing_pct（Q2=B）：
-  core: 6%   income: 5%   defensive: 4%   other: 8%
+    群組對應的 trailing_pct（Q2=B）：
+  core: 6%   income: 5%   defensive: 4%   growth: 8%   smart_beta: 7%   other: 8%
   鎖利模式（持倉報酬 ≥ 20%）：統一收緊到 3%
 """
 from __future__ import annotations
@@ -38,6 +38,8 @@ GROUP_TRAILING_PCT: dict[str, float] = {
     "core":      0.06,
     "income":    0.05,
     "defensive": 0.04,
+    "growth":    0.08,
+    "smart_beta": 0.07,
     "other":     0.08,
 }
 

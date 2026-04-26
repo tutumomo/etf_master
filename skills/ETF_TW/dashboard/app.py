@@ -1525,11 +1525,14 @@ def trade_preview(payload: TradeRequest):
         wl_map = {str(item.get("symbol", "")).upper(): item for item in wl_items}
         group = wl_map.get(symbol_upper, {}).get("group", "")
         strategy_group_map = {
-            "核心累積": "core", "收益優先": "income",
-            "防守保守": "defensive", "平衡配置": "core",
+            "核心累積": {"core"},
+            "收益優先": {"income"},
+            "防守保守": {"defensive"},
+            "平衡配置": {"core", "income", "defensive"},
+            "觀察模式": set(),
         }
-        preferred_group = strategy_group_map.get(base_strategy, "")
-        strategy_aligned = bool(preferred_group and group == preferred_group)
+        preferred_groups = strategy_group_map.get(base_strategy, set())
+        strategy_aligned = bool(preferred_groups and group in preferred_groups)
     except Exception:
         strategy_aligned = False
 

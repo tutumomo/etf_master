@@ -29,6 +29,11 @@ def test_trailing_pct_defensive():
     assert pt.get_trailing_pct("defensive") == 0.04
 
 
+def test_trailing_pct_growth_and_smart_beta():
+    assert pt.get_trailing_pct("growth") == 0.08
+    assert pt.get_trailing_pct("smart_beta") == 0.07
+
+
 def test_trailing_pct_other():
     assert pt.get_trailing_pct("other") == 0.08
 

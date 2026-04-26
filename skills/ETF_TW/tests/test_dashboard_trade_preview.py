@@ -61,6 +61,38 @@ def test_trade_preview_uses_items_watchlist_for_strategy_alignment():
     assert captured["context"]["market_regime"] == "balanced_bullish"
 
 
+def test_trade_preview_treats_balanced_income_as_strategy_aligned():
+    payload = dashboard_app.TradeRequest(
+        symbol="00878",
+        side="buy",
+        quantity=1000,
+        price=20.0,
+    )
+
+    captured = {}
+
+    def fake_check_order(order, context):
+        captured["context"] = context
+        return {"passed": True, "reason": "", "details": {}, "investment_score": 5, "score_breakdown": ["策略對齊 +2"]}
+
+    def fake_safe_load_json(path, default=None):
+        path_name = path.name
+        if path_name == "market_context_taiwan.json":
+            return {"market_regime": "cautious"}
+        if path_name == "strategy_link.json":
+            return {"base_strategy": "平衡配置"}
+        if path_name == "watchlist.json":
+            return {"items": [{"symbol": "00878", "group": "income"}]}
+        return default if default is not None else {}
+
+    with patch.object(dashboard_app, "build_overview_model", return_value={"account": {"cash": 100000.0}, "positions": {"positions": []}}), \
+         patch.object(dashboard_app, "safe_load_json", side_effect=fake_safe_load_json), \
+         patch.object(dashboard_app.pre_flight, "check_order", side_effect=fake_check_order):
+        dashboard_app.trade_preview(payload)
+
+    assert captured["context"]["strategy_aligned"] is True
+
+
 def test_trade_preview_includes_ai_confidence_for_matching_symbol():
     payload = dashboard_app.TradeRequest(
         symbol="0050",

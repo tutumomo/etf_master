@@ -68,6 +68,33 @@ DROP_LADDER: list[tuple[float, int]] = [
 # 觸發最小跌幅（負值表示「跌至少這個百分比」）
 MIN_DROP_TO_TRIGGER = -1.0
 
+STRATEGY_GROUP_MULTIPLIER: dict[str, dict[str, float]] = {
+    "平衡配置": {"core": 1.0, "income": 1.0, "defensive": 0.5, "growth": 0.5, "smart_beta": 0.5, "other": 1.0},
+    "核心累積": {"core": 1.0, "income": 0.5, "defensive": 0.5, "growth": 0.5, "smart_beta": 0.5, "other": 1.0},
+    "收益優先": {"income": 1.0, "core": 0.5, "defensive": 0.5, "growth": 0.3, "smart_beta": 0.5, "other": 1.0},
+    "防守保守": {"defensive": 1.0, "income": 0.5, "core": 0.3, "growth": 0.0, "smart_beta": 0.3, "other": 1.0},
+    "觀察模式": {"core": 0.0, "income": 0.0, "defensive": 0.0, "growth": 0.0, "smart_beta": 0.0, "other": 0.0},
+}
+
+OVERLAY_GROUP_MULTIPLIER: dict[str, dict[str, float]] = {
+    "逢低觀察": {"core": 1.0, "income": 1.0, "defensive": 1.0, "growth": 1.0, "smart_beta": 1.0, "other": 1.0},
+    "高波動警戒": {"core": 0.75, "income": 0.75, "defensive": 1.0, "growth": 0.3, "smart_beta": 0.5, "other": 0.5},
+    "減碼保守": {"core": 0.5, "income": 0.5, "defensive": 1.0, "growth": 0.0, "smart_beta": 0.3, "other": 0.3},
+    "收益再投資": {"income": 1.25, "core": 0.75, "defensive": 0.75, "growth": 0.5, "smart_beta": 0.75, "other": 0.5},
+    "無": {},
+}
+
+RISK_TEMPERATURE_MULTIPLIER = {
+    "low": 1.0,
+    "normal": 1.0,
+    "medium": 0.9,
+    "elevated": 0.5,
+    "high": 0.35,
+    "extreme": 0.2,
+}
+
+CAUTIOUS_GROWTH_MIN_DROP = -3.0
+
 
 def ladder_amount(drop_pct: float) -> int:
     """
@@ -75,6 +102,7 @@ def ladder_amount(drop_pct: float) -> int:
     例：drop_pct=-2.5 → 4000（落在 -2.0 ~ -3.0 區間）
     若 drop_pct > MIN_DROP_TO_TRIGGER（沒跌夠 1%）→ 0
     """
+    drop_pct = round(drop_pct, 6)
     if drop_pct > MIN_DROP_TO_TRIGGER:
         return 0
     # 從最劇烈往最溫和找
@@ -121,6 +149,137 @@ def _get_tracked_symbols(state_dir: Path) -> list[str]:
                         sym = sym[:-len(suffix)]
                 symbols.add(sym)
     return sorted(symbols)
+
+
+def _get_symbol_groups(state_dir: Path) -> dict[str, str]:
+    """讀 watchlist，回傳 symbol → group 對應。"""
+    data = safe_load_json(state_dir / "watchlist.json", default={})
+    items = data.get("items") or data.get("watchlist") or []
+    groups: dict[str, str] = {}
+    for item in items:
+        sym = str(item.get("symbol", "")).strip().upper()
+        if not sym:
+            continue
+        for suffix in (".TW", ".TWO"):
+            if sym.endswith(suffix):
+                sym = sym[:-len(suffix)]
+        groups[sym] = str(item.get("group") or item.get("category") or "other").strip().lower()
+    return groups
+
+
+def _get_active_cooldown(state_dir: Path, symbol: str, now: datetime) -> dict | None:
+    """Return active post-sell cooldown entry for symbol, if still in force."""
+    data = safe_load_json(state_dir / "position_cooldown.json", default={})
+    entry = data.get(symbol.upper()) if isinstance(data, dict) else None
+    if not isinstance(entry, dict):
+        return None
+
+    cooldown_until = entry.get("cooldown_until")
+    if not cooldown_until:
+        return None
+
+    try:
+        until_dt = datetime.fromisoformat(cooldown_until)
+        if until_dt.tzinfo is None and now.tzinfo is not None:
+            until_dt = until_dt.replace(tzinfo=now.tzinfo)
+    except ValueError:
+        return None
+
+    if now < until_dt:
+        return entry
+    return None
+
+
+def _load_strategy_link(state_dir: Path) -> dict:
+    return safe_load_json(state_dir / "strategy_link.json", default={})
+
+
+def _load_market_context(state_dir: Path) -> dict:
+    context = safe_load_json(state_dir / "market_context_taiwan.json", default={})
+    event_context = safe_load_json(state_dir / "market_event_context.json", default={})
+    return {**event_context, **context}
+
+
+def _phase2_buy_adjustment(
+    *,
+    base_amount: int,
+    drop_pct: float,
+    group: str,
+    strategy: dict,
+    market_context: dict,
+) -> dict:
+    """Calculate Phase 2 strategy-aware amount adjustment without bypassing redlines."""
+    group = (group or "other").lower()
+    base_strategy = strategy.get("base_strategy") or "平衡配置"
+    scenario_overlay = strategy.get("scenario_overlay") or "無"
+    market_regime = str(market_context.get("market_regime") or market_context.get("event_regime") or "").lower()
+    risk_temperature = str(market_context.get("risk_temperature") or "normal").lower()
+    defensive_tilt = str(market_context.get("defensive_tilt") or "").lower()
+
+    strategy_multiplier = STRATEGY_GROUP_MULTIPLIER.get(base_strategy, STRATEGY_GROUP_MULTIPLIER["平衡配置"]).get(group, 0.5)
+    overlay_multiplier = OVERLAY_GROUP_MULTIPLIER.get(scenario_overlay, {}).get(group, 1.0)
+    risk_multiplier = RISK_TEMPERATURE_MULTIPLIER.get(risk_temperature, 1.0)
+    defensive_boost = 1.25 if group == "defensive" and defensive_tilt == "high" else 1.0
+
+    threshold_note = ""
+    if group in {"growth", "smart_beta"} and (
+        "cautious" in market_regime or risk_temperature in {"elevated", "high", "extreme"}
+    ):
+        if drop_pct > CAUTIOUS_GROWTH_MIN_DROP:
+            return {
+                "blocked": True,
+                "block_reason": "cautious_growth_threshold",
+                "base_strategy": base_strategy,
+                "scenario_overlay": scenario_overlay,
+                "group": group,
+                "base_ladder_amount": base_amount,
+                "final_amount": 0,
+                "strategy_multiplier": strategy_multiplier,
+                "overlay_multiplier": overlay_multiplier,
+                "risk_multiplier": risk_multiplier,
+                "defensive_boost": defensive_boost,
+                "market_regime": market_regime,
+                "risk_temperature": risk_temperature,
+                "threshold_note": f"{group} 在謹慎/高風險情境需跌至 {CAUTIOUS_GROWTH_MIN_DROP:.0f}% 以上",
+            }
+        threshold_note = f"{group} 已符合謹慎情境加嚴門檻"
+
+    final_multiplier = strategy_multiplier * overlay_multiplier * risk_multiplier * defensive_boost
+    final_amount = int(base_amount * final_multiplier)
+
+    if final_amount <= 0:
+        return {
+            "blocked": True,
+            "block_reason": "strategy_disabled",
+            "base_strategy": base_strategy,
+            "scenario_overlay": scenario_overlay,
+            "group": group,
+            "base_ladder_amount": base_amount,
+            "final_amount": 0,
+            "strategy_multiplier": strategy_multiplier,
+            "overlay_multiplier": overlay_multiplier,
+            "risk_multiplier": risk_multiplier,
+            "defensive_boost": defensive_boost,
+            "market_regime": market_regime,
+            "risk_temperature": risk_temperature,
+            "threshold_note": threshold_note,
+        }
+
+    return {
+        "blocked": False,
+        "base_strategy": base_strategy,
+        "scenario_overlay": scenario_overlay,
+        "group": group,
+        "base_ladder_amount": base_amount,
+        "final_amount": final_amount,
+        "strategy_multiplier": strategy_multiplier,
+        "overlay_multiplier": overlay_multiplier,
+        "risk_multiplier": risk_multiplier,
+        "defensive_boost": defensive_boost,
+        "market_regime": market_regime,
+        "risk_temperature": risk_temperature,
+        "threshold_note": threshold_note,
+    }
 
 
 def _get_prev_close(market_cache: dict, symbol: str) -> float | None:
@@ -189,6 +348,8 @@ def run_buy_scan(
           "enqueued": [signal_dict, ...],   # 成功入 queue 的訊號
           "blocked": [{symbol, reason}, ...],# pre_flight_gate 擋下的
           "below_threshold": [...],          # 跌幅不足跳過
+          "cooldown": [...],                 # 賣出後冷卻中跳過
+          "strategy_skipped": [...],          # 策略/情境調整後跳過
           "no_data": [...],                  # 無資料跳過
         }
     """
@@ -208,6 +369,8 @@ def run_buy_scan(
         "enqueued": [],
         "blocked": [],
         "below_threshold": [],
+        "cooldown": [],
+        "strategy_skipped": [],
         "no_data": [],
     }
 
@@ -234,6 +397,8 @@ def run_buy_scan(
     )
     account = safe_load_json(state_dir / "account_snapshot.json", default={})
     redlines = safe_load_json(state_dir / "safety_redlines.json", default={})
+    strategy = _load_strategy_link(state_dir)
+    market_context = _load_market_context(state_dir)
 
     cash = float(account.get("cash", 0))
     ssc = float(account.get("settlement_safe_cash") or 0)
@@ -249,9 +414,20 @@ def run_buy_scan(
     # ── Step 3: 對每檔掃描 ─────────────────────────────────────────────
     intraday_data = intraday.get("intraday", {})
     symbols = _get_tracked_symbols(state_dir)
+    symbol_groups = _get_symbol_groups(state_dir)
     result["candidates"] = len(symbols)
 
     for symbol in symbols:
+        cooldown = _get_active_cooldown(state_dir, symbol, now)
+        if cooldown:
+            result["cooldown"].append({
+                "symbol": symbol,
+                "reason": "post_sell_cooldown",
+                "cooldown_until": cooldown.get("cooldown_until"),
+                "sold_at": cooldown.get("sold_at"),
+            })
+            continue
+
         bars_entry = intraday_data.get(symbol)
         if not bars_entry or not bars_entry.get("bars"):
             result["no_data"].append({"symbol": symbol, "reason": "no_intraday_bars"})
@@ -287,6 +463,29 @@ def run_buy_scan(
             })
             continue
 
+        group = symbol_groups.get(symbol, "other")
+        adjustment = _phase2_buy_adjustment(
+            base_amount=amount,
+            drop_pct=drop_pct,
+            group=group,
+            strategy=strategy,
+            market_context=market_context,
+        )
+        if adjustment["blocked"]:
+            result["strategy_skipped"].append({
+                "symbol": symbol,
+                "reason": adjustment["block_reason"],
+                "drop_pct": round(drop_pct, 3),
+                "group": adjustment["group"],
+                "base_strategy": adjustment["base_strategy"],
+                "scenario_overlay": adjustment["scenario_overlay"],
+                "base_ladder_amount": amount,
+                "final_amount": adjustment["final_amount"],
+                "threshold_note": adjustment.get("threshold_note", ""),
+            })
+            continue
+        amount = int(adjustment["final_amount"])
+
         # ── Step 4: 算股數、走 pre_flight_gate ──────────────────────────
         current_price = _get_current_price(market_cache, symbol, vwap_res.vwap)
         if not current_price:
@@ -313,6 +512,7 @@ def run_buy_scan(
             "lot_type": lot_type,
         }
         gate_ctx = {
+            "state_dir": state_dir,
             "cash": cash,
             "settlement_safe_cash": ssc,
             "inventory": inventory,
@@ -331,10 +531,14 @@ def run_buy_scan(
                 "quantity": quantity,
                 "price": current_price,
                 "trigger_source": trigger_source,
-                "trigger_reason": f"VWAP 跌 {drop_pct:.2f}% → 階梯 {amount} TWD",
+                "trigger_reason": (
+                    f"VWAP 跌 {drop_pct:.2f}% → 階梯 {adjustment['base_ladder_amount']} TWD，"
+                    f"策略/情境調整後 {amount} TWD"
+                ),
                 "gate_reason": gate_res.get("reason"),
                 "gate_details": gate_res.get("details", {}),
                 "drop_pct": round(drop_pct, 3),
+                "phase2_adjustment": adjustment,
             }
             history_path.parent.mkdir(parents=True, exist_ok=True)
             with open(history_path, "a", encoding="utf-8") as f:
@@ -358,12 +562,27 @@ def run_buy_scan(
             order_type="limit",
             lot_type=lot_type,
             trigger_source=trigger_source,
-            trigger_reason=f"VWAP 跌 {drop_pct:.2f}% → 階梯買入 {amount} TWD",
+            trigger_reason=(
+                f"VWAP 跌 {drop_pct:.2f}% → 階梯 {adjustment['base_ladder_amount']} TWD，"
+                f"{adjustment['base_strategy']}/{adjustment['scenario_overlay']} "
+                f"群組 {adjustment['group']} 調整後 {amount} TWD"
+            ),
             trigger_payload={
                 "vwap": vwap_res.vwap,
                 "prev_close": prev_close,
                 "drop_pct": round(drop_pct, 3),
                 "ladder_amount": amount,
+                "base_ladder_amount": adjustment["base_ladder_amount"],
+                "strategy_multiplier": adjustment["strategy_multiplier"],
+                "overlay_multiplier": adjustment["overlay_multiplier"],
+                "risk_multiplier": adjustment["risk_multiplier"],
+                "defensive_boost": adjustment["defensive_boost"],
+                "base_strategy": adjustment["base_strategy"],
+                "scenario_overlay": adjustment["scenario_overlay"],
+                "group": adjustment["group"],
+                "market_regime": adjustment["market_regime"],
+                "risk_temperature": adjustment["risk_temperature"],
+                "threshold_note": adjustment["threshold_note"],
                 "vwap_sample_count": vwap_res.sample_count,
                 "trigger_window": f"{vwap_res.start_time}~{vwap_res.end_time}",
             },

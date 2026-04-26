@@ -43,6 +43,7 @@ def test_ladder_2pct_drop():
 
 def test_ladder_3pct_drop():
     assert ladder_amount(-3.0) == 6000
+    assert ladder_amount(-2.9999999999999916) == 6000
     assert ladder_amount(-3.5) == 6000
 
 
@@ -225,6 +226,135 @@ def test_run_buy_scan_below_threshold_no_signal(state_dir):
     assert res["enqueued"] == []
     assert len(res["below_threshold"]) == 1
     assert res["below_threshold"][0]["symbol"] == "0056"
+
+
+def test_run_buy_scan_skips_symbol_during_post_sell_cooldown(state_dir):
+    """賣出 cooldown 期間，即使 VWAP 跌幅達標也不應重新入 queue。"""
+    on_date = datetime(2026, 4, 25, 9, 30, tzinfo=TW_TZ)
+    bar_start = datetime(2026, 4, 25, 9, 0, tzinfo=TW_TZ)
+
+    intraday = {
+        "intraday": {
+            "00923": {
+                "ticker_used": "00923.TW",
+                "bars": _make_intraday("00923", bar_start, [33.0] * 30, volume=1000),
+                "bar_count": 30,
+                "latest_close": 33.0,
+                "latest_time": bar_start.isoformat(),
+            }
+        }
+    }
+    _write_state(state_dir, "watchlist.json", {"items": [{"symbol": "00923"}]})
+    _write_state(state_dir, "positions.json", {"positions": []})
+    _write_state(state_dir, "intraday_quotes_1m.json", intraday)
+    _write_state(state_dir, "market_cache.json", {
+        "quotes": {"00923": {"current_price": 33.0, "prev_close": 35.0}}
+    })
+    _write_state(state_dir, "account_snapshot.json", {"cash": 100000, "settlement_safe_cash": 100000})
+    _write_state(state_dir, "safety_redlines.json", {
+        "enabled": False, "max_buy_amount_pct": 0.5, "max_buy_amount_twd": 1000000,
+    })
+    _write_state(state_dir, "position_cooldown.json", {
+        "00923": {
+            "sold_at": "2026-04-24T13:30:00+08:00",
+            "cooldown_until": "2026-05-01T13:30:00+08:00",
+        }
+    })
+
+    res = run_buy_scan(
+        trigger_time=time(9, 30),
+        state_dir=state_dir,
+        on_date=on_date,
+        skip_circuit_breaker=True,
+    )
+
+    assert res["enqueued"] == []
+    assert res["blocked"] == []
+    assert res["below_threshold"] == []
+    assert len(res["cooldown"]) == 1
+    assert res["cooldown"][0]["symbol"] == "00923"
+    assert res["cooldown"][0]["reason"] == "post_sell_cooldown"
+
+
+def test_run_buy_scan_applies_strategy_and_overlay_amount_adjustment(state_dir):
+    """Phase 2 買入會把原始階梯金額依策略與 overlay 調整後再入 queue。"""
+    on_date = datetime(2026, 4, 25, 9, 30, tzinfo=TW_TZ)
+    bar_start = datetime(2026, 4, 25, 9, 0, tzinfo=TW_TZ)
+
+    _write_state(state_dir, "watchlist.json", {"items": [{"symbol": "00878", "group": "income"}]})
+    _write_state(state_dir, "positions.json", {"positions": []})
+    _write_state(state_dir, "intraday_quotes_1m.json", {
+        "intraday": {
+            "00878": {
+                "ticker_used": "00878.TW",
+                "bars": _make_intraday("00878", bar_start, [19.5] * 30, volume=1000),
+                "bar_count": 30,
+            }
+        }
+    })
+    _write_state(state_dir, "market_cache.json", {
+        "quotes": {"00878": {"current_price": 20.0, "prev_close": 20.0}}
+    })
+    _write_state(state_dir, "account_snapshot.json", {"cash": 100000, "settlement_safe_cash": 100000})
+    _write_state(state_dir, "safety_redlines.json", {
+        "enabled": True, "max_buy_amount_pct": 0.5, "max_buy_amount_twd": 1000000,
+    })
+    _write_state(state_dir, "strategy_link.json", {"base_strategy": "收益優先", "scenario_overlay": "收益再投資"})
+    _write_state(state_dir, "market_context_taiwan.json", {"risk_temperature": "normal", "market_regime": "normal"})
+
+    res = run_buy_scan(
+        trigger_time=time(9, 30),
+        state_dir=state_dir,
+        on_date=on_date,
+        skip_circuit_breaker=True,
+    )
+
+    assert len(res["enqueued"]) == 1
+    sig = res["enqueued"][0]
+    assert sig["quantity"] == 250  # 4000 TWD × 1.25 overlay / 20
+    assert sig["trigger_payload"]["base_ladder_amount"] == 4000
+    assert sig["trigger_payload"]["ladder_amount"] == 5000
+    assert sig["trigger_payload"]["base_strategy"] == "收益優先"
+    assert sig["trigger_payload"]["scenario_overlay"] == "收益再投資"
+    assert sig["trigger_payload"]["group"] == "income"
+    assert sig["trigger_payload"]["overlay_multiplier"] == 1.25
+
+
+def test_run_buy_scan_skips_growth_in_cautious_market_until_deeper_drop(state_dir):
+    """謹慎/高風險情境下，growth 類跌幅未達加嚴門檻時不入 queue。"""
+    on_date = datetime(2026, 4, 25, 9, 30, tzinfo=TW_TZ)
+    bar_start = datetime(2026, 4, 25, 9, 0, tzinfo=TW_TZ)
+
+    _write_state(state_dir, "watchlist.json", {"items": [{"symbol": "00830", "group": "growth"}]})
+    _write_state(state_dir, "positions.json", {"positions": []})
+    _write_state(state_dir, "intraday_quotes_1m.json", {
+        "intraday": {
+            "00830": {
+                "ticker_used": "00830.TW",
+                "bars": _make_intraday("00830", bar_start, [97.5] * 30, volume=1000),
+                "bar_count": 30,
+            }
+        }
+    })
+    _write_state(state_dir, "market_cache.json", {
+        "quotes": {"00830": {"current_price": 97.5, "prev_close": 100.0}}
+    })
+    _write_state(state_dir, "account_snapshot.json", {"cash": 100000, "settlement_safe_cash": 100000})
+    _write_state(state_dir, "safety_redlines.json", {"enabled": True, "max_buy_amount_pct": 0.5})
+    _write_state(state_dir, "strategy_link.json", {"base_strategy": "平衡配置", "scenario_overlay": "無"})
+    _write_state(state_dir, "market_context_taiwan.json", {"risk_temperature": "elevated", "market_regime": "cautious"})
+
+    res = run_buy_scan(
+        trigger_time=time(9, 30),
+        state_dir=state_dir,
+        on_date=on_date,
+        skip_circuit_breaker=True,
+    )
+
+    assert res["enqueued"] == []
+    assert len(res["strategy_skipped"]) == 1
+    assert res["strategy_skipped"][0]["symbol"] == "00830"
+    assert res["strategy_skipped"][0]["reason"] == "cautious_growth_threshold"
 
 
 def test_run_buy_scan_gate_blocked_writes_history(state_dir):

@@ -286,6 +286,12 @@
               VWAP={{ '%.4f'|format(p.trigger_payload.vwap or 0) }}　|
               昨收={{ '%.4f'|format(p.trigger_payload.prev_close or 0) }}　|
               階梯金額={{ p.trigger_payload.ladder_amount }} TWD
+              {% if p.trigger_payload.base_ladder_amount %}
+                　|　原始={{ p.trigger_payload.base_ladder_amount }} TWD
+                　|　策略={{ p.trigger_payload.base_strategy }}/{{ p.trigger_payload.scenario_overlay }}
+                　|　群組={{ p.trigger_payload.group }}
+                　|　乘數={{ '%.2f'|format((p.trigger_payload.strategy_multiplier or 1) * (p.trigger_payload.overlay_multiplier or 1) * (p.trigger_payload.risk_multiplier or 1) * (p.trigger_payload.defensive_boost or 1)) }}
+              {% endif %}
             {% else %}
               peak={{ '%.4f'|format(p.trigger_payload.peak_close or 0) }}　|
               stop={{ '%.4f'|format(p.trigger_payload.stop_price or 0) }}　|
