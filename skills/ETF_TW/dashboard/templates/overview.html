@@ -94,6 +94,220 @@
   </div>
 </section>
 
+<!-- ─────────── Phase 2 自動交易控制台 ─────────── -->
+<section class="grid" style="margin-bottom:18px;">
+  <div class="card full" id="card_phase2"
+       style="border:2px solid {{ '#35d49a' if phase2_config.enabled else 'rgba(255,255,255,0.15)' }};
+              background:{{ 'rgba(53,212,154,0.04)' if phase2_config.enabled else 'rgba(255,255,255,0.02)' }};">
+    <div class="card-header" onclick="toggleCard('card_phase2')">
+      <div class="label" style="margin-bottom:0;">
+        <span>🤖 Phase 2 自動交易（半自動）</span>
+        <span class="tag" style="background:{{ 'rgba(53,212,154,0.18)' if phase2_config.enabled else 'rgba(255,107,129,0.18)' }};
+                                 color:{{ '#35d49a' if phase2_config.enabled else '#ff6b81' }};">
+          {{ '🟢 已啟用' if phase2_config.enabled else '🔴 未啟用' }}
+        </span>
+        <span class="tag" style="background:{{ 'rgba(53,212,154,0.18)' if phase2_circuit_breaker.buy_allowed else 'rgba(255,209,102,0.18)' }};
+                                 color:{{ '#35d49a' if phase2_circuit_breaker.buy_allowed else '#ffd166' }};">
+          熔斷器：{{ '✓ 允許' if phase2_circuit_breaker.buy_allowed else '⛔ 擋下' }}
+        </span>
+        {% if phase2_pending %}
+        <span class="tag" style="background:#ffd166; color:#000; font-weight:800;">
+          ⚠ 待確認 {{ phase2_pending|length }} 筆
+        </span>
+        {% endif %}
+      </div>
+      <span class="collapse-icon">▼</span>
+    </div>
+    <div class="card-content">
+
+      <!-- Master switch + 控制 -->
+      <div style="display:flex; gap:16px; align-items:center; margin-bottom:14px; padding:12px; border-radius:12px; background:rgba(0,0,0,0.2);">
+        <div>
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:14px; font-weight:700;">
+            <input type="checkbox" id="phase2_enabled_toggle" {% if phase2_config.enabled %}checked{% endif %}
+                   onchange="phase2ToggleEnabled(this)">
+            Master Switch（總開關）
+          </label>
+          <div style="font-size:11px; color:rgba(255,255,255,0.5); margin-top:4px;">
+            關閉後，cron 觸發的所有買賣掃描都會跳過。賣出仍會記錄但不入 queue。
+          </div>
+        </div>
+        <button onclick="phase2RefreshAll()"
+                style="padding:8px 14px; border-radius:8px; border:1px solid rgba(124,214,255,0.3);
+                       background:rgba(124,214,255,0.1); color:#7cd6ff; cursor:pointer; font-weight:700;">
+          ↻ 重新整理
+        </button>
+      </div>
+
+      <!-- 待確認訊號區 -->
+      {% if phase2_pending %}
+      <div style="margin-bottom:14px;">
+        <div style="font-weight:700; color:#ffd166; margin-bottom:8px;">
+          ⚠️ 待確認自動交易訊號（{{ phase2_pending|length }} 筆，逾期自動作廢）
+        </div>
+        {% for p in phase2_pending %}
+        <div class="phase2-pending" data-id="{{ p.id }}" data-expires="{{ p.expires_at }}"
+             style="margin-bottom:10px; padding:12px; border-radius:10px;
+                    border:1px solid {{ '#35d49a' if p.side == 'buy' else '#ff6b81' }};
+                    background:{{ 'rgba(53,212,154,0.06)' if p.side == 'buy' else 'rgba(255,107,129,0.06)' }};">
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <span style="font-weight:800; font-size:15px; color:{{ '#35d49a' if p.side == 'buy' else '#ff6b81' }};">
+              {{ '🟢 BUY' if p.side == 'buy' else '🔴 SELL' }}
+            </span>
+            <span class="mono" style="font-size:15px; font-weight:700;">{{ p.symbol }}</span>
+            <span class="mono" style="color:rgba(255,255,255,0.7);">{{ p.quantity }} 股 @ {{ '%.4f'|format(p.price) }}</span>
+            <span class="tag">{{ p.order_type|upper }}</span>
+            <span class="tag">{{ p.lot_type }}</span>
+            <span style="margin-left:auto; font-size:12px; color:#ffd166; font-weight:700;">
+              ⏱ <span class="phase2-countdown">{{ p.seconds_left }}</span>s
+            </span>
+          </div>
+          <div style="margin-top:6px; font-size:12px; color:rgba(255,255,255,0.6);">
+            觸發來源：<span class="mono">{{ p.trigger_source }}</span>　|　{{ p.trigger_reason }}
+          </div>
+          {% if p.trigger_payload %}
+          <div style="margin-top:4px; font-size:11px; color:rgba(255,255,255,0.4);">
+            {% if p.side == 'buy' %}
+              VWAP={{ '%.4f'|format(p.trigger_payload.vwap or 0) }}　|
+              昨收={{ '%.4f'|format(p.trigger_payload.prev_close or 0) }}　|
+              階梯金額={{ p.trigger_payload.ladder_amount }} TWD
+            {% else %}
+              peak={{ '%.4f'|format(p.trigger_payload.peak_close or 0) }}　|
+              stop={{ '%.4f'|format(p.trigger_payload.stop_price or 0) }}　|
+              trail={{ '%.0f%%'|format((p.trigger_payload.trailing_pct or 0) * 100) }}
+              {% if p.trigger_payload.is_locked_in %}<span style="color:#ffd166;">🔒 已鎖利</span>{% endif %}
+            {% endif %}
+          </div>
+          {% endif %}
+          <div style="margin-top:10px; display:flex; gap:8px;">
+            <button onclick="phase2Ack('{{ p.id }}')"
+                    style="padding:8px 16px; border-radius:8px; border:1px solid #35d49a;
+                           background:rgba(53,212,154,0.15); color:#35d49a; font-weight:800; cursor:pointer;">
+              ✅ 確認下單
+            </button>
+            <button onclick="phase2Reject('{{ p.id }}')"
+                    style="padding:8px 16px; border-radius:8px; border:1px solid #ff6b81;
+                           background:rgba(255,107,129,0.15); color:#ff6b81; font-weight:800; cursor:pointer;">
+              ❌ 拒絕
+            </button>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div style="margin-bottom:14px; padding:12px; border-radius:10px; background:rgba(255,255,255,0.03); color:rgba(255,255,255,0.5); text-align:center;">
+        目前沒有待確認的自動交易訊號
+      </div>
+      {% endif %}
+
+      <!-- 熔斷器 7 個檢查 -->
+      <details style="margin-bottom:10px;">
+        <summary style="cursor:pointer; font-weight:600; color:#7cd6ff; padding:8px 0;">
+          🛡 Circuit Breaker 檢查（{{ phase2_circuit_breaker.checks|length }} 項）
+        </summary>
+        <table style="width:100%; font-size:12px; margin-top:6px;">
+          {% for c in phase2_circuit_breaker.checks %}
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+            <td style="padding:6px 8px; width:30%;">
+              {{ '✅' if c.passed else '⛔' }} <span class="mono">{{ c.name }}</span>
+            </td>
+            <td style="padding:6px 8px; color:rgba(255,255,255,0.7);">{{ c.detail }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+<script>
+async function phase2ToggleEnabled(checkbox) {
+  const enabled = checkbox.checked;
+  try {
+    const res = await fetch('/api/auto-trade/phase2/config', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({enabled: enabled})
+    });
+    const data = await res.json();
+    if (data.ok) {
+      // reload to refresh circuit breaker state
+      setTimeout(() => location.reload(), 500);
+    } else {
+      alert('設定失敗：' + JSON.stringify(data));
+      checkbox.checked = !enabled;
+    }
+  } catch (e) {
+    alert('網路錯誤：' + e.message);
+    checkbox.checked = !enabled;
+  }
+}
+
+async function phase2Ack(signalId) {
+  if (!confirm('確認下單？此操作會立即送出真實訂單。')) return;
+  try {
+    const res = await fetch(`/api/auto-trade/phase2/ack/${signalId}`, {method: 'POST'});
+    const data = await res.json();
+    if (data.ok) {
+      alert(`✅ 下單成功！\n${data.execution_output || ''}`);
+    } else {
+      alert(`❌ 下單失敗\n狀態：${data.status}\n原因：${data.reason}\n${data.execution_output || ''}`);
+    }
+    location.reload();
+  } catch (e) {
+    alert('網路錯誤：' + e.message);
+  }
+}
+
+async function phase2Reject(signalId) {
+  const reason = prompt('拒絕原因（可空）', '');
+  try {
+    const res = await fetch(`/api/auto-trade/phase2/reject/${signalId}`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({reason: reason || 'user_rejected'})
+    });
+    if (res.ok) location.reload();
+    else alert('拒絕失敗');
+  } catch (e) {
+    alert('網路錯誤：' + e.message);
+  }
+}
+
+function phase2RefreshAll() {
+  location.reload();
+}
+
+// 倒數計時
+(function phase2StartCountdown() {
+  setInterval(() => {
+    document.querySelectorAll('.phase2-pending').forEach(el => {
+      const expiresAt = new Date(el.dataset.expires);
+      const left = Math.max(0, Math.floor((expiresAt - new Date()) / 1000));
+      const span = el.querySelector('.phase2-countdown');
+      if (span) span.textContent = left;
+      if (left <= 0) el.style.opacity = '0.5';
+    });
+  }, 1000);
+})();
+
+// 每 30 秒輪詢 pending（不重整整頁，只更新 pending 數量提示）
+(function phase2Poll() {
+  setInterval(async () => {
+    try {
+      const res = await fetch('/api/auto-trade/phase2/pending');
+      const data = await res.json();
+      // 若 server-side 數量比 UI 多 → 提示重整
+      const uiCount = document.querySelectorAll('.phase2-pending').length;
+      if (data.count !== uiCount) {
+        console.log('[phase2] pending count mismatch, suggest reload');
+      }
+    } catch (e) {}
+  }, 30000);
+})();
+</script>
+
 <section class="grid" style="margin-bottom:18px;">
   <div class="card full" id="card_safety_redlines">
     <div class="card-header" onclick="toggleCard('card_safety_redlines')">

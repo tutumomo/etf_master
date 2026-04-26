@@ -35,6 +35,12 @@ from ai_auto_reflection import auto_reflect_if_ready
 from auto_quality_refresh import auto_refresh_quality_state
 from provenance_logger import provenance_summary as get_provenance_summary
 from strategy_audit import run_strategy_audit
+from scripts.auto_trade import (
+    ack_handler as auto_ack,
+    pending_queue as auto_queue,
+    circuit_breaker as auto_cb,
+    peak_tracker as auto_peak,
+)
 
 # Multi-tenant Context
 STATE = context.get_state_dir()
@@ -1087,6 +1093,22 @@ def build_overview_model() -> dict:
     except Exception:
         strategy_audit = {}
 
+    # ── Phase 2 自動交易狀態 ─────────────────────────────────────────────
+    try:
+        phase2_pending = auto_queue.list_active(STATE / "pending_auto_orders.json")
+    except Exception:
+        phase2_pending = []
+    try:
+        phase2_config = auto_cb.load_auto_trade_config(STATE)
+    except Exception:
+        phase2_config = {"enabled": False}
+    try:
+        _ssc_for_cb = float(account.get("settlement_safe_cash") or account.get("cash") or 0)
+        _cb_eval = auto_cb.evaluate_buy_allowed(STATE, settlement_safe_cash=_ssc_for_cb)
+        phase2_circuit_breaker = _cb_eval.as_dict()
+    except Exception as _e:
+        phase2_circuit_breaker = {"buy_allowed": False, "reasons": [f"eval_error:{_e}"], "checks": []}
+
     return {
         "account": {
             **account,
@@ -1139,6 +1161,9 @@ def build_overview_model() -> dict:
         "conflict_history": conflict_history,
         "strategy_audit": strategy_audit,
         "sensor_health": sensor_health,
+        "phase2_pending": phase2_pending,
+        "phase2_config": phase2_config,
+        "phase2_circuit_breaker": phase2_circuit_breaker,
     }
 
 
@@ -1929,3 +1954,109 @@ def get_worldmonitor_status():
         "highest_alert_severity": highest_severity,
         "chokepoints": chokepoint_summary,
     }
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# Phase 2 自動交易 endpoints
+# ──────────────────────────────────────────────────────────────────────────
+
+class Phase2ConfigRequest(BaseModel):
+    enabled: bool
+    weekly_loss_limit_pct: float | None = None
+    consecutive_buy_days_limit: int | None = None
+    daily_auto_buy_pct: float | None = None
+
+
+class Phase2RejectRequest(BaseModel):
+    reason: str | None = None
+
+
+@app.get("/api/auto-trade/phase2/pending")
+def phase2_get_pending():
+    """回傳所有目前 active 的 pending 訊號（含剩餘秒數）"""
+    queue_path = STATE / "pending_auto_orders.json"
+    items = auto_queue.list_active(queue_path)
+    return {"ok": True, "count": len(items), "pending": items}
+
+
+@app.get("/api/auto-trade/phase2/history")
+def phase2_get_history(limit: int = 50):
+    """回傳 auto_trade_history.jsonl 最近 N 筆"""
+    path = STATE / "auto_trade_history.jsonl"
+    if not path.exists():
+        return {"ok": True, "count": 0, "history": []}
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            lines = f.readlines()
+    except OSError:
+        return {"ok": False, "count": 0, "history": [], "error": "read_failed"}
+    records = []
+    for line in lines[-limit:][::-1]:  # 最新在前
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            records.append(json.loads(line))
+        except Exception:
+            continue
+    return {"ok": True, "count": len(records), "history": records}
+
+
+@app.get("/api/auto-trade/phase2/circuit-breaker")
+def phase2_get_circuit_breaker():
+    """回傳當前熔斷器評估結果（即時計算）"""
+    account = safe_load_json(STATE / "account_snapshot.json", default={})
+    ssc = float(account.get("settlement_safe_cash") or account.get("cash") or 0)
+    res = auto_cb.evaluate_buy_allowed(STATE, settlement_safe_cash=ssc)
+    return {
+        "ok": True,
+        **res.as_dict(),
+        "settlement_safe_cash": ssc,
+    }
+
+
+@app.get("/api/auto-trade/phase2/config")
+def phase2_get_config():
+    """回傳當前 Phase 2 master switch 與閾值設定"""
+    cfg = auto_cb.load_auto_trade_config(STATE)
+    return {"ok": True, "config": cfg}
+
+
+@app.post("/api/auto-trade/phase2/config")
+def phase2_set_config(payload: Phase2ConfigRequest):
+    """更新 Phase 2 設定（master switch + 自訂閾值）"""
+    cfg_path = STATE / "auto_trade_phase2_config.json"
+    existing = safe_load_json(cfg_path, default={})
+    existing["enabled"] = payload.enabled
+    if payload.weekly_loss_limit_pct is not None:
+        existing["weekly_loss_limit_pct"] = float(payload.weekly_loss_limit_pct)
+    if payload.consecutive_buy_days_limit is not None:
+        existing["consecutive_buy_days_limit"] = int(payload.consecutive_buy_days_limit)
+    if payload.daily_auto_buy_pct is not None:
+        existing["daily_auto_buy_pct"] = float(payload.daily_auto_buy_pct)
+    cfg_path.write_text(json.dumps(existing, ensure_ascii=False, indent=2), encoding="utf-8")
+    return {"ok": True, "config": auto_cb.load_auto_trade_config(STATE)}
+
+
+@app.post("/api/auto-trade/phase2/ack/{signal_id}")
+def phase2_ack(signal_id: str):
+    """使用者按下「✅ 確認下單」"""
+    result = auto_ack.ack_signal(signal_id, state_dir=STATE)
+    return {"ok": result.get("ok", False), **result}
+
+
+@app.post("/api/auto-trade/phase2/reject/{signal_id}")
+def phase2_reject(signal_id: str, payload: Phase2RejectRequest = None):
+    """使用者按下「❌ 拒絕」"""
+    reason = (payload.reason if payload and payload.reason else "user_rejected")
+    updated = auto_ack.reject_signal(signal_id, reason=reason, state_dir=STATE)
+    if updated is None:
+        raise HTTPException(status_code=404, detail=f"signal {signal_id} 不存在")
+    return {"ok": True, "signal": updated}
+
+
+@app.get("/api/auto-trade/phase2/peak-tracker")
+def phase2_get_peak_tracker():
+    """回傳 peak_tracker 當前狀態，供 UI 顯示每檔 stop_price"""
+    tracker = auto_peak.load_tracker(STATE)
+    return {"ok": True, "tracker": tracker}
