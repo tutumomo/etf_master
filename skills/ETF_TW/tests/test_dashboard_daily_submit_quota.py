@@ -95,3 +95,6 @@ def test_dashboard_template_contains_daily_submit_quota_controls():
     assert "redline_daily_max_sell_submits" in text
     assert "daily_max_buy_submits:" in text
     assert "daily_max_sell_submits:" in text
+    assert "redline_enabled" not in text
+    assert "啟用紅線檢查" not in text
+    assert "紅線檢查強制啟用" in text

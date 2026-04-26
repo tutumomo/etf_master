@@ -91,15 +91,16 @@ class TestSafetyRedlines(unittest.TestCase):
         self.assertEqual(result['reason'], 'low_ai_confidence')
 
     @patch('scripts.pre_flight_gate.load_safety_data')
-    def test_safety_redlines_disabled(self, mock_load):
-        # 驗證紅線系統 enabled: false 時不影響正常交易
+    def test_safety_redlines_disabled_is_ignored(self, mock_load):
+        # 紅線系統強制啟用：即使舊設定 enabled:false，也必須阻斷超線交易
         mock_load.return_value = {
             "redlines": {**self.default_redlines, "enabled": False, "max_buy_shares": 10},
             "pnl": self.default_pnl
         }
         order = {'symbol': '0050', 'side': 'buy', 'quantity': 100, 'price': 100}
         result = check_order(order, self.context)
-        self.assertTrue(result['passed'])
+        self.assertFalse(result['passed'])
+        self.assertEqual(result['reason'], 'redline_shares_exceeded')
 
 if __name__ == '__main__':
     unittest.main()

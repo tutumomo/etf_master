@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## v1.5.1 — 2026-04-26
+
+### Added
+- **Dashboard 雙欄與設定區**：主畫面加入左側資訊/設定欄，支援券商設定與亮色、暗色、跟隨系統配色切換。
+- **正式下單安全確認**：人工下單延伸為 preview id + 精確確認字串 + submit 的流程，並保留 live mode、交易時段與紅線檢查。
+
+### Changed
+- **README 單一來源**：root `README.md` 成為唯一主 README，移除重複的 `skills/ETF_TW/README.md`，避免 GitHub 版本與技能目錄文件分岔。
+- **交易模式切換回饋**：Dashboard 的 Live/Paper 切換改為即時按鈕狀態與區塊內提示，不再用 popup 承擔主要確認。
+- **紅線檢查強制啟用**：移除可關閉紅線檢查的假開關，後端與 pre-flight gate 均固定執行紅線檢查。
+
+### Tests
+- **Dashboard / trading gate 回歸**：補齊正式送單、每日送單次數、Phase 2 ack submit gate、紅線強制啟用與基礎模板測試。
+
 ## v1.4.17 — 2026-04-24
 
 ### Added

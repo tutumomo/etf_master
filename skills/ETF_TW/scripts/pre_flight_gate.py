@@ -37,8 +37,10 @@ def load_safety_data(state_dir_override=None) -> Dict[str, Any]:
                 pass
         return default
 
+    redlines = safe_load(redlines_file, {"enabled": True})
+    redlines["enabled"] = True
     return {
-        "redlines": safe_load(redlines_file, {"enabled": False}),
+        "redlines": redlines,
         "pnl": safe_load(daily_pnl_file, {"circuit_breaker_triggered": False}),
     }
 
@@ -240,7 +242,7 @@ def check_order(order: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any
         pnl      = safety_data['pnl']
         daily_order_limits = load_daily_order_limits(state_dir) if state_dir else default_daily_order_limits()
 
-        if redlines.get('enabled', True):
+        if True:
             daily_max_buy_submits = int(redlines.get('daily_max_buy_submits', 2))
             daily_max_sell_submits = int(redlines.get('daily_max_sell_submits', 2))
 

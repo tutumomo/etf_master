@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 from pathlib import Path
 from datetime import datetime, timezone, timedelta
 import subprocess
@@ -91,11 +92,27 @@ class TradingModeRequest(BaseModel):
     mode: Literal["live", "paper"]
 
 
+class BrokerSettingsRequest(BaseModel):
+    account_alias: str
+    broker_id: str
+    account_id: str
+    mode: Literal["paper", "sandbox", "live"] = "paper"
+    api_key: str | None = None
+    api_secret: str | None = None
+    set_default: bool = True
+
+
 class TradeRequest(BaseModel):
     symbol: str
     side: Literal["buy", "sell"]
     quantity: int
     price: float
+
+
+class TradeSubmitRequest(TradeRequest):
+    preview_id: str
+    confirmation: str
+    large_order_confirmation: str | None = None
 
 
 class AIDecisionReviewRequest(BaseModel):
@@ -130,6 +147,17 @@ TradeRequest.model_rebuild()
 TradingModeRequest.model_rebuild()
 AIDecisionReviewRequest.model_rebuild()
 AIDecisionOutcomeRequest.model_rebuild()
+
+
+def build_trade_preview_id(symbol: str, side: str, quantity: int, price: float) -> str:
+    payload = {
+        "symbol": normalize_symbol(symbol),
+        "side": side.lower(),
+        "quantity": int(quantity),
+        "price": round(float(price), 4),
+    }
+    raw = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()[:24]
 
 
 def load_etf_catalog() -> dict:
@@ -339,6 +367,7 @@ async def update_safety_redlines_api(payload: SafetyRedlinesRequest):
     try:
         path = STATE / "safety_redlines.json"
         data = payload.dict()
+        data["enabled"] = True
         # Mapping confidence threshold to label for UI
         if data['ai_confidence_threshold'] >= 0.85: data['ai_confidence_level'] = "High"
         elif data['ai_confidence_threshold'] >= 0.65: data['ai_confidence_level'] = "Medium"
@@ -492,6 +521,108 @@ def load_state(name: str) -> dict:
         return json.loads(text) if text else {}
     except Exception:
         return {"_load_warning": f"failed_to_load:{name}"}
+
+
+def load_instance_config() -> dict:
+    if not CONFIG_PATH.exists():
+        return {}
+    try:
+        return json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        return {"_load_warning": "failed_to_load:instance_config.json"}
+
+
+def load_broker_registry() -> dict:
+    path = ROOT / "data" / "broker_registry.json"
+    if not path.exists():
+        return {"brokers": {}}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"brokers": {}}
+
+
+def mask_secret(value: str | None) -> dict:
+    if not value:
+        return {"configured": False, "masked": "未設定"}
+    tail = str(value)[-4:]
+    return {"configured": True, "masked": f"••••{tail}"}
+
+
+def build_broker_settings_model(instance_config: dict | None = None) -> dict:
+    config = instance_config or load_instance_config()
+    registry = load_broker_registry()
+    broker_defs = registry.get("brokers", {})
+    accounts = []
+    for alias, account in (config.get("accounts") or {}).items():
+        credentials = account.get("credentials") or {}
+        broker_id = account.get("broker_id") or "paper"
+        broker_info = broker_defs.get(broker_id, {})
+        accounts.append({
+            "alias": account.get("alias") or alias,
+            "broker_id": broker_id,
+            "broker_name": broker_info.get("name") or broker_id,
+            "account_id": account.get("account_id") or "",
+            "mode": account.get("mode") or "paper",
+            "api_key": mask_secret(credentials.get("api_key")),
+            "api_secret": mask_secret(credentials.get("api_secret")),
+            "is_default": (config.get("default_account") == alias),
+        })
+    brokers = [
+        {
+            "id": broker_id,
+            "name": info.get("name") or broker_id,
+            "supports_live": bool(info.get("supports_live")),
+            "supports_sandbox": bool(info.get("supports_sandbox")),
+            "supports_paper": bool(info.get("supports_paper", True)),
+        }
+        for broker_id, info in broker_defs.items()
+    ]
+    return {
+        "agent_id": config.get("agent_id") or instance_id,
+        "default_account": config.get("default_account") or "",
+        "accounts": accounts,
+        "brokers": brokers,
+        "config_path": str(CONFIG_PATH),
+    }
+
+
+def write_broker_settings(payload: BrokerSettingsRequest) -> dict:
+    alias = payload.account_alias.strip()
+    broker_id = payload.broker_id.strip()
+    account_id = payload.account_id.strip()
+    if not alias or not broker_id or not account_id:
+        raise ValueError("account_alias、broker_id、account_id 皆為必填")
+
+    broker_defs = load_broker_registry().get("brokers", {})
+    if broker_id not in broker_defs:
+        raise ValueError(f"不支援的券商：{broker_id}")
+
+    config = load_instance_config()
+    if config.get("_load_warning"):
+        raise ValueError("無法讀取 instance_config.json")
+    config.setdefault("agent_id", instance_id)
+    accounts = config.setdefault("accounts", {})
+    previous = accounts.get(alias, {})
+    credentials = dict(previous.get("credentials") or {})
+    if payload.api_key:
+        credentials["api_key"] = payload.api_key
+    if payload.api_secret:
+        credentials["api_secret"] = payload.api_secret
+
+    accounts[alias] = {
+        **previous,
+        "alias": alias,
+        "broker_id": broker_id,
+        "account_id": account_id,
+        "mode": payload.mode,
+        "credentials": credentials,
+    }
+    if payload.set_default:
+        config["default_account"] = alias
+
+    CONFIG_PATH.write_text(json.dumps(config, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return build_broker_settings_model(config)
 
 
 def load_daily_order_limits_state() -> dict:
@@ -906,6 +1037,7 @@ def build_overview_model() -> dict:
             **DEFAULT_REDLINES,
             **safety_redlines,
         }
+    safety_redlines["enabled"] = True
     daily_pnl = load_state("daily_pnl.json")
     daily_order_limits = load_daily_order_limits_state()
 
@@ -1126,6 +1258,13 @@ def build_overview_model() -> dict:
         "trading_mode": trading_mode,
         "trading_mode_summary": trading_mode_summary,
         "trading_mode_warnings": trading_mode_warnings,
+        "dashboard_identity": {
+            "agent_id": instance_id,
+            "instance_dir": str(INSTANCE_DIR),
+            "state_dir": str(STATE),
+            "config_path": str(CONFIG_PATH),
+        },
+        "broker_settings": build_broker_settings_model(),
         "market_calendar_status": market_calendar_status,
         "market_session_status": market_session_status,
         "market_cache": market_cache,
@@ -1183,6 +1322,19 @@ def health() -> dict:
 @app.get("/api/overview")
 def overview_api() -> dict:
     return build_overview_model()
+
+
+@app.get("/api/settings/brokers")
+def broker_settings_api() -> dict:
+    return build_broker_settings_model()
+
+
+@app.post("/api/settings/brokers")
+def broker_settings_update(payload: BrokerSettingsRequest):
+    try:
+        return {"ok": True, "settings": write_broker_settings(payload)}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -1431,6 +1583,8 @@ def trade_preview(payload: TradeRequest):
         "side": payload.side,
         "quantity": payload.quantity,
         "price": payload.price,
+        "preview_id": build_trade_preview_id(payload.symbol, payload.side, payload.quantity, payload.price),
+        "confirmation_required": f"CONFIRM {normalize_symbol(payload.symbol)} {payload.side} {payload.quantity}",
         "estimated_total": round(payload.quantity * payload.price, 2),
         "pre_flight": {
             "ok": check_res.get("passed", False),
@@ -1445,7 +1599,15 @@ def trade_preview(payload: TradeRequest):
 
 
 @app.post("/api/trade/submit")
-def trade_submit(payload: TradeRequest):
+def trade_submit(payload: TradeSubmitRequest):
+    expected_confirmation = f"CONFIRM {normalize_symbol(payload.symbol)} {payload.side} {payload.quantity}"
+    if payload.confirmation != expected_confirmation:
+        raise HTTPException(status_code=400, detail=f"確認文字不符，預期：{expected_confirmation}")
+
+    expected_preview_id = build_trade_preview_id(payload.symbol, payload.side, payload.quantity, payload.price)
+    if payload.preview_id != expected_preview_id:
+        raise HTTPException(status_code=400, detail="preview_id 不符，請重新預覽交易")
+
     # Re-run pre_flight_gate check
     overview = build_overview_model()
     account = overview["account"]
@@ -1470,6 +1632,7 @@ def trade_submit(payload: TradeRequest):
         "max_single_limit_twd": _redlines_submit.get("max_buy_amount_twd", 1000000.0),
         "risk_temperature": 1.0,
         "force_trading_hours": True, # Force trading hours for actual submission
+        "state_dir": STATE,
     }
 
     order = {
@@ -1479,7 +1642,17 @@ def trade_submit(payload: TradeRequest):
         "price": payload.price,
         "order_type": "limit",
         "lot_type": "board" if payload.quantity >= 1000 else "odd",
+        "is_submit": True,
+        "is_confirmed": True,
     }
+
+    if payload.quantity * payload.price > (account.get("total_equity", 0) or 0) * 0.5 and payload.large_order_confirmation != "CONFIRM LARGE ORDER":
+        raise HTTPException(status_code=403, detail="大額交易需輸入 CONFIRM LARGE ORDER")
+
+    if mode == "live":
+        live_mode = safe_load_json(STATE / "live_mode.json", default={})
+        if not live_mode.get("enabled"):
+            raise HTTPException(status_code=403, detail="live_mode 尚未解鎖，禁止正式下單")
     
     check_res = pre_flight.check_order(order, context_data)
     if not check_res.get("passed"):
@@ -1503,11 +1676,19 @@ def trade_submit(payload: TradeRequest):
         if result.returncode != 0:
             detail = (result.stderr or result.stdout or "未知錯誤").strip()
             raise HTTPException(status_code=500, detail=f"交易執行失敗：{detail}")
-            
+
+        stdout = result.stdout or ""
+        verified = ("broker_order_id" in stdout or "ordno" in stdout or "VERIFIED" in stdout)
         return {
             "ok": True,
-            "message": f"委託成功送出：{payload.side.upper()} {payload.symbol} {payload.quantity}股 @ {payload.price}",
-            "stdout": result.stdout[:500]
+            "verified": verified,
+            "status": "VERIFIED" if verified else "SUBMITTED_UNVERIFIED",
+            "message": (
+                f"委託已驗證落地：{payload.side.upper()} {payload.symbol} {payload.quantity}股 @ {payload.price}"
+                if verified else
+                f"委託已送出但尚未驗證落地：{payload.side.upper()} {payload.symbol} {payload.quantity}股 @ {payload.price}"
+            ),
+            "stdout": stdout[:500]
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

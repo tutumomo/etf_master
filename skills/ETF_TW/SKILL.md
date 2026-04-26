@@ -1,6 +1,6 @@
 ---
 name: ETF_TW
-version: v1.4.17
+version: v1.5.1
 description: 台灣 ETF 投資助理技能（包含 state-driven dashboard、orders_open lifecycle、callback/polling reconciliation、交易流程驗證、回測去重與報酬回補、worldmonitor 全球風險雷達整合）
 ---
 
@@ -841,7 +841,7 @@ cd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/refre
 - bump 版本號前，必須先 `git fetch --tags origin`，再以 `git tag --sort=-v:refname | head`、root `README.md` 版本紀錄、`CHANGELOG.md` 最上方版本共同確認目前最新版本。
 - 不可只看 `SKILL.md` frontmatter 的 `version:`，該值可能落後於 GitHub tag / CHANGELOG / README。
 - 使用者要求「版本號 +0.0.1」時，意思是從目前最新正式版本做 patch bump：例如最新 `v1.4.16` → `v1.4.17`，不是建立 `v0.0.1` tag，也不是從 stale frontmatter `v1.4.5` bump 到 `v1.4.6`。
-- 發布流程必須一次更新所有版本來源：root `README.md` 標題與「📦 版本紀錄」→ `skills/ETF_TW/README.md` 標題與版本紀錄 → `skills/ETF_TW/SKILL.md` frontmatter → `skills/ETF_TW/CHANGELOG.md` 最上方條目 → 測試 → commit → push main → 建立正確版本 tag → push tag。
+- 發布流程必須一次更新所有版本來源：root `README.md` 標題與「📦 版本紀錄」（唯一主 README）→ `skills/ETF_TW/SKILL.md` frontmatter → `skills/ETF_TW/CHANGELOG.md` 最上方條目 → 測試 → commit → push main → 建立正確版本 tag → push tag。
 - 遠端驗證不能只看本機 git：必須用 `git ls-remote origin refs/heads/main refs/tags/<tag>` 確認 main/tag SHA，並用 `git show origin/main:README.md` 或 GitHub raw/API 確認遠端 README 已顯示新版紀錄。
 - 若誤建 tag，必須同輪刪除本地與遠端錯誤 tag：`git tag -d <bad>` + `git push origin :refs/tags/<bad>`，再建立正確 tag。
 - 若 tag 已推送後才補文件，需把 tag 移到最新 commit 並 force push tag；同時明確回報這是 tag 重定位，不是改寫 main history。

@@ -44,6 +44,121 @@
 </div>
 {% endif %}
 
+<div class="dashboard-shell">
+  <aside class="sidebar">
+    <div class="card sidebar-card">
+      <div class="sidebar-title">
+        <span>版面配色</span>
+        <span class="tag">Theme</span>
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Dashboard theme">
+        <button class="theme-button" type="button" data-theme-choice="system" onclick="applyDashboardTheme('system')">跟隨系統</button>
+        <button class="theme-button" type="button" data-theme-choice="dark" onclick="applyDashboardTheme('dark')">暗色系</button>
+        <button class="theme-button" type="button" data-theme-choice="light" onclick="applyDashboardTheme('light')">亮色系</button>
+      </div>
+      <div class="muted" style="font-size:12px; line-height:1.5; margin-top:10px;">偏好會保存在這個瀏覽器，不會寫入交易設定。</div>
+    </div>
+
+    <div class="card sidebar-card">
+      <div class="sidebar-title">
+        <span>基本資訊</span>
+        <span class="tag">Profile</span>
+      </div>
+      <div class="sidebar-list">
+        <div class="sidebar-row"><span class="muted">Agent</span><span class="mono">{{ dashboard_identity.get('agent_id') }}</span></div>
+        <div class="sidebar-row"><span class="muted">策略</span><span>{{ strategy.get('base_strategy', 'N/A') }}</span></div>
+        <div class="sidebar-row"><span class="muted">情境覆蓋</span><span>{{ strategy.get('scenario_overlay', 'N/A') }}</span></div>
+        <div class="sidebar-row"><span class="muted">交易模式</span><span class="{% if trading_mode_summary.get('mode_label') == 'LIVE-READY' %}good{% else %}warn{% endif %}">{{ trading_mode_summary.get('mode_label', 'UNKNOWN') }}</span></div>
+        <div class="sidebar-row"><span class="muted">資料來源</span><span>{{ trading_mode_summary.get('data_source', 'N/A') }}</span></div>
+        <div class="sidebar-row"><span class="muted">State</span><span class="mono">{{ dashboard_identity.get('state_dir') }}</span></div>
+      </div>
+    </div>
+
+    <div class="card sidebar-card">
+      <div class="sidebar-title">
+        <span>資金快照</span>
+        <span class="tag">Cash</span>
+      </div>
+      <div class="sidebar-list">
+        <div class="sidebar-row"><span class="muted">帳面現金</span><span class="mono">{{ "{:,.0f}".format(account.get('cash', 0) or 0) }}</span></div>
+        <div class="sidebar-row"><span class="muted">可交割金額</span><span class="mono good">{{ "{:,.0f}".format(account.get('settlement_safe_cash', account.get('cash', 0)) or 0) }}</span></div>
+        <div class="sidebar-row"><span class="muted">持倉市值</span><span class="mono">{{ "{:,.0f}".format(account.get('market_value', 0) or 0) }}</span></div>
+        <div class="sidebar-row"><span class="muted">追蹤標的</span><span class="mono">{{ account.get('tracked_count', 0) }}</span></div>
+      </div>
+    </div>
+
+    <div class="card sidebar-card">
+      <div class="sidebar-title">
+        <span>券商設定</span>
+        <span class="tag">Settings</span>
+      </div>
+      <div id="broker_settings_banner" class="inline-banner"></div>
+      {% for acc in broker_settings.get('accounts', []) %}
+      <div class="broker-account">
+        <div style="display:flex; justify-content:space-between; gap:8px; align-items:center;">
+          <strong class="mono">{{ acc.alias }}</strong>
+          {% if acc.is_default %}<span class="tag good">Default</span>{% endif %}
+        </div>
+        <div class="sidebar-list">
+          <div class="sidebar-row"><span class="muted">券商</span><span>{{ acc.broker_name }}</span></div>
+          <div class="sidebar-row"><span class="muted">帳號</span><span class="mono">{{ acc.account_id }}</span></div>
+          <div class="sidebar-row"><span class="muted">模式</span><span class="mono">{{ acc.mode }}</span></div>
+          <div class="sidebar-row"><span class="muted">API Key</span><span class="mono">{{ acc.api_key.masked }}</span></div>
+          <div class="sidebar-row"><span class="muted">API Secret</span><span class="mono">{{ acc.api_secret.masked }}</span></div>
+        </div>
+      </div>
+      {% else %}
+      <div class="muted" style="font-size:13px;">尚未設定券商帳戶。</div>
+      {% endfor %}
+
+      {% set default_account = (broker_settings.get('accounts', []) | selectattr('is_default') | list | first) or (broker_settings.get('accounts', []) | first) or {} %}
+      <form class="settings-form" onsubmit="saveBrokerSettings(event)">
+        <div class="field">
+          <label for="settings_account_alias">帳戶別名</label>
+          <input id="settings_account_alias" name="account_alias" value="{{ default_account.get('alias') or broker_settings.get('default_account', 'sinopac_01') }}" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="settings_broker_id">券商</label>
+          <select id="settings_broker_id" name="broker_id">
+            {% for b in broker_settings.get('brokers', []) %}
+            <option value="{{ b.id }}" {% if b.id == trading_mode_summary.get('default_broker') %}selected{% endif %}>{{ b.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field">
+          <label for="settings_account_id">券商帳號</label>
+          <input id="settings_account_id" name="account_id" value="{{ default_account.get('account_id', '') }}" placeholder="券商帳號或內部代號" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="settings_mode">帳戶模式</label>
+          <select id="settings_mode" name="mode">
+            <option value="paper" {% if default_account.get('mode') == 'paper' %}selected{% endif %}>paper</option>
+            <option value="sandbox" {% if default_account.get('mode') == 'sandbox' %}selected{% endif %}>sandbox</option>
+            <option value="live" {% if default_account.get('mode') == 'live' %}selected{% endif %}>live</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="settings_api_key">API Key（留空保留原值）</label>
+          <input id="settings_api_key" name="api_key" type="password" autocomplete="new-password">
+        </div>
+        <div class="field">
+          <label for="settings_api_secret">API Secret（留空保留原值）</label>
+          <input id="settings_api_secret" name="api_secret" type="password" autocomplete="new-password">
+        </div>
+        <label style="display:flex; gap:8px; align-items:center; color:var(--muted); font-size:12px;">
+          <input id="settings_set_default" name="set_default" type="checkbox" checked>
+          設為預設帳戶
+        </label>
+        <div class="button-row">
+          <button class="btn-primary" type="submit">儲存設定</button>
+          <span class="muted" style="font-size:12px;">儲存只更新設定檔，不會登入券商或送單。</span>
+        </div>
+      </form>
+    </div>
+  </aside>
+
+  <main class="main-workspace">
+
 <section class="grid" style="margin-bottom:18px;">
   <div class="card full" id="card_trading_mode">
     <div class="card-header" onclick="toggleCard('card_trading_mode')">
@@ -62,7 +177,7 @@
     <div class="card-content">
       <div id="trading_mode_banner" class="inline-banner"></div>
       <div class="status-list">
-        <div class="status-item"><span class="muted">目前模式</span><span class="{% if trading_mode_summary.get('mode_label') == 'LIVE-READY' %}good{% else %}warn{% endif %}">{{ trading_mode_summary.get('mode_label', 'UNKNOWN') }}</span></div>
+        <div class="status-item"><span class="muted">目前模式</span><span id="trading_mode_label" class="{% if trading_mode_summary.get('mode_label') == 'LIVE-READY' %}good{% else %}warn{% endif %}">{{ trading_mode_summary.get('mode_label', 'UNKNOWN') }}</span></div>
         <div class="status-item"><span class="muted">預設帳戶</span><span class="mono">{{ trading_mode_summary.get('default_account', 'N/A') }}</span></div>
         <div class="status-item"><span class="muted">預設券商</span><span>{{ trading_mode_summary.get('default_broker', 'N/A') }}</span></div>
         <div class="status-item"><span class="muted">資料來源</span><span>{{ trading_mode_summary.get('data_source', 'N/A') }}</span></div>
@@ -70,10 +185,10 @@
         <div class="status-item"><span class="muted">最後更新</span><span class="mono">{{ trading_mode_summary.get('updated_at', 'N/A') }}</span></div>
       </div>
       <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:16px;">
-        <button onclick="setTradingMode('live')" 
+        <button id="btn_mode_live" onclick="setTradingMode('live')"
                 title="切換至正式交易模式。系統將連線永豐金證券(SinoPac)帳戶，即時同步真實持倉與餘額，並準備執行正式交易指令。"
                 style="padding:10px 14px; border-radius:999px; border:none; background:linear-gradient(90deg,#7cd6ff,#8b8fff); color:#07111f; font-weight:700; cursor:pointer;">切到 LIVE</button>
-        <button onclick="setTradingMode('paper')" 
+        <button id="btn_mode_paper" onclick="setTradingMode('paper')"
                 title="切換至模擬交易模式。系統將讀取本地模擬帳本，並在每次重新整理時更新模擬收益，適合策略實驗與預演。"
                 style="padding:10px 14px; border-radius:999px; border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.06); color:#edf2ff; font-weight:700; cursor:pointer;">切到 PAPER</button>
         <button id="btn_full_pipeline" onclick="runFullPipelineSync()" 
@@ -432,10 +547,7 @@ function phase2RefreshAll() {
 
       <div style="margin-top:20px; display:flex; gap:12px; align-items:center;">
         <button onclick="saveSafetyRedlines()" style="padding:10px 20px; border-radius:999px; border:none; background:linear-gradient(90deg,#ff6b81,#ff9daf); color:#fff; font-weight:700; cursor:pointer;">儲存安全紅線設定</button>
-        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-          <input type="checkbox" id="redline_enabled" {% if safety_redlines.get('enabled') %}checked{% endif %}>
-          <span style="font-size:14px; color:#edf2ff;">啟用紅線檢查</span>
-        </label>
+        <span class="tag" style="background:rgba(255,107,129,0.12); color:#ff9daf; border:1px solid rgba(255,107,129,0.25);">紅線檢查強制啟用</span>
       </div>
     </div>
   </div>
@@ -1444,6 +1556,8 @@ function phase2RefreshAll() {
     </div>
   </div>
 </section>
+  </main>
+</div>
 <script>
 const WM_RISK_COLOR = {low:'#2ecc71', moderate:'#f39c12', elevated:'#e67e22', high:'#e74c3c', critical:'#8e44ad', unknown:'#95a5a6'};
 const WM_STATUS_COLOR = {green:'#2ecc71', yellow:'#f39c12', orange:'#e67e22', red:'#e74c3c'};
@@ -1557,20 +1671,107 @@ function showGlobalBanner(message, type) {
   if (w) { w.textContent = message; w.className = `inline-banner show ${type}`; }
 }
 
+function showBrokerSettingsBanner(message, type='success') {
+  const el = document.getElementById('broker_settings_banner');
+  if (!el) return;
+  el.textContent = message;
+  el.className = `inline-banner show ${type}`;
+}
+
+async function saveBrokerSettings(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const payload = {
+    account_alias: form.account_alias.value.trim(),
+    broker_id: form.broker_id.value,
+    account_id: form.account_id.value.trim(),
+    mode: form.mode.value,
+    api_key: form.api_key.value.trim() || null,
+    api_secret: form.api_secret.value.trim() || null,
+    set_default: form.set_default.checked
+  };
+  showBrokerSettingsBanner('正在儲存券商設定…', 'success');
+  try {
+    const res = await fetch('/api/settings/brokers', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok || !data.ok) {
+      throw new Error((data.detail || '設定儲存失敗'));
+    }
+    showBrokerSettingsBanner('券商設定已儲存。重新整理後會顯示最新遮罩狀態。', 'success');
+    form.api_key.value = '';
+    form.api_secret.value = '';
+    setTimeout(() => location.reload(), 700);
+  } catch (e) {
+    showBrokerSettingsBanner(e.message, 'error');
+  }
+}
+
 async function setTradingMode(mode) {
-  showGlobalBanner(`正在切換模式至 ${mode.toUpperCase()} 並同步狀態…`, 'success');
-  const res = await fetch('/api/trading-mode/set', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({mode})
+  const targetLabel = mode === 'live' ? 'LIVE-READY' : 'PAPER';
+  const banner = document.getElementById('trading_mode_banner');
+  const label = document.getElementById('trading_mode_label');
+  const liveBtn = document.getElementById('btn_mode_live');
+  const paperBtn = document.getElementById('btn_mode_paper');
+  const clickedBtn = mode === 'live' ? liveBtn : paperBtn;
+  const originalLiveText = liveBtn ? liveBtn.textContent : '';
+  const originalPaperText = paperBtn ? paperBtn.textContent : '';
+
+  if (banner) {
+    banner.textContent = `已按下切換至 ${targetLabel}，正在同步券商/帳本狀態…`;
+    banner.className = 'inline-banner show success';
+  }
+  if (label) {
+    label.textContent = `切換中 → ${targetLabel}`;
+    label.className = 'warn';
+  }
+  [liveBtn, paperBtn].forEach(btn => {
+    if (!btn) return;
+    btn.disabled = true;
+    btn.style.opacity = '0.62';
+    btn.style.cursor = 'wait';
   });
-  const data = await res.json();
-  if (res.ok) {
-    const summary = data.trading_mode_summary || {};
-    showGlobalBanner(`交易模式已切換為：${summary.mode_label || mode}`, 'success');
-    setTimeout(() => window.location.reload(), 600);
-  } else {
-    showGlobalBanner(`交易模式切換失敗：${data.detail || '系統未提供詳細原因'}`, 'error');
+  if (clickedBtn) clickedBtn.textContent = `切換中… ${targetLabel}`;
+
+  try {
+    const res = await fetch('/api/trading-mode/set', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({mode})
+    });
+    const data = await res.json();
+    if (res.ok) {
+      const summary = data.trading_mode_summary || {};
+      const finalLabel = summary.mode_label || targetLabel;
+      if (label) {
+        label.textContent = finalLabel;
+        label.className = finalLabel === 'LIVE-READY' ? 'good' : 'warn';
+      }
+      if (banner) {
+        banner.textContent = `交易模式已切換為：${finalLabel}。頁面即將刷新最新狀態。`;
+        banner.className = 'inline-banner show success';
+      }
+      setTimeout(() => window.location.reload(), 1100);
+    } else {
+      throw new Error(data.detail || '系統未提供詳細原因');
+    }
+  } catch (err) {
+    if (banner) {
+      banner.textContent = `交易模式切換失敗：${err.message}`;
+      banner.className = 'inline-banner show error';
+    }
+    if (label) label.textContent = '切換失敗，請重試';
+    [liveBtn, paperBtn].forEach(btn => {
+      if (!btn) return;
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      btn.style.cursor = 'pointer';
+    });
+    if (liveBtn) liveBtn.textContent = originalLiveText;
+    if (paperBtn) paperBtn.textContent = originalPaperText;
   }
 }
 
@@ -1688,7 +1889,7 @@ async function removeWatchlistSymbol(symbol) {
   ai_confidence_threshold: Number(document.getElementById('redline_ai_confidence').value),
   daily_max_buy_submits: parseInt(document.getElementById('redline_daily_max_buy_submits').value),
   daily_max_sell_submits: parseInt(document.getElementById('redline_daily_max_sell_submits').value),
-  enabled: document.getElementById('redline_enabled').checked
+  enabled: true
   };
 
   const banner = document.getElementById('safety_redlines_banner');
@@ -1883,6 +2084,8 @@ async function previewTrade(symbol, cleanId) {
         }
         
         const data = await res.json();
+        previewArea.dataset.previewId = data.preview_id || '';
+        previewArea.dataset.confirmationRequired = data.confirmation_required || '';
         
         let html = `
             <div class="status-item"><span class="muted">委託方向</span><span class="${side === 'buy' ? 'good' : 'bad'}" style="font-weight:700;">${side === 'buy' ? '買進 (BUY)' : '賣出 (SELL)'}</span></div>
@@ -1922,6 +2125,20 @@ async function previewTrade(symbol, cleanId) {
             html += `<div style="margin-top:12px; padding:10px; border-radius:8px; background:rgba(53,212,154,0.08); border:1px solid rgba(53,212,154,0.2); color:#35d49a; font-size:13px;">
                 ✓ 已通過所有風險檢查
             </div>`;
+            html += `<div style="margin-top:14px; padding:12px; border-radius:10px; background:rgba(255,209,102,0.08); border:1px solid rgba(255,209,102,0.24);">
+                <div style="font-weight:800; color:var(--warn); margin-bottom:8px;">正式下單確認</div>
+                <div class="muted" style="font-size:12px; line-height:1.6; margin-bottom:10px;">
+                    請輸入確認文字：<span class="mono" style="color:var(--text);">${data.confirmation_required}</span>
+                </div>
+                <input data-submit-confirm="${cleanId}" placeholder="${data.confirmation_required}" autocomplete="off"
+                       style="width:100%; padding:10px; border-radius:8px; background:var(--input-bg); border:1px solid var(--input-border); color:var(--text);">
+                <input data-large-order-confirm="${cleanId}" placeholder="大額交易才需輸入 CONFIRM LARGE ORDER" autocomplete="off"
+                       style="width:100%; margin-top:8px; padding:10px; border-radius:8px; background:var(--input-bg); border:1px solid var(--input-border); color:var(--text);">
+                <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
+                    <button id="submit-btn-${cleanId}" onclick="executeTrade('${symbol}')" style="padding:10px 16px; border-radius:8px; border:1px solid rgba(255,209,102,0.35); background:rgba(255,209,102,0.14); color:var(--warn); font-weight:900; cursor:pointer;">正式下單 (Submit)</button>
+                    <span class="muted" style="font-size:12px; align-self:center;">送出後仍需券商回報驗證，未驗證不會顯示為成功落地。</span>
+                </div>
+            </div>`;
         }
         previewContent.innerHTML = html;
 
@@ -1952,9 +2169,9 @@ function resetTicketState(cleanId) {
 }
 
 function toggleSubmitBtn(cleanId) {
-    const isChecked = document.getElementById(`confirm-check-${cleanId}`).checked;
+    const isChecked = document.getElementById(`confirm-check-${cleanId}`)?.checked;
     const submitBtn = document.getElementById(`submit-btn-${cleanId}`);
-    submitBtn.style.display = isChecked ? 'block' : 'none';
+    if (submitBtn) submitBtn.style.display = isChecked ? 'block' : 'none';
 }
 
 function cancelPreview(cleanId) {
@@ -1972,16 +2189,20 @@ function cancelPreview(cleanId) {
 async function executeTrade(symbol) {
     const cleanId = symbol.replace('.', '');
     const side = document.querySelector(`input[name="side-${cleanId}"]:checked`).value;
-    const qty = document.getElementById(`qty-${cleanId}`).value;
-    const price = document.getElementById(`price-${cleanId}`).value;
-    const isChecked = document.getElementById(`confirm-check-${cleanId}`).checked;
-    
-    if (!isChecked) {
-        alert('請先勾選確認方塊');
+    const qty = document.querySelector(`input[data-ticket-id="${cleanId}"][data-field="qty"]`).value;
+    const price = document.querySelector(`input[data-ticket-id="${cleanId}"][data-field="price"]`).value;
+    const previewArea = _getPreviewArea(cleanId);
+    const confirmInput = document.querySelector(`input[data-submit-confirm="${cleanId}"]`);
+    const largeConfirmInput = document.querySelector(`input[data-large-order-confirm="${cleanId}"]`);
+    const confirmation = (confirmInput?.value || '').trim();
+    const expected = previewArea?.dataset.confirmationRequired || '';
+
+    if (!confirmation || confirmation !== expected) {
+        alert(`請輸入完整確認文字：${expected}`);
         return;
     }
     
-    if (!confirm(`最後確認：送出 ${side.toUpperCase()} ${symbol} ${qty} 股 @ ${price}？`)) {
+    if (!confirm(`最後確認：正式送出 ${side.toUpperCase()} ${symbol} ${qty} 股 @ ${price}？`)) {
         return;
     }
     
@@ -1993,12 +2214,20 @@ async function executeTrade(symbol) {
         const res = await fetch('/api/trade/submit', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({symbol, side, quantity: Number(qty), price: Number(price)})
+            body: JSON.stringify({
+                symbol,
+                side,
+                quantity: Number(qty),
+                price: Number(price),
+                preview_id: previewArea?.dataset.previewId || '',
+                confirmation,
+                large_order_confirmation: (largeConfirmInput?.value || '').trim() || null
+            })
         });
         const data = await res.json();
         
         if (res.ok) {
-            alert(`交易成功！\n${data.message}`);
+            alert(`${data.status || 'SUBMITTED'}\n${data.message}`);
             window.location.reload();
         } else {
             alert(`交易失敗：${data.detail || '未知錯誤'}`);

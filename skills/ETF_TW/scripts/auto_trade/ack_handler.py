@@ -69,9 +69,8 @@ def _build_gate_context(state_dir: Path, side: str) -> dict:
         "inventory": inventory,
         "max_concentration_pct": max_conc,
         "max_single_limit_twd": redlines.get("max_buy_amount_twd", 1_000_000.0),
-        # ack 時段使用者主動操作 → 不強制檢查交易時段
-        # （pre_flight_gate 自身的時段檢查會在 force_trading_hours=True 時生效）
-        "force_trading_hours": False,
+        "force_trading_hours": True,
+        "state_dir": state_dir,
     }
 
 
@@ -157,6 +156,8 @@ def ack_signal(
         "price": float(signal["price"]),
         "order_type": signal.get("order_type", "limit"),
         "lot_type": signal.get("lot_type", "board"),
+        "is_submit": True,
+        "is_confirmed": True,
     }
     gate_res = pre_flight.check_order(order, gate_ctx)
 
@@ -197,7 +198,7 @@ def ack_signal(
         execution_output = "[skip_complete_trade=True]"
         execution_ok = True
     else:
-        execution_output, execution_ok = _invoke_complete_trade(signal)
+        execution_output, execution_ok = _invoke_complete_trade(signal, state_dir=state_dir)
 
     # 6. 標記終局狀態
     if execution_ok:
@@ -235,7 +236,7 @@ def ack_signal(
         }
 
 
-def _invoke_complete_trade(signal: dict) -> tuple[str, bool]:
+def _invoke_complete_trade(signal: dict, *, state_dir: Path | None = None) -> tuple[str, bool]:
     """
     呼叫既有的 complete_trade.py 完成下單。
 
@@ -245,13 +246,24 @@ def _invoke_complete_trade(signal: dict) -> tuple[str, bool]:
     if not venv_python.exists():
         venv_python = ETF_TW_ROOT / ".venv" / "bin" / "python"
 
+    trading_mode = safe_load_json((state_dir or ctx_mod.get_state_dir()) / "trading_mode.json", default={})
+    mode = str(trading_mode.get("effective_mode") or "paper").lower()
+    if mode == "live-ready":
+        mode = "live"
+    broker = trading_mode.get("default_broker", "sinopac")
+    account = trading_mode.get("default_account", "sinopac_01")
+
     cmd = [
         str(venv_python),
         str(ETF_TW_ROOT / "scripts" / "complete_trade.py"),
         signal["symbol"],
         signal["side"],
         str(signal["quantity"]),
-        str(signal["price"]),
+        "--price", str(signal["price"]),
+        "--mode", mode,
+        "--broker", broker,
+        "--account", account,
+        "--decision-id", signal["id"],
     ]
 
     try:
@@ -262,8 +274,10 @@ def _invoke_complete_trade(signal: dict) -> tuple[str, bool]:
             timeout=60,
             cwd=str(ETF_TW_ROOT),
         )
-        ok = proc.returncode == 0
         output = (proc.stdout or "") + ("\n[stderr]\n" + proc.stderr if proc.stderr else "")
+        ok = proc.returncode == 0
+        if ok and mode == "live":
+            ok = "broker_order_id" in output or "ordno" in output or "VERIFIED" in output
         return output.strip(), ok
     except subprocess.TimeoutExpired:
         return "complete_trade.py 執行逾時（60s）", False

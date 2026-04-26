@@ -1,4 +1,4 @@
-# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.5.0)
+# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.5.1)
 
 `ETF_Master` 是一款專為台灣 ETF 投資者設計的 AI 輔助決策與資產管理系統。本專案秉持「**交易安全優先於功能完備**」的核心價值，透過「三層真相層級」治理與「雙鏈決策仲裁」機制，為投資者提供一個穩定、透明且具備深度洞察的投資工作台。
 
@@ -44,6 +44,7 @@
 - **網址**：`http://localhost:5055`
 - **特色**：
   - 即時反映永豐金實體帳戶持倉與 KPI。
+  - 自動維持 `instances/<agent_id>/state/agent_summary.json`，供 Hermes Agent 快速讀取當前決策狀態與資產概況。
   - 反應式 (Reactive) 策略切換：套用策略後自動重生決策建議。
   - 摺疊式區塊：在維持監控頂部看板的同時保持介面簡潔。
   - 內嵌式交易票據：流暢的三段式下單體驗。
@@ -107,6 +108,12 @@ AGENT_ID=etf_master .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.
 ---
 
 ## 📦 版本紀錄
+
+### v1.5.1 (2026-04-26)
+- docs(readme): 收斂為 root `README.md` 單一主文件，移除重複的 `skills/ETF_TW/README.md`，避免版本與操作說明分岔。
+- feat(dashboard): 儀表板導入雙欄資訊架構、券商設定區與可切換亮色/暗色/跟隨系統配色。
+- ux(dashboard): 交易模式切換改為即時按鈕狀態與區塊內提示，不再以 popup 作為主要回饋。
+- safety(trade): 紅線檢查改為強制啟用；人工下單與 Phase 2 半自動 ack 均維持 preview / confirm / submit 安全閘門。
 
 ### v1.5.0 (2026-04-26)
 - feat(auto_trade): 完成 Phase 2 半自動交易系統 🎉
