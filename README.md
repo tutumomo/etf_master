@@ -1,4 +1,4 @@
-# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.4.17)
+# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.5.0)
 
 `ETF_Master` 是一款專為台灣 ETF 投資者設計的 AI 輔助決策與資產管理系統。本專案秉持「**交易安全優先於功能完備**」的核心價值，透過「三層真相層級」治理與「雙鏈決策仲裁」機制，為投資者提供一個穩定、透明且具備深度洞察的投資工作台。
 
@@ -107,6 +107,23 @@ AGENT_ID=etf_master .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.
 ---
 
 ## 📦 版本紀錄
+
+### v1.5.0 (2026-04-26)
+- feat(auto_trade): 完成 Phase 2 半自動交易系統 🎉
+  - M1：盤中報價基礎建設（VWAP 計算、`sync_intraday_quotes.py`）
+  - M2：買入掃描 + pending queue + 7 項 circuit breaker 熔斷
+  - M3：trailing stop 賣出掃描 + peak tracker（群組 trailing %、≥20% 鎖利）
+  - M4：Dashboard pending card + ack/reject 流程 + launchd 排程
+- feat(gate): 「單筆金額上限」改以可交割金額為基準（cash − T+1/T+2）
+- feat(dashboard): 多項 UI 強化
+  - P1-1 衝突歷史面板（Tier 2/3 規則 vs AI 分歧）
+  - P1-2 策略影響力即時摘要（對齊率、勝率）
+  - P1-3 感測器降級行動指引
+  - P2-4 持倉分群配置比例 bar
+  - P2-5 事件堆積警報
+  - 現金 KPI 三層揭露（帳面 / 可交割 / 待交割）
+- fix(ohlcv): `return_1y` 不再因台股交易日 < 252 一律 None，改用年化推算
+- 累計 128 個新 unit test（總計 555/555 PASS）
 
 ### v1.4.17 (2026-04-24)
 - feat(dashboard): 「現金 / 追蹤數」模塊在 Full Sync 後同步顯示帳面現金與交割安全金額
