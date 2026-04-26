@@ -46,52 +46,64 @@
 
 <div class="dashboard-shell">
   <aside class="sidebar">
-    <div class="card sidebar-card">
-      <div class="sidebar-title">
+    <div class="card sidebar-card" id="sidebar_theme">
+      <div class="sidebar-title card-header" onclick="toggleCard('sidebar_theme')">
         <span>版面配色</span>
-        <span class="tag">Theme</span>
+        <span style="display:flex; align-items:center; gap:8px;"><span class="tag">Theme</span><span class="collapse-icon">▼</span></span>
       </div>
-      <div class="theme-toggle" role="group" aria-label="Dashboard theme">
-        <button class="theme-button" type="button" data-theme-choice="system" onclick="applyDashboardTheme('system')">跟隨系統</button>
-        <button class="theme-button" type="button" data-theme-choice="dark" onclick="applyDashboardTheme('dark')">暗色系</button>
-        <button class="theme-button" type="button" data-theme-choice="light" onclick="applyDashboardTheme('light')">亮色系</button>
+      <div class="card-content">
+        <div class="theme-toggle" role="group" aria-label="Dashboard theme">
+          <button class="theme-button" type="button" data-theme-choice="system" onclick="applyDashboardTheme('system')">跟隨系統</button>
+          <button class="theme-button" type="button" data-theme-choice="dark" onclick="applyDashboardTheme('dark')">暗色系</button>
+          <button class="theme-button" type="button" data-theme-choice="light" onclick="applyDashboardTheme('light')">亮色系</button>
+        </div>
+        <div class="muted" style="font-size:12px; line-height:1.5; margin-top:10px;">偏好會保存在這個瀏覽器，不會寫入交易設定。</div>
       </div>
-      <div class="muted" style="font-size:12px; line-height:1.5; margin-top:10px;">偏好會保存在這個瀏覽器，不會寫入交易設定。</div>
     </div>
 
-    <div class="card sidebar-card">
-      <div class="sidebar-title">
+    <div class="card sidebar-card" id="sidebar_profile">
+      <div class="sidebar-title card-header" onclick="toggleCard('sidebar_profile')">
         <span>基本資訊</span>
-        <span class="tag">Profile</span>
+        <span style="display:flex; align-items:center; gap:8px;"><span class="tag">Profile</span><span class="collapse-icon">▼</span></span>
       </div>
-      <div class="sidebar-list">
-        <div class="sidebar-row"><span class="muted">Agent</span><span class="mono">{{ dashboard_identity.get('agent_id') }}</span></div>
-        <div class="sidebar-row"><span class="muted">策略</span><span>{{ strategy.get('base_strategy', 'N/A') }}</span></div>
-        <div class="sidebar-row"><span class="muted">情境覆蓋</span><span>{{ strategy.get('scenario_overlay', 'N/A') }}</span></div>
-        <div class="sidebar-row"><span class="muted">交易模式</span><span class="{% if trading_mode_summary.get('mode_label') == 'LIVE-READY' %}good{% else %}warn{% endif %}">{{ trading_mode_summary.get('mode_label', 'UNKNOWN') }}</span></div>
-        <div class="sidebar-row"><span class="muted">資料來源</span><span>{{ trading_mode_summary.get('data_source', 'N/A') }}</span></div>
-        <div class="sidebar-row"><span class="muted">State</span><span class="mono">{{ dashboard_identity.get('state_dir') }}</span></div>
+      <div class="card-content">
+        <div class="sidebar-list">
+          <div class="sidebar-row"><span class="muted">Agent</span><span class="mono">{{ dashboard_identity.get('agent_id') }}</span></div>
+          <div class="sidebar-row"><span class="muted">策略</span><span>{{ strategy.get('base_strategy', 'N/A') }}</span></div>
+          <div class="sidebar-row"><span class="muted">情境覆蓋</span><span>{{ strategy.get('scenario_overlay', 'N/A') }}</span></div>
+          <div class="sidebar-row"><span class="muted">交易模式</span><span class="{% if trading_mode_summary.get('mode_label') == 'LIVE-READY' %}good{% else %}warn{% endif %}">{{ trading_mode_summary.get('mode_label', 'UNKNOWN') }}</span></div>
+          <div class="sidebar-row"><span class="muted">交易資料</span><span>{{ trading_mode_summary.get('data_source', 'N/A') }}</span></div>
+          <div class="sidebar-row"><span class="muted">帳戶資料</span><span>{{ account.get('source', 'N/A') }}</span></div>
+          <div class="sidebar-row"><span class="muted">策略同步</span><span class="good">{{ strategy.get('source', 'N/A') }}</span></div>
+          <div class="sidebar-row"><span class="muted">價格快取</span><span>{{ market_cache.get('source', 'N/A') }}</span></div>
+          <div class="sidebar-row"><span class="muted">最後更新</span><span class="mono">{{ market_cache.get('updated_at', account.get('updated_at', 'N/A')) }}</span></div>
+          <div class="sidebar-row"><span class="muted">目前階段</span><span class="warn">保守增量改造</span></div>
+          <div class="sidebar-row"><span class="muted">State</span><span class="mono">{{ dashboard_identity.get('state_dir') }}</span></div>
+        </div>
       </div>
     </div>
 
-    <div class="card sidebar-card">
-      <div class="sidebar-title">
+    <div class="card sidebar-card" id="sidebar_cash">
+      <div class="sidebar-title card-header" onclick="toggleCard('sidebar_cash')">
         <span>資金快照</span>
-        <span class="tag">Cash</span>
+        <span style="display:flex; align-items:center; gap:8px;"><span class="tag">Cash</span><span class="collapse-icon">▼</span></span>
       </div>
-      <div class="sidebar-list">
-        <div class="sidebar-row"><span class="muted">帳面現金</span><span class="mono">{{ "{:,.0f}".format(account.get('cash', 0) or 0) }}</span></div>
-        <div class="sidebar-row"><span class="muted">可交割金額</span><span class="mono good">{{ "{:,.0f}".format(account.get('settlement_safe_cash', account.get('cash', 0)) or 0) }}</span></div>
-        <div class="sidebar-row"><span class="muted">持倉市值</span><span class="mono">{{ "{:,.0f}".format(account.get('market_value', 0) or 0) }}</span></div>
-        <div class="sidebar-row"><span class="muted">追蹤標的</span><span class="mono">{{ account.get('tracked_count', 0) }}</span></div>
+      <div class="card-content">
+        <div class="sidebar-list">
+          <div class="sidebar-row"><span class="muted">帳面現金</span><span class="mono">{{ "{:,.0f}".format(account.get('cash', 0) or 0) }}</span></div>
+          <div class="sidebar-row"><span class="muted">可交割金額</span><span class="mono good">{{ "{:,.0f}".format(account.get('settlement_safe_cash', account.get('cash', 0)) or 0) }}</span></div>
+          <div class="sidebar-row"><span class="muted">持倉市值</span><span class="mono">{{ "{:,.0f}".format(account.get('market_value', 0) or 0) }}</span></div>
+          <div class="sidebar-row"><span class="muted">追蹤標的</span><span class="mono">{{ account.get('tracked_count', 0) }}</span></div>
+        </div>
       </div>
     </div>
 
-    <div class="card sidebar-card">
-      <div class="sidebar-title">
+    <div class="card sidebar-card" id="sidebar_broker_settings">
+      <div class="sidebar-title card-header" onclick="toggleCard('sidebar_broker_settings')">
         <span>券商設定</span>
-        <span class="tag">Settings</span>
+        <span style="display:flex; align-items:center; gap:8px;"><span class="tag">Settings</span><span class="collapse-icon">▼</span></span>
       </div>
+      <div class="card-content">
       <div id="broker_settings_banner" class="inline-banner"></div>
       {% for acc in broker_settings.get('accounts', []) %}
       <div class="broker-account">
@@ -154,6 +166,7 @@
           <span class="muted" style="font-size:12px;">儲存只更新設定檔，不會登入券商或送單。</span>
         </div>
       </form>
+      </div>
     </div>
   </aside>
 
@@ -1154,7 +1167,7 @@ function phase2RefreshAll() {
     </div>
   </div>
 
-  <div class="card wide" id="card_positions">
+  <div class="card full" id="card_positions">
     <div class="card-header" onclick="toggleCard('card_positions')">
       <div class="label" style="margin-bottom:0;">
         <span>持倉快照</span>
@@ -1315,37 +1328,6 @@ function phase2RefreshAll() {
     {% endif %}
   </div>
 </div>
-
-  <div class="card side" id="card_status">
-    <div class="card-header" onclick="toggleCard('card_status')">
-      <div class="label" style="margin-bottom:0;"><span>狀態中心</span><span class="tag">Status</span></div>
-      <span class="collapse-icon">▼</span>
-    </div>
-    <div class="card-content">
-      <div class="status-list">
-        <div class="status-item">
-          <span class="muted">資料來源</span>
-          <span>{{ account.get('source', 'N/A') }}</span>
-        </div>
-        <div class="status-item">
-          <span class="muted">策略同步</span>
-          <span class="good">{{ strategy.get('source', 'N/A') }}</span>
-        </div>
-        <div class="status-item">
-          <span class="muted">價格快取</span>
-          <span>{{ market_cache.get('source', 'N/A') }}</span>
-        </div>
-        <div class="status-item">
-          <span class="muted">最後更新</span>
-          <span class="mono">{{ market_cache.get('updated_at', account.get('updated_at', 'N/A')) }}</span>
-        </div>
-        <div class="status-item">
-          <span class="muted">目前階段</span>
-          <span class="warn">保守增量改造</span>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <div class="card full" id="card_diagnostics">
 

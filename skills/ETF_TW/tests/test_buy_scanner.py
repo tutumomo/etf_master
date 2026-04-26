@@ -402,6 +402,58 @@ def test_run_buy_scan_gate_blocked_writes_history(state_dir):
     assert rec["_event"] == "gate_blocked"
 
 
+def test_run_buy_scan_blocks_second_candidate_when_daily_amount_would_exceed_safe_cash(state_dir):
+    """同一輪掃描多檔候選時，pending + 本筆不能超過可交割金額比例。"""
+    on_date = datetime(2026, 4, 25, 9, 30, tzinfo=TW_TZ)
+    bar_start = datetime(2026, 4, 25, 9, 0, tzinfo=TW_TZ)
+    intraday = {
+        "intraday": {
+            "0050": {
+                "ticker_used": "0050.TW",
+                "bars": _make_intraday("0050", bar_start, [33.0] * 30, volume=1000),
+                "bar_count": 30,
+                "latest_close": 33.0,
+                "latest_time": bar_start.isoformat(),
+            },
+            "00923": {
+                "ticker_used": "00923.TW",
+                "bars": _make_intraday("00923", bar_start, [33.0] * 30, volume=1000),
+                "bar_count": 30,
+                "latest_close": 33.0,
+                "latest_time": bar_start.isoformat(),
+            },
+        }
+    }
+    _write_state(state_dir, "watchlist.json", {"items": [{"symbol": "0050"}, {"symbol": "00923"}]})
+    _write_state(state_dir, "positions.json", {"positions": []})
+    _write_state(state_dir, "intraday_quotes_1m.json", intraday)
+    _write_state(state_dir, "market_cache.json", {
+        "quotes": {
+            "0050": {"current_price": 33.0, "prev_close": 35.0},
+            "00923": {"current_price": 33.0, "prev_close": 35.0},
+        }
+    })
+    _write_state(state_dir, "account_snapshot.json", {"cash": 100000, "settlement_safe_cash": 30000})
+    _write_state(state_dir, "safety_redlines.json", {
+        "enabled": True,
+        "max_buy_amount_pct": 0.5,
+        "max_buy_amount_twd": 1000000,
+        "max_buy_shares": 1000,
+        "daily_max_buy_submits": 10,
+    })
+
+    res = run_buy_scan(
+        trigger_time=time(9, 30), state_dir=state_dir,
+        on_date=on_date, skip_circuit_breaker=True,
+    )
+
+    assert len(res["enqueued"]) == 1
+    assert len(res["blocked"]) == 1
+    assert res["blocked"][0]["reason"] == "daily_buy_amount_limit"
+    assert res["blocked"][0]["details"]["limit"] == 15000
+    assert res["blocked"][0]["details"]["used_today"] > 0
+
+
 def test_run_buy_scan_circuit_breaker_skips_all(state_dir):
     """master switch off → 整體跳過"""
     _write_state(state_dir, "watchlist.json", {"items": [{"symbol": "0050"}]})

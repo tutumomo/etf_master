@@ -378,7 +378,7 @@ def run_buy_scan(
     if not skip_circuit_breaker:
         from scripts.auto_trade.circuit_breaker import evaluate_buy_allowed
         account = safe_load_json(state_dir / "account_snapshot.json", default={})
-        ssc = float(account.get("settlement_safe_cash") or account.get("cash") or 0)
+        ssc = float(account.get("settlement_safe_cash") if account.get("settlement_safe_cash") is not None else account.get("cash") or 0)
         cb = evaluate_buy_allowed(
             state_dir,
             settlement_safe_cash=ssc,
@@ -547,6 +547,44 @@ def run_buy_scan(
                 "symbol": symbol,
                 "reason": gate_res.get("reason"),
                 "details": gate_res.get("details", {}),
+                "drop_pct": round(drop_pct, 3),
+            })
+            continue
+
+        used_today = pending_queue.sum_today_buy_amount(queue_path, on_date=now.date().isoformat())
+        order_amount = float(quantity) * float(current_price)
+        aggregate_limit = max(0.0, ssc) * max_conc_pct
+        if used_today + order_amount > aggregate_limit:
+            blocked_record = {
+                "_event": "gate_blocked",
+                "_event_at": now.isoformat(),
+                "side": "buy",
+                "symbol": symbol,
+                "quantity": quantity,
+                "price": current_price,
+                "trigger_source": trigger_source,
+                "trigger_reason": (
+                    f"VWAP 跌 {drop_pct:.2f}% → 階梯 {adjustment['base_ladder_amount']} TWD，"
+                    f"策略/情境調整後 {amount} TWD"
+                ),
+                "gate_reason": "daily_buy_amount_limit",
+                "gate_details": {
+                    "used_today": used_today,
+                    "order_amount": round(order_amount, 2),
+                    "limit": round(aggregate_limit, 2),
+                    "settlement_safe_cash": ssc,
+                    "max_buy_amount_pct": max_conc_pct,
+                },
+                "drop_pct": round(drop_pct, 3),
+                "phase2_adjustment": adjustment,
+            }
+            history_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(history_path, "a", encoding="utf-8") as f:
+                f.write(json.dumps(blocked_record, ensure_ascii=False) + "\n")
+            result["blocked"].append({
+                "symbol": symbol,
+                "reason": "daily_buy_amount_limit",
+                "details": blocked_record["gate_details"],
                 "drop_pct": round(drop_pct, 3),
             })
             continue

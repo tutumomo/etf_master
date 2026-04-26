@@ -240,7 +240,20 @@ class SinopacAdapterEnhanced(BaseAdapter):
                 price_type = StockPriceType.MKT
             
             # 4. 建立訂單
-            lots = order.quantity // 1000 if order.quantity >= 1000 else 1
+            # 台股內部統一以「股」表示；送 Shioaji 時才依市場別轉換：
+            # Common 整股用「張」，IntradayOdd 零股用「股」。
+            if order.quantity % 1000 == 0:
+                lots = order.quantity // 1000
+                order_lot = StockOrderLot.Common
+            elif 1 <= order.quantity <= 999:
+                lots = order.quantity
+                order_lot = StockOrderLot.IntradayOdd
+                if price_type != StockPriceType.LMT:
+                    price_type = StockPriceType.LMT
+            else:
+                order.status = 'rejected'
+                order.error = '非整張數量必須為 1-999 股零股'
+                return order
             
             sj_order = self.api.Order(
                 price=order.price or contract.reference,
@@ -248,6 +261,7 @@ class SinopacAdapterEnhanced(BaseAdapter):
                 action=action,
                 price_type=price_type,
                 order_type=OrderType.ROD,
+                order_lot=order_lot,
             )
             
             # 5. 設定回調

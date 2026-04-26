@@ -49,6 +49,7 @@ CONFIG_PATH = context.get_instance_config()
 FILLED_RECONCILIATION_PATH = STATE / "filled_reconciliation.json"
 
 ETF_DATA_PATH = ROOT / "data" / "etfs.json"
+ETF_UNIVERSE_PATH = ROOT / "data" / "etf_universe_tw.json"
 templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent / "templates"))
 app = FastAPI(title="ETF_TW Dashboard")
 PYTHON_VENV = ROOT / ".venv" / "bin" / "python3"
@@ -161,10 +162,14 @@ def build_trade_preview_id(symbol: str, side: str, quantity: int, price: float) 
 
 
 def load_etf_catalog() -> dict:
-    if not ETF_DATA_PATH.exists():
-        return {}
-    payload = json.loads(ETF_DATA_PATH.read_text(encoding="utf-8"))
-    return payload.get("etfs", {})
+    catalog: dict = {}
+    if ETF_UNIVERSE_PATH.exists():
+        payload = json.loads(ETF_UNIVERSE_PATH.read_text(encoding="utf-8"))
+        catalog.update(payload.get("etfs", {}))
+    if ETF_DATA_PATH.exists():
+        payload = json.loads(ETF_DATA_PATH.read_text(encoding="utf-8"))
+        catalog.update(payload.get("etfs", {}))
+    return catalog
 
 
 def normalize_symbol(symbol: str) -> str:
@@ -183,15 +188,22 @@ def infer_watchlist_group(etf_info: dict) -> str:
         return "income"
     if category == "債券型":
         return "defensive"
+    text = " ".join(
+        str(etf_info.get(key) or "")
+        for key in ("symbol", "name", "index", "index_name", "description")
+    )
+    if "債" in text or str(etf_info.get("symbol") or "").upper().endswith("B"):
+        return "defensive"
     return "other"
 
 
 def build_watchlist_item(symbol: str, etf_info: dict) -> dict:
     group = infer_watchlist_group(etf_info)
+    description = etf_info.get("description") or etf_info.get("category") or etf_info.get("index_name") or etf_info.get("source") or "ETF 追蹤"
     return {
         "symbol": symbol,
         "name": etf_info.get("name", symbol),
-        "reason": f"手動加入觀察：{etf_info.get('description', etf_info.get('category', 'ETF 追蹤'))}",
+        "reason": f"手動加入觀察：{description}",
         "category": group,
         "status": "watch",
         "group": group,

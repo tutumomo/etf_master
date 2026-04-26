@@ -1,12 +1,12 @@
-# Graph Report - /Users/tuchengshin/.hermes/profiles/etf_master  (2026-04-26)
+# Graph Report - /Users/tuchengshin/.hermes/profiles/etf_master  (2026-04-27)
 
 ## Corpus Check
-- 399 files · ~1,599,523 words
+- 400 files · ~1,606,990 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 3498 nodes · 6456 edges · 213 communities detected
-- Extraction: 66% EXTRACTED · 34% INFERRED · 0% AMBIGUOUS · INFERRED: 2209 edges (avg confidence: 0.68)
+- 3561 nodes · 6567 edges · 233 communities detected
+- Extraction: 65% EXTRACTED · 35% INFERRED · 0% AMBIGUOUS · INFERRED: 2274 edges (avg confidence: 0.67)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -223,18 +223,38 @@
 - [[_COMMUNITY_Community 210|Community 210]]
 - [[_COMMUNITY_Community 211|Community 211]]
 - [[_COMMUNITY_Community 212|Community 212]]
+- [[_COMMUNITY_Community 213|Community 213]]
+- [[_COMMUNITY_Community 214|Community 214]]
+- [[_COMMUNITY_Community 215|Community 215]]
+- [[_COMMUNITY_Community 216|Community 216]]
+- [[_COMMUNITY_Community 217|Community 217]]
+- [[_COMMUNITY_Community 218|Community 218]]
+- [[_COMMUNITY_Community 219|Community 219]]
+- [[_COMMUNITY_Community 220|Community 220]]
+- [[_COMMUNITY_Community 221|Community 221]]
+- [[_COMMUNITY_Community 222|Community 222]]
+- [[_COMMUNITY_Community 223|Community 223]]
+- [[_COMMUNITY_Community 224|Community 224]]
+- [[_COMMUNITY_Community 225|Community 225]]
+- [[_COMMUNITY_Community 226|Community 226]]
+- [[_COMMUNITY_Community 227|Community 227]]
+- [[_COMMUNITY_Community 228|Community 228]]
+- [[_COMMUNITY_Community 229|Community 229]]
+- [[_COMMUNITY_Community 230|Community 230]]
+- [[_COMMUNITY_Community 231|Community 231]]
+- [[_COMMUNITY_Community 232|Community 232]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `Order` - 190 edges
-2. `BaseAdapter` - 113 edges
-3. `PortfolioStore` - 97 edges
-4. `Position` - 91 edges
-5. `AccountBalance` - 91 edges
-6. `SinopacAdapter` - 70 edges
-7. `run()` - 69 edges
+1. `Order` - 210 edges
+2. `BaseAdapter` - 120 edges
+3. `Position` - 98 edges
+4. `AccountBalance` - 98 edges
+5. `PortfolioStore` - 97 edges
+6. `run()` - 75 edges
+7. `SinopacAdapter` - 70 edges
 8. `AccountManager` - 62 edges
-9. `safe_load_json()` - 53 edges
-10. `Fundamentals` - 42 edges
+9. `safe_load_json()` - 54 edges
+10. `VWAPResult` - 43 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Test 1: Load and display broker registry.` --uses--> `Order`  [INFERRED]
@@ -265,63 +285,63 @@
 
 ### Community 0 - "Community 0"
 Cohesion: 0.03
-Nodes (133): AccountBalance, BaseAdapter, get_full_data(), get_price(), MarketDataProvider, Order, Position, Abstract base class for all broker adapters. (+125 more)
+Nodes (152): AccountBalance, BaseAdapter, get_full_data(), get_price(), MarketDataProvider, Order, Position, Abstract base class for all broker adapters. (+144 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.02
-Nodes (174): AccountManager, get_account_manager(), Get adapter for an account.                  Args:             alias: Account al, Authenticate an account.                  Args:             alias: Account alias, Save current configuration to file., Set the default account alias., Get the full configuration., List all configured accounts.                  Returns:             List of acco (+166 more)
+Cohesion: 0.01
+Nodes (157): get_order_status(), list_trades(), Callback/Polling Reconciliation, build_submit_order_row(), execute_trade(), load_orders_open(), main(), Execute a complete trade with risk control and logging.      Args:         symbo (+149 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.02
-Nodes (131): list_trades(), Callback/Polling Reconciliation, build_fill_fact_row(), build_fills_ledger_payload(), merge_fill_facts(), save_fills_ledger(), Ghost Order Detection, event_payload_to_order_row() (+123 more)
+Cohesion: 0.03
+Nodes (182): AnalystSentiment, analyze_analyst_sentiment(), analyze_crypto_fundamentals(), analyze_earnings_surprise(), analyze_earnings_timing(), analyze_fundamentals(), analyze_historical_patterns(), analyze_market_context() (+174 more)
 
 ### Community 3 - "Community 3"
 Cohesion: 0.02
-Nodes (134): auto_reflect_if_ready(), _load_json(), add_watchlist_symbol(), ai_decision_generate(), ai_decision_outcome(), ai_decision_refresh_background(), ai_decision_rerun(), ai_decision_review() (+126 more)
+Nodes (165): AccountManager, get_account_manager(), Get adapter for an account.                  Args:             alias: Account al, Authenticate an account.                  Args:             alias: Account alias, Save current configuration to file., Set the default account alias., Get the full configuration., List all configured accounts.                  Returns:             List of acco (+157 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.04
-Nodes (145): AnalystSentiment, analyze_analyst_sentiment(), analyze_crypto_fundamentals(), analyze_earnings_surprise(), analyze_earnings_timing(), analyze_fundamentals(), analyze_historical_patterns(), analyze_market_context() (+137 more)
+Cohesion: 0.02
+Nodes (138): auto_reflect_if_ready(), _load_json(), add_watchlist_symbol(), ai_decision_generate(), ai_decision_outcome(), ai_decision_refresh_background(), ai_decision_rerun(), ai_decision_review() (+130 more)
 
 ### Community 5 - "Community 5"
-Cohesion: 0.03
-Nodes (135): _build_close_lookup_from_intraday(), _build_return_pct_lookup(), _log(), main(), _now(), 從 intraday_quotes_1m.json 取每檔的 latest_close 給 peak_tracker 用, 用 positions.average_cost + 即時價算 return_pct（給鎖利判定用）, _build_quotes_df() (+127 more)
+Cohesion: 0.02
+Nodes (135): append_audit(), _clamp(), load_current_thresholds(), main(), run(), save_applied_thresholds(), save_suggestion(), _submit_order_impl() (+127 more)
 
 ### Community 6 - "Community 6"
-Cohesion: 0.03
-Nodes (104): 觸發 sync_worldmonitor.py --mode daily，立即更新快照, worldmonitor_refresh(), run(), patch(), 測試系統 DNS，若正常則直接返回（零幹擾）。     若系統 DNS 損壞，套用 monkey-patch 並回報。, get_hermes_home(), get_token_path(), get_valid_token() (+96 more)
+Cohesion: 0.02
+Nodes (154): _build_close_lookup_from_intraday(), _build_return_pct_lookup(), _log(), main(), _now(), 從 intraday_quotes_1m.json 取每檔的 latest_close 給 peak_tracker 用, 用 positions.average_cost + 即時價算 return_pct（給鎖利判定用）, _build_quotes_df() (+146 more)
 
 ### Community 7 - "Community 7"
 Cohesion: 0.02
-Nodes (120): _append_jsonl(), _determine_review_window(), _load_json(), Determine which review window (T1/T3/T10) to fill based on decision age., update_review_status(), append_audit(), backfill_return_pct(), dedup_decisions() (+112 more)
+Nodes (117): _append_jsonl(), _determine_review_window(), _load_json(), Determine which review window (T1/T3/T10) to fill based on decision age., update_review_status(), backfill_return_pct(), dedup_decisions(), fetch_price_at_date() (+109 more)
 
 ### Community 8 - "Community 8"
-Cohesion: 0.03
-Nodes (89): Live 模式授權解鎖 — LIVE-02.     需要雙重確認字串 + 品質閘門通過才能寫入 live_mode.json.     Note: endpo, unlock_live_mode(), _clamp(), compute_calibration(), load_current_thresholds(), main(), 計算建議門檻與是否自動套用。      Returns:         {             "suggestions": {risk_level: {, save_applied_thresholds() (+81 more)
-
-### Community 9 - "Community 9"
-Cohesion: 0.03
-Nodes (77): ABC, BaseBroker, connect(), get_inventory(), place_order(), Base Broker Interface for ETF_TW Pro, BaseBroker, Broker Factory to manage multiple broker instances (+69 more)
-
-### Community 10 - "Community 10"
-Cohesion: 0.03
-Nodes (91): get_decision_quality_report(), get_live_mode_status(), get_worldmonitor_status(), Live 模式授權狀態 — LIVE-02, 回傳 worldmonitor 全球風險快照摘要, classify_level(), classify_level_with_worldmonitor(), event_hash() (+83 more)
-
-### Community 11 - "Community 11"
 Cohesion: 0.02
 Nodes (100): auto_jailbreak(), _build_messages(), _detect_model_family(), _get_api_key(), _get_current_model(), Detect model family from model ID string., Read current model and provider from Hermes config.yaml.     Returns (model_str,, Get the appropriate API key. (+92 more)
 
-### Community 12 - "Community 12"
+### Community 9 - "Community 9"
 Cohesion: 0.04
 Nodes (85): phase2_get_peak_tracker(), 回傳 peak_tracker 當前狀態，供 UI 顯示每檔 stop_price, _build_group_lookup(), calc_stop_price(), get_trailing_pct(), is_tracking_active(), load_tracker(), _now_iso() (+77 more)
 
-### Community 13 - "Community 13"
+### Community 10 - "Community 10"
+Cohesion: 0.04
+Nodes (78): ack_signal(), _build_gate_context(), expire_sweep(), _invoke_complete_trade(), _now(), 使用者按下「✅ 確認下單」。      Returns:         {           "ok": bool,           "status":, 呼叫既有的 complete_trade.py 完成下單。      沿用 dashboard.app trade_submit 同樣的命令格式。, 重新組裝 pre_flight_gate 需要的 context（ack 時最新狀態）。 (+70 more)
+
+### Community 11 - "Community 11"
+Cohesion: 0.03
+Nodes (66): build_agent_consumed_response_payload(), build_ai_decision_request(), build_ai_decision_request_from_state(), build_ai_decision_response(), _build_worldmonitor_context(), default_ai_decision_request_payload(), default_ai_decision_response_payload(), is_ai_decision_response_stale() (+58 more)
+
+### Community 12 - "Community 12"
 Cohesion: 0.04
 Nodes (63): correctness_reward_func(), extract_answer(), extract_xml_tag(), format_reward_func(), get_dataset(), get_peft_config(), incremental_format_reward_func(), main() (+55 more)
 
-### Community 14 - "Community 14"
+### Community 13 - "Community 13"
 Cohesion: 0.04
 Nodes (42): _append_jsonl(), _load_json(), record_outcome(), _load_json(), Write a canonical review artifact for dashboard/agents to consume., run_auto_post_review_cycle(), _write_review_artifact(), get_instance_id_fallback() (+34 more)
+
+### Community 14 - "Community 14"
+Cohesion: 0.05
+Nodes (32): ABC, BaseBroker, get_inventory(), place_order(), Base Broker Interface for ETF_TW Pro, BaseBroker, Broker Factory to manage multiple broker instances, Add a broker instance to the manager (+24 more)
 
 ### Community 15 - "Community 15"
 Cohesion: 0.06
@@ -332,8 +352,8 @@ Cohesion: 0.07
 Nodes (55): phase2_get_circuit_breaker(), phase2_get_config(), phase2_set_config(), 回傳當前 Phase 2 master switch 與閾值設定, 更新 Phase 2 設定（master switch + 自訂閾值）, check_consecutive_buy_days(), check_daily_buy_amount(), check_major_event() (+47 more)
 
 ### Community 17 - "Community 17"
-Cohesion: 0.07
-Nodes (54): ack_signal(), _build_gate_context(), expire_sweep(), _invoke_complete_trade(), _now(), 使用者按下「✅ 確認下單」。      Returns:         {           "ok": bool,           "status":, 呼叫既有的 complete_trade.py 完成下單。      沿用 dashboard.app trade_submit 同樣的命令格式。, 重新組裝 pre_flight_gate 需要的 context（ack 時最新狀態）。 (+46 more)
+Cohesion: 0.05
+Nodes (39): patch(), _patched_getaddrinfo(), dns_fix.py — 沙盒 DNS 應急備案模組 ======================================  ## 背景  Hermes, Replacement getaddrinfo: 系統 DNS 失敗時才走 UDP DNS。, 測試系統 DNS，若正常則直接返回（零幹擾）。     若系統 DNS 損壞，套用 monkey-patch 並回報。, Raw UDP DNS A-record query. 不依賴系統 resolver。, _udp_dns_query(), check_order() (+31 more)
 
 ### Community 18 - "Community 18"
 Cohesion: 0.06
@@ -352,16 +372,16 @@ Cohesion: 0.08
 Nodes (50): build_overpass_bbox(), build_overpass_nearby(), build_parser(), cmd_area(), cmd_bbox(), cmd_directions(), cmd_distance(), cmd_nearby() (+42 more)
 
 ### Community 22 - "Community 22"
-Cohesion: 0.09
-Nodes (41): _atomic_save_json(), default_daily_order_limits(), ensure_daily_order_limits(), increment_daily_submit_count(), check_order(), compute_investment_score(), _fail(), load_daily_order_limits() (+33 more)
+Cohesion: 0.07
+Nodes (39): get_broker_config(), get_instance_config(), get_instance_dir(), get_instance_id(), get_log_dir(), get_port(), get_private_dir(), get_runtime_dir() (+31 more)
 
 ### Community 23 - "Community 23"
-Cohesion: 0.06
-Nodes (29): check_requirements(), convert(), Check disk space before installing., build_palette_image(), Named RGB palettes for pixel_art() and pixel_art_video().  Palette RGB values so, Build a 1x1 PIL 'P'-mode image with the named palette for Image.quantize(palette, main(), pixel_art() (+21 more)
+Cohesion: 0.09
+Nodes (39): _atomic_save_json(), default_daily_order_limits(), ensure_daily_order_limits(), increment_daily_submit_count(), check_order(), compute_investment_score(), _fail(), load_daily_order_limits() (+31 more)
 
 ### Community 24 - "Community 24"
-Cohesion: 0.07
-Nodes (33): build_agent_consumed_response_payload(), build_ai_decision_request(), build_ai_decision_request_from_state(), build_ai_decision_response(), _build_worldmonitor_context(), default_ai_decision_request_payload(), default_ai_decision_response_payload(), is_ai_decision_response_stale() (+25 more)
+Cohesion: 0.06
+Nodes (29): check_requirements(), convert(), Check disk space before installing., build_palette_image(), Named RGB palettes for pixel_art() and pixel_art_video().  Palette RGB values so, Build a 1x1 PIL 'P'-mode image with the named palette for Image.quantize(palette, main(), pixel_art() (+21 more)
 
 ### Community 25 - "Community 25"
 Cohesion: 0.09
@@ -376,12 +396,12 @@ Cohesion: 0.1
 Nodes (14): HotScanner, main(), Get trending crypto from CoinGecko., Get top gainers/losers., Get finance news from Google News RSS., Search for crypto news., Scrape Yahoo Finance movers with gzip support., Scrape r/wallstreetbets for hot stocks. (+6 more)
 
 ### Community 28 - "Community 28"
-Cohesion: 0.21
-Nodes (27): build_service(), calendar_create(), calendar_delete(), calendar_list(), contacts_list(), _datetime_with_timezone(), docs_get(), drive_search() (+19 more)
+Cohesion: 0.11
+Nodes (27): check_cycle_orders(), _default_scan_fn(), main(), Check a single cycle's order list for safety violations.      Returns:         {, Default scan_fn: read current paper-mode state files., Run N cycles and validate safety invariants.      Args:         cycles: Number o, run_stress_test(), _clean_board() (+19 more)
 
 ### Community 29 - "Community 29"
-Cohesion: 0.12
-Nodes (14): get_logger(), Log order submission., Log order cancellation., Query trade logs with filters.                  Args:             symbol: Filter, Represents a single trade log entry., Generate audit report.                  Returns:             Report dictionary w, Verify audit trail integrity.                  Returns:             Tuple of (is, Get or create the global trade logger. (+6 more)
+Cohesion: 0.21
+Nodes (27): build_service(), calendar_create(), calendar_delete(), calendar_list(), contacts_list(), _datetime_with_timezone(), docs_get(), drive_search() (+19 more)
 
 ### Community 30 - "Community 30"
 Cohesion: 0.17
@@ -392,12 +412,12 @@ Cohesion: 0.12
 Nodes (24): compute_metrics(), compute_trade_pnl(), evaluate_quality_gate(), fetch_price(), main(), backtest_decision_outcomes.py — AI 決策歷史回測引擎  讀取 ai_decision_outcome.jsonl，計算各交易的, 品質閘門：win_rate >= 0.5 AND max_drawdown <= 0.15。, 從 yfinance 取得指定日期的收盤價。失敗時回傳 None。 (+16 more)
 
 ### Community 32 - "Community 32"
-Cohesion: 0.08
-Nodes (26): Alignment Principle, Bell Discipline (7 Rules), ETF_Master Persona, Financial Ecosystem, Risk-First Principle, 8-Dimension Analysis Model, Graceful Degradation Pattern, Stock Analysis v6.0 (+18 more)
+Cohesion: 0.15
+Nodes (11): compute_calibration(), 計算建議門檻與是否自動套用。      Returns:         {             "suggestions": {risk_level: {, _make_breakdown(), Tests for auto_calibrate_thresholds.py  Run: cd skills/ETF_TW && .venv/bin/pytho, 套用後門檻不得超出 THRESHOLD_BOUNDS。, Build a minimal chain_breakdown with rule_engine stats., win_rate < WIN_RATE_LOW → 門檻 +MAX_STEP, win_rate >= WIN_RATE_HIGH → 門檻 -MAX_STEP (+3 more)
 
 ### Community 33 - "Community 33"
-Cohesion: 0.14
-Nodes (20): fetch_intraday_for_symbol(), _is_nan(), main(), 抓取單一標的的當日 1m 報價。      Returns:         (bars, ticker_used)         bars: list of, build_candidate_symbols(), build_quote_entry(), canonicalize_symbol(), ensure_watchlist_integrity() (+12 more)
+Cohesion: 0.08
+Nodes (26): Alignment Principle, Bell Discipline (7 Rules), ETF_Master Persona, Financial Ecosystem, Risk-First Principle, 8-Dimension Analysis Model, Graceful Degradation Pattern, Stock Analysis v6.0 (+18 more)
 
 ### Community 34 - "Community 34"
 Cohesion: 0.14
@@ -428,116 +448,116 @@ Cohesion: 0.16
 Nodes (16): Live 模式授權閘門 contract tests — LIVE-02 Tests: 7 (status + unlock double-confirm +, Correct confirms + quality_gate_passed=True → 200, live_mode.json written., Unlock twice with correct inputs → second call also 200., No state files → enabled=False, quality_gate_passed=False., backtest_results.json quality_gate_passed=True → status returns True., Wrong confirm_1 → 400., Correct confirm_1 but wrong confirm_2 → 400., Correct confirms, but quality gate not passed → 403. (+8 more)
 
 ### Community 41 - "Community 41"
-Cohesion: 0.15
-Nodes (14): _patched_getaddrinfo(), dns_fix.py — 沙盒 DNS 應急備案模組 ======================================  ## 背景  Hermes, Replacement getaddrinfo: 系統 DNS 失敗時才走 UDP DNS。, Raw UDP DNS A-record query. 不依賴系統 resolver。, _udp_dns_query(), _condense_xml(), pack(), Pack a directory into a DOCX, PPTX, or XLSX file.  Validates with auto-repair, c (+6 more)
-
-### Community 42 - "Community 42"
 Cohesion: 0.25
 Nodes (16): _can_merge(), _consolidate_text(), _find_elements(), _first_child_run(), _get_child(), _get_children(), _is_adjacent(), _is_run() (+8 more)
+
+### Community 42 - "Community 42"
+Cohesion: 0.21
+Nodes (13): generate_report(), main(), Pure function: compute decision quality metrics from outcome records., test_decision_quality_report.py — QUALITY-01  Contract tests for generate_decisi, Records with no confidence/tier/strategy_alignment keys must not raise., test_confidence_distribution_buckets(), test_empty_records_all_zeros(), test_interception_rate_calculation() (+5 more)
 
 ### Community 43 - "Community 43"
 Cohesion: 0.13
 Nodes (15): AI Decision Bridge, ai_decision_outcome.jsonl Review Ledger, ai_decision_request.json Contract, ai_decision_response.json Contract, Dashboard No Direct AI RPC Principle, Decision Artifact, Staged Autonomy Model (Stage 0-4), Fallback Rule Engine (run_auto_decision_scan) (+7 more)
 
 ### Community 44 - "Community 44"
-Cohesion: 0.22
-Nodes (9): parse_iso(), reconciliation_summary(), stale_delta_seconds(), symbol_set(), test_reconciliation_summary_detects_clean_alignment_and_open_order_gap(), test_reconciliation_summary_detects_positions_snapshot_drift(), test_reconciliation_summary_shape_for_alignment_diagnostic(), load_json() (+1 more)
-
-### Community 45 - "Community 45"
 Cohesion: 0.24
 Nodes (10): build_order_state_machine(), load_json(), main(), P3: 建立訂單狀態機      狀態轉換:     pending → submitted → [filled | cancelled | rejected], P3: 驗證 orders_open 狀態      檢查：     1. 所有訂單的狀態是否合法     2. 終端狀態的訂單是否已正確清理, P3: 執行完整狀態對帳      返回：     - 對帳結果     - 發現的問題     - 建議行動, P3: 對帳 orders_open 與 positions      檢查：     1. orders_open 中的 filled 訂單是否在 posit, reconcile_orders_with_positions() (+2 more)
 
-### Community 46 - "Community 46"
+### Community 45 - "Community 45"
 Cohesion: 0.29
 Nodes (11): _can_merge_tracked(), _find_elements(), _get_author(), _get_authors_from_docx(), get_tracked_change_authors(), infer_author(), _is_element(), _merge_tracked_changes_in() (+3 more)
 
-### Community 47 - "Community 47"
+### Community 46 - "Community 46"
 Cohesion: 0.2
 Nodes (12): AI Decision Status Handoff Index, AI Decision Layer (request/response), Fixed Quality Metric, AI Review/Outcome/Reflection Layer, orders_open.json as Order Truth, positions.json as Position Truth, auto_post_review_cycle.py Runner, T+1/T+3/T+10 Layered Review (+4 more)
 
-### Community 48 - "Community 48"
+### Community 47 - "Community 47"
 Cohesion: 0.24
 Nodes (9): Exception, _alarm_handler(), _AlarmTimeout, fetch_advanced_options(), parse_val(), Parses strings like '$1.31b', '$512.30m', '1,258,024' into numbers., Global timeout guard.      Why both?     - asyncio.wait_for covers awaited corou, Scrape UW option stats + (when available) a small sample of live flow.      Hard (+1 more)
 
-### Community 49 - "Community 49"
+### Community 48 - "Community 48"
 Cohesion: 0.27
 Nodes (3): calculate_size(), 計算建議下單股數。          Args:         cash (float): 目前可用現金。         current_holding_v, TestSizingEngineV1
 
-### Community 50 - "Community 50"
+### Community 49 - "Community 49"
 Cohesion: 0.33
 Nodes (10): clean_unused_files(), get_referenced_files(), get_slide_referenced_files(), get_slides_in_sldidlst(), Remove unreferenced files from an unpacked PPTX directory.  Usage: python clean., remove_orphaned_files(), remove_orphaned_rels_files(), remove_orphaned_slides() (+2 more)
 
-### Community 51 - "Community 51"
+### Community 50 - "Community 50"
 Cohesion: 0.2
 Nodes (11): Adapter Exploration Workflow (6-Step), Lazy-Loaded API Rationale, One-Shot CLI Generation (4-Step), Browser Automation for AI Agents, State-Over-Screenshot Rule, Strategy Cascade (PUBLIC/COOKIE/UI), Browser Bridge Chrome Extension, AI Agent Workflow (explore/synthesize/generate/record) (+3 more)
 
-### Community 52 - "Community 52"
+### Community 51 - "Community 51"
 Cohesion: 0.31
 Nodes (9): find_nearby(), geocode(), haversine(), _http_get(), _http_post(), main(), Distance in meters between two coordinates., Convert address/city/zip to coordinates via Nominatim. (+1 more)
 
-### Community 53 - "Community 53"
+### Community 52 - "Community 52"
 Cohesion: 0.31
-Nodes (8): check_sensor_health(), _is_critical_ok(), _load_sensor(), sensor_health.py — RESILIENCE-01  感測器分層健康檢查模組。 關鍵感測器失效 → healthy=False（呼叫方應中止管線）, 純函數：檢查所有感測器，回傳 SensorHealthResult。, 讀取感測器 JSON。失敗或空 dict 回傳 None。, # NOTE: val==0/False/"" would pass here — acceptable because all current, SensorHealthResult
+Nodes (8): analyze_dividends(), DividendAnalysis, format_text(), main(), Format dividend analysis as text., Analyze dividend metrics for a stock., test_dividend_stock(), test_no_dividend_stock()
 
-### Community 54 - "Community 54"
+### Community 53 - "Community 53"
 Cohesion: 0.22
 Nodes (2): BrokerAdapterExample, Example contract only. Live trading is not implemented in this version.
+
+### Community 54 - "Community 54"
+Cohesion: 0.31
+Nodes (8): check_sensor_health(), _is_critical_ok(), _load_sensor(), sensor_health.py — RESILIENCE-01  感測器分層健康檢查模組。 關鍵感測器失效 → healthy=False（呼叫方應中止管線）, 純函數：檢查所有感測器，回傳 SensorHealthResult。, 讀取感測器 JSON。失敗或空 dict 回傳 None。, # NOTE: val==0/False/"" would pass here — acceptable because all current, SensorHealthResult
 
 ### Community 55 - "Community 55"
 Cohesion: 0.44
 Nodes (7): _add_to_content_types(), _add_to_presentation_rels(), create_slide_from_layout(), duplicate_slide(), _get_next_slide_id(), get_next_slide_number(), Add a new slide to an unpacked PPTX directory.  Usage: python add_slide.py <unpa
 
 ### Community 56 - "Community 56"
+Cohesion: 0.36
+Nodes (8): get_hermes_home(), get_token_path(), get_valid_token(), main(), Refresh the access token using the refresh token., Return a valid access token, refreshing if needed., Refresh token if needed, then exec gws with remaining args., refresh_token()
+
+### Community 57 - "Community 57"
 Cohesion: 0.25
 Nodes (8): Dividend Analysis Module, Hot Scanner, Rumor Scanner, 8-Dimension Analysis Framework, Contrarian Signal Philosophy, Risk Detection (Caution-First), Stock Analysis TW (v6.2 Skill), StockPulse Commercial Product Roadmap
 
-### Community 57 - "Community 57"
+### Community 58 - "Community 58"
 Cohesion: 0.48
 Nodes (6): build_standard_jobs(), cron_add_job(), cron_list_payload(), extract_dedupe_keys(), main(), Legacy CLI landing is disabled in Hermes mode.
 
-### Community 58 - "Community 58"
+### Community 59 - "Community 59"
 Cohesion: 0.43
 Nodes (4): derive_state_dir(), main(), root_sensitive_present(), verdict()
 
-### Community 59 - "Community 59"
+### Community 60 - "Community 60"
 Cohesion: 0.29
 Nodes (7): Trading Hours Hard Constraint, ETF_TW Dashboard Runbook, ETF_TW Agent Boot Sequence, ETF_TW Agent Identity, ETF_TW Agent SOUL, Mainline B: TW Market Calendar, Mainline E: Dashboard/Summary/Docs Consolidation
 
-### Community 60 - "Community 60"
+### Community 61 - "Community 61"
 Cohesion: 0.6
 Nodes (5): fetch_tpex(), fetch_twse(), _http_json(), main(), Fetch JSON with a robust strategy.      Rationale:     - Some macOS Python build
 
-### Community 61 - "Community 61"
+### Community 62 - "Community 62"
 Cohesion: 0.47
 Nodes (4): build_account_snapshot(), build_positions_from_trades(), main(), test_build_positions_from_trades_aggregates_buys_and_sells()
 
-### Community 62 - "Community 62"
+### Community 63 - "Community 63"
 Cohesion: 0.6
 Nodes (5): build_summary(), freshness_text(), load_state(), main(), parse_ts()
 
-### Community 63 - "Community 63"
+### Community 64 - "Community 64"
 Cohesion: 0.4
 Nodes (4): get_history(), get_ma(), test_get_history_period(), test_get_ma()
 
-### Community 64 - "Community 64"
-Cohesion: 0.33
-Nodes (0):
-
 ### Community 65 - "Community 65"
+Cohesion: 0.33
+Nodes (0): 
+
+### Community 66 - "Community 66"
 Cohesion: 0.7
 Nodes (4): load(), test_open_orders_symbols_do_not_appear_in_positions_until_filled(), test_open_orders_symbols_do_not_force_holdings_into_snapshot_until_filled(), test_positions_and_snapshot_symbols_remain_aligned_for_live_holdings()
 
-### Community 66 - "Community 66"
+### Community 67 - "Community 67"
 Cohesion: 0.5
 Nodes (3): build_strategy_payload(), main(), test_build_strategy_payload_maps_strategy_state()
 
-### Community 67 - "Community 67"
-Cohesion: 0.7
-Nodes (4): atomic_save_json(), classify_symbol_signal(), main(), safe_load_json()
-
 ### Community 68 - "Community 68"
 Cohesion: 0.7
-Nodes (4): compare_etfs(), _highlight_distribution(), _highlight_fee(), _highlight_suitability()
+Nodes (4): atomic_save_json(), classify_symbol_signal(), main(), safe_load_json()
 
 ### Community 69 - "Community 69"
 Cohesion: 0.8
@@ -557,11 +577,11 @@ Nodes (2): build_layered_review_cron_jobs(), test_build_cron_jobs_from_plan_retu
 
 ### Community 73 - "Community 73"
 Cohesion: 0.5
-Nodes (0):
+Nodes (0): 
 
 ### Community 74 - "Community 74"
 Cohesion: 0.5
-Nodes (0):
+Nodes (0): 
 
 ### Community 75 - "Community 75"
 Cohesion: 0.5
@@ -569,39 +589,39 @@ Nodes (4): Candlestick + Volume Upgrade (Phase 1), Hidden OHLCV Data Gap, Techni
 
 ### Community 76 - "Community 76"
 Cohesion: 0.67
-Nodes (0):
+Nodes (0): 
 
 ### Community 77 - "Community 77"
 Cohesion: 0.67
-Nodes (0):
+Nodes (0): 
 
 ### Community 78 - "Community 78"
 Cohesion: 0.67
-Nodes (0):
+Nodes (0): 
 
 ### Community 79 - "Community 79"
 Cohesion: 0.67
-Nodes (0):
+Nodes (0): 
 
 ### Community 80 - "Community 80"
 Cohesion: 0.67
-Nodes (0):
+Nodes (0): 
 
 ### Community 81 - "Community 81"
 Cohesion: 0.67
-Nodes (0):
+Nodes (0): 
 
 ### Community 82 - "Community 82"
 Cohesion: 0.67
-Nodes (0):
+Nodes (0): 
 
 ### Community 83 - "Community 83"
 Cohesion: 0.67
-Nodes (0):
+Nodes (0): 
 
 ### Community 84 - "Community 84"
 Cohesion: 0.67
-Nodes (0):
+Nodes (0): 
 
 ### Community 85 - "Community 85"
 Cohesion: 0.67
@@ -637,135 +657,135 @@ Nodes (3): Cron Pack Dedupe Key (cronpack::<instance_id>::...), Standard Cron Pa
 
 ### Community 93 - "Community 93"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 94 - "Community 94"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 95 - "Community 95"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 96 - "Community 96"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 97 - "Community 97"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 98 - "Community 98"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 99 - "Community 99"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 100 - "Community 100"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 101 - "Community 101"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 102 - "Community 102"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 103 - "Community 103"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 104 - "Community 104"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 105 - "Community 105"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 106 - "Community 106"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 107 - "Community 107"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 108 - "Community 108"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 109 - "Community 109"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 110 - "Community 110"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 111 - "Community 111"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 112 - "Community 112"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 113 - "Community 113"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 114 - "Community 114"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 115 - "Community 115"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 116 - "Community 116"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 117 - "Community 117"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 118 - "Community 118"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 119 - "Community 119"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 120 - "Community 120"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 121 - "Community 121"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 122 - "Community 122"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 123 - "Community 123"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 124 - "Community 124"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 125 - "Community 125"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 126 - "Community 126"
 Cohesion: 1.0
@@ -805,39 +825,39 @@ Nodes (2): Source: ai_agent (Agent-Consumed), Source: ai_decision_bridge (Placeh
 
 ### Community 135 - "Community 135"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 136 - "Community 136"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 137 - "Community 137"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 138 - "Community 138"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 139 - "Community 139"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 140 - "Community 140"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 141 - "Community 141"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 142 - "Community 142"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 143 - "Community 143"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 144 - "Community 144"
 Cohesion: 1.0
@@ -857,266 +877,346 @@ Nodes (1): Place an order         action: 'BUY' or 'SELL'         order_type: 'M
 
 ### Community 148 - "Community 148"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 149 - "Community 149"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 150 - "Community 150"
 Cohesion: 1.0
-Nodes (0):
+Nodes (0): 
 
 ### Community 151 - "Community 151"
 Cohesion: 1.0
-Nodes (1): 生成 fixture 用的 intraday bars
+Nodes (1): Submit a live order through the full safety pipeline.      Args:         order:
 
 ### Community 152 - "Community 152"
 Cohesion: 1.0
-Nodes (1): 單一檔跌 2.5% 應觸發 4000 TWD 買入訊號
+Nodes (1): CLI entry — for manual testing only. Real invocations come from dashboard.
 
 ### Community 153 - "Community 153"
 Cohesion: 1.0
-Nodes (1): 賣出 cooldown 期間，即使 VWAP 跌幅達標也不應重新入 queue。
+Nodes (1): Submit the current preview candidate as a real order.     Requires explicit conf
 
 ### Community 154 - "Community 154"
 Cohesion: 1.0
-Nodes (1): sizing limit 擋下 → 不入 queue，寫 history (gate_blocked)
+Nodes (1): Freshness check with relaxed thresholds outside trading hours.      During tradi
 
 ### Community 155 - "Community 155"
 Cohesion: 1.0
-Nodes (1): 謹慎/高風險情境下，growth 類跌幅未達加嚴門檻時不入 queue。
+Nodes (1): Extract Tier 2 / Tier 3 conflict records from decision_provenance.jsonl.     Ret
 
 ### Community 156 - "Community 156"
 Cohesion: 1.0
-Nodes (1): sizing limit 擋下 → 不入 queue，寫 history (gate_blocked)
+Nodes (1): Helper: run rule engine scan and then generate consensus.     Called after any d
 
 ### Community 157 - "Community 157"
 Cohesion: 1.0
-Nodes (1): master switch off → 整體跳過
+Nodes (1): 依序執行報價同步、規則掃描、仲裁共識的全鏈路管線。
 
 ### Community 158 - "Community 158"
 Cohesion: 1.0
-Nodes (1): 測試 venv_executor.py 腳本
+Nodes (1): Submit a preview candidate as a real order.          Safety gates:     1. Confir
 
 ### Community 159 - "Community 159"
 Cohesion: 1.0
-Nodes (1): 測試 state_reconciliation_enhanced.py 腳本
+Nodes (1): Return a specific date's EOD trade journal.
 
 ### Community 160 - "Community 160"
 Cohesion: 1.0
-Nodes (1): Submit the current preview candidate as a real order.     Requires explicit conf
+Nodes (1): List all available trade journal dates.
 
 ### Community 161 - "Community 161"
 Cohesion: 1.0
-Nodes (1): Helper: run rule engine scan (which includes consensus arbitration with AI Bridg
+Nodes (1): Generate (or regenerate) a trade journal for a given date. Defaults to today.
 
 ### Community 162 - "Community 162"
 Cohesion: 1.0
-Nodes (1): Submit a preview candidate as a real order.          Safety gates:     1. Confir
+Nodes (1): Live 模式授權狀態 — LIVE-02
 
 ### Community 163 - "Community 163"
 Cohesion: 1.0
-Nodes (1): Return a specific date's EOD trade journal.
+Nodes (1): Live 模式授權解鎖 — LIVE-02.     需要雙重確認字串 + 品質閘門通過才能寫入 live_mode.json.     Note: endpo
 
 ### Community 164 - "Community 164"
 Cohesion: 1.0
-Nodes (1): List all available trade journal dates.
+Nodes (1): 觸發 sync_worldmonitor.py --mode daily，立即更新快照
 
 ### Community 165 - "Community 165"
 Cohesion: 1.0
-Nodes (1): Generate (or regenerate) a trade journal for a given date. Defaults to today.
+Nodes (1): 回傳 worldmonitor 全球風險快照摘要
 
 ### Community 166 - "Community 166"
 Cohesion: 1.0
-Nodes (1): # NOTE: shioaji may spawn background threads; in some environments Python finali
+Nodes (1): 回傳所有目前 active 的 pending 訊號（含剩餘秒數）
 
 ### Community 167 - "Community 167"
 Cohesion: 1.0
-Nodes (1): Three-tier arbitration:       Tier 1: Both agree on symbol + direction -> high c
+Nodes (1): 回傳 auto_trade_history.jsonl 最近 N 筆
 
 ### Community 168 - "Community 168"
 Cohesion: 1.0
-Nodes (1): Build a dedup key: same date + same symbol + same action = same session decision
+Nodes (1): 回傳當前 Phase 2 master switch 與閾值設定
 
 ### Community 169 - "Community 169"
 Cohesion: 1.0
-Nodes (1): Check if this session key already exists in today's decision_log.
+Nodes (1): 更新 Phase 2 設定（master switch + 自訂閾值）
 
 ### Community 170 - "Community 170"
 Cohesion: 1.0
-Nodes (1): Load market_intelligence.json for momentum/sharpe/return data.
+Nodes (1): 回傳 peak_tracker 當前狀態，供 UI 顯示每檔 stop_price
 
 ### Community 171 - "Community 171"
 Cohesion: 1.0
-Nodes (1): TOMO 原則 1：價值被低估 → 殖利率越高越好。      Sources (priority): watchlist yield_pct > shioaj
+Nodes (1): 生成 fixture 用的 intraday bars
 
 ### Community 172 - "Community 172"
 Cohesion: 1.0
-Nodes (1): TOMO 原則 2：前景看好 → 動能為正且穩定。      Uses momentum_20d from market_intelligence.     A
+Nodes (1): 單一檔跌 2.5% 應觸發 4000 TWD 買入訊號
 
 ### Community 173 - "Community 173"
 Cohesion: 1.0
-Nodes (1): TOMO 原則 3：過往紀錄良好 → 夏普值高、1年報酬正。      Uses sharpe_30d and return_1y from market_in
+Nodes (1): 賣出 cooldown 期間，即使 VWAP 跌幅達標也不應重新入 queue。
 
 ### Community 174 - "Community 174"
 Cohesion: 1.0
-Nodes (1): Poll an order status repeatedly.
+Nodes (1): sizing limit 擋下 → 不入 queue，寫 history (gate_blocked)
 
 ### Community 175 - "Community 175"
 Cohesion: 1.0
-Nodes (1): Build a complete provenance record from request + response + optional scan conte
+Nodes (1): 謹慎/高風險情境下，growth 類跌幅未達加嚴門檻時不入 queue。
 
 ### Community 176 - "Community 176"
 Cohesion: 1.0
-Nodes (1): Append a provenance record to the JSONL file.
+Nodes (1): sizing limit 擋下 → 不入 queue，寫 history (gate_blocked)
 
 ### Community 177 - "Community 177"
 Cohesion: 1.0
-Nodes (1): Find a provenance record by decision_id. Returns the record or None.
+Nodes (1): master switch off → 整體跳過
 
 ### Community 178 - "Community 178"
 Cohesion: 1.0
-Nodes (1): Update a specific review slot in a provenance record.      Since JSONL is append
+Nodes (1): 測試 venv_executor.py 腳本
 
 ### Community 179 - "Community 179"
 Cohesion: 1.0
-Nodes (1): Set the outcome_final field on a provenance record.
+Nodes (1): 測試 state_reconciliation_enhanced.py 腳本
 
 ### Community 180 - "Community 180"
 Cohesion: 1.0
-Nodes (1): Quick summary of recent provenance records for dashboard / memory context.
+Nodes (1): Submit the current preview candidate as a real order.     Requires explicit conf
 
 ### Community 181 - "Community 181"
 Cohesion: 1.0
-Nodes (1): Returns the directory for the current agent instance.
+Nodes (1): Helper: run rule engine scan (which includes consensus arbitration with AI Bridg
 
 ### Community 182 - "Community 182"
 Cohesion: 1.0
-Nodes (1): Returns the state directory for the current instance.
+Nodes (1): Submit a preview candidate as a real order.          Safety gates:     1. Confir
 
 ### Community 183 - "Community 183"
 Cohesion: 1.0
-Nodes (1): Returns the private directory for certificates and secrets.
+Nodes (1): Return a specific date's EOD trade journal.
 
 ### Community 184 - "Community 184"
 Cohesion: 1.0
-Nodes (1): Returns the log directory for the current instance.
+Nodes (1): List all available trade journal dates.
 
 ### Community 185 - "Community 185"
 Cohesion: 1.0
-Nodes (1): Returns the temp directory for the current instance.
+Nodes (1): Generate (or regenerate) a trade journal for a given date. Defaults to today.
 
 ### Community 186 - "Community 186"
 Cohesion: 1.0
-Nodes (1): Returns the runtime (PID, lock) directory for the current instance.
+Nodes (1): # NOTE: shioaji may spawn background threads; in some environments Python finali
 
 ### Community 187 - "Community 187"
 Cohesion: 1.0
-Nodes (1): Returns the config file path for the current instance.
+Nodes (1): Three-tier arbitration:       Tier 1: Both agree on symbol + direction -> high c
 
 ### Community 188 - "Community 188"
 Cohesion: 1.0
-Nodes (1): Loads the broker configuration for the current instance.
+Nodes (1): Build a dedup key: same date + same symbol + same action = same session decision
 
 ### Community 189 - "Community 189"
 Cohesion: 1.0
-Nodes (1): Returns the locked port for the current instance, defaults to 5055 in Hermes.
+Nodes (1): Check if this session key already exists in today's decision_log.
 
 ### Community 190 - "Community 190"
 Cohesion: 1.0
-Nodes (1): Return True if a Series-like has at least one non-NaN value.
+Nodes (1): Load market_intelligence.json for momentum/sharpe/return data.
 
 ### Community 191 - "Community 191"
 Cohesion: 1.0
-Nodes (1): Broker Adapter Pattern
+Nodes (1): TOMO 原則 1：價值被低估 → 殖利率越高越好。      Sources (priority): watchlist yield_pct > shioaj
 
 ### Community 192 - "Community 192"
 Cohesion: 1.0
-Nodes (1): Watchlist (18 ETFs across 5 groups)
+Nodes (1): TOMO 原則 2：前景看好 → 動能為正且穩定。      Uses momentum_20d from market_intelligence.     A
 
 ### Community 193 - "Community 193"
 Cohesion: 1.0
-Nodes (1): Human Readable Name
+Nodes (1): TOMO 原則 3：過往紀錄良好 → 夏普值高、1年報酬正。      Uses sharpe_30d and return_1y from market_in
 
 ### Community 194 - "Community 194"
 Cohesion: 1.0
-Nodes (1): ETF_TW v1.0
+Nodes (1): Poll an order status repeatedly.
 
 ### Community 195 - "Community 195"
 Cohesion: 1.0
-Nodes (1): Taiwan ETF Types
+Nodes (1): Build a complete provenance record from request + response + optional scan conte
 
 ### Community 196 - "Community 196"
 Cohesion: 1.0
-Nodes (1): DCA Strategy
+Nodes (1): Append a provenance record to the JSONL file.
 
 ### Community 197 - "Community 197"
 Cohesion: 1.0
-Nodes (1): Shioaji Snapshots API
+Nodes (1): Find a provenance record by decision_id. Returns the record or None.
 
 ### Community 198 - "Community 198"
 Cohesion: 1.0
-Nodes (1): Six Development Phases (P1-P6)
+Nodes (1): Update a specific review slot in a provenance record.      Since JSONL is append
 
 ### Community 199 - "Community 199"
 Cohesion: 1.0
-Nodes (1): Normalized Order Schema
+Nodes (1): Set the outcome_final field on a provenance record.
 
 ### Community 200 - "Community 200"
 Cohesion: 1.0
-Nodes (1): Plugin Readiness 65% Overall
+Nodes (1): Quick summary of recent provenance records for dashboard / memory context.
 
 ### Community 201 - "Community 201"
 Cohesion: 1.0
-Nodes (1): 10-Script Refresh Pipeline
+Nodes (1): Returns the directory for the current agent instance.
 
 ### Community 202 - "Community 202"
 Cohesion: 1.0
-Nodes (1): Signal Thresholds (BUY/HOLD/SELL)
+Nodes (1): Returns the state directory for the current instance.
 
 ### Community 203 - "Community 203"
 Cohesion: 1.0
-Nodes (1): Hot Scanner Scoring System
+Nodes (1): Returns the private directory for certificates and secrets.
 
 ### Community 204 - "Community 204"
 Cohesion: 1.0
-Nodes (1): Technical Indicators (RSI/MACD/BB/VWAP/ATR)
+Nodes (1): Returns the log directory for the current instance.
 
 ### Community 205 - "Community 205"
 Cohesion: 1.0
-Nodes (1): Comparable Company Analysis (Comps)
+Nodes (1): Returns the temp directory for the current instance.
 
 ### Community 206 - "Community 206"
 Cohesion: 1.0
-Nodes (1): Catalyst Calendar
+Nodes (1): Returns the runtime (PID, lock) directory for the current instance.
 
 ### Community 207 - "Community 207"
 Cohesion: 1.0
-Nodes (1): Deal Materials (CIM/Teaser/Pitch Deck)
+Nodes (1): Returns the config file path for the current instance.
 
 ### Community 208 - "Community 208"
 Cohesion: 1.0
-Nodes (1): Unit Economics (LTV/CAC/IRR/MOIC)
+Nodes (1): Loads the broker configuration for the current instance.
 
 ### Community 209 - "Community 209"
 Cohesion: 1.0
-Nodes (1): Merger Model (Accretion/Dilution)
+Nodes (1): Returns the locked port for the current instance, defaults to 5055 in Hermes.
 
 ### Community 210 - "Community 210"
 Cohesion: 1.0
-Nodes (1): ETF_TW Improvement Plan v3.1
+Nodes (1): Return True if a Series-like has at least one non-NaN value.
 
 ### Community 211 - "Community 211"
 Cohesion: 1.0
-Nodes (1): Dashboard State Source Rule
+Nodes (1): Broker Adapter Pattern
 
 ### Community 212 - "Community 212"
+Cohesion: 1.0
+Nodes (1): Watchlist (18 ETFs across 5 groups)
+
+### Community 213 - "Community 213"
+Cohesion: 1.0
+Nodes (1): Human Readable Name
+
+### Community 214 - "Community 214"
+Cohesion: 1.0
+Nodes (1): ETF_TW v1.0
+
+### Community 215 - "Community 215"
+Cohesion: 1.0
+Nodes (1): Taiwan ETF Types
+
+### Community 216 - "Community 216"
+Cohesion: 1.0
+Nodes (1): DCA Strategy
+
+### Community 217 - "Community 217"
+Cohesion: 1.0
+Nodes (1): Shioaji Snapshots API
+
+### Community 218 - "Community 218"
+Cohesion: 1.0
+Nodes (1): Six Development Phases (P1-P6)
+
+### Community 219 - "Community 219"
+Cohesion: 1.0
+Nodes (1): Normalized Order Schema
+
+### Community 220 - "Community 220"
+Cohesion: 1.0
+Nodes (1): Plugin Readiness 65% Overall
+
+### Community 221 - "Community 221"
+Cohesion: 1.0
+Nodes (1): 10-Script Refresh Pipeline
+
+### Community 222 - "Community 222"
+Cohesion: 1.0
+Nodes (1): Signal Thresholds (BUY/HOLD/SELL)
+
+### Community 223 - "Community 223"
+Cohesion: 1.0
+Nodes (1): Hot Scanner Scoring System
+
+### Community 224 - "Community 224"
+Cohesion: 1.0
+Nodes (1): Technical Indicators (RSI/MACD/BB/VWAP/ATR)
+
+### Community 225 - "Community 225"
+Cohesion: 1.0
+Nodes (1): Comparable Company Analysis (Comps)
+
+### Community 226 - "Community 226"
+Cohesion: 1.0
+Nodes (1): Catalyst Calendar
+
+### Community 227 - "Community 227"
+Cohesion: 1.0
+Nodes (1): Deal Materials (CIM/Teaser/Pitch Deck)
+
+### Community 228 - "Community 228"
+Cohesion: 1.0
+Nodes (1): Unit Economics (LTV/CAC/IRR/MOIC)
+
+### Community 229 - "Community 229"
+Cohesion: 1.0
+Nodes (1): Merger Model (Accretion/Dilution)
+
+### Community 230 - "Community 230"
+Cohesion: 1.0
+Nodes (1): ETF_TW Improvement Plan v3.1
+
+### Community 231 - "Community 231"
+Cohesion: 1.0
+Nodes (1): Dashboard State Source Rule
+
+### Community 232 - "Community 232"
 Cohesion: 1.0
 Nodes (1): Symbol Normalization Rule
 
 ## Knowledge Gaps
-- **739 isolated node(s):** `從建議文字中提取 4-6 位數字的 ETF 代碼 (CR-02)`, `安全讀取 JSON 檔案，防止崩潰 (CR-01)`, `檢查標的是否符合當前策略優先級 (Task 1)`, `GET request, return parsed JSON.`, `Parse double-encoded JSON fields (outcomePrices, outcomes, clobTokenIds).` (+734 more)
+- **771 isolated node(s):** `從建議文字中提取 4-6 位數字的 ETF 代碼 (CR-02)`, `安全讀取 JSON 檔案，防止崩潰 (CR-01)`, `檢查標的是否符合當前策略優先級 (Task 1)`, `GET request, return parsed JSON.`, `Parse double-encoded JSON fields (outcomePrices, outcomes, clobTokenIds).` (+766 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **Thin community `Community 93`** (2 nodes): `main()`, `options_links.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -1234,145 +1334,185 @@ Nodes (1): Symbol Normalization Rule
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 150`** (1 nodes): `__init__.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 151`** (1 nodes): `生成 fixture 用的 intraday bars`
+- **Thin community `Community 151`** (1 nodes): `Submit a live order through the full safety pipeline.      Args:         order:`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 152`** (1 nodes): `單一檔跌 2.5% 應觸發 4000 TWD 買入訊號`
+- **Thin community `Community 152`** (1 nodes): `CLI entry — for manual testing only. Real invocations come from dashboard.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 153`** (1 nodes): `賣出 cooldown 期間，即使 VWAP 跌幅達標也不應重新入 queue。`
+- **Thin community `Community 153`** (1 nodes): `Submit the current preview candidate as a real order.     Requires explicit conf`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 154`** (1 nodes): `sizing limit 擋下 → 不入 queue，寫 history (gate_blocked)`
+- **Thin community `Community 154`** (1 nodes): `Freshness check with relaxed thresholds outside trading hours.      During tradi`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 155`** (1 nodes): `謹慎/高風險情境下，growth 類跌幅未達加嚴門檻時不入 queue。`
+- **Thin community `Community 155`** (1 nodes): `Extract Tier 2 / Tier 3 conflict records from decision_provenance.jsonl.     Ret`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 156`** (1 nodes): `sizing limit 擋下 → 不入 queue，寫 history (gate_blocked)`
+- **Thin community `Community 156`** (1 nodes): `Helper: run rule engine scan and then generate consensus.     Called after any d`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 157`** (1 nodes): `master switch off → 整體跳過`
+- **Thin community `Community 157`** (1 nodes): `依序執行報價同步、規則掃描、仲裁共識的全鏈路管線。`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 158`** (1 nodes): `測試 venv_executor.py 腳本`
+- **Thin community `Community 158`** (1 nodes): `Submit a preview candidate as a real order.          Safety gates:     1. Confir`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 159`** (1 nodes): `測試 state_reconciliation_enhanced.py 腳本`
+- **Thin community `Community 159`** (1 nodes): `Return a specific date's EOD trade journal.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 160`** (1 nodes): `Submit the current preview candidate as a real order.     Requires explicit conf`
+- **Thin community `Community 160`** (1 nodes): `List all available trade journal dates.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 161`** (1 nodes): `Helper: run rule engine scan (which includes consensus arbitration with AI Bridg`
+- **Thin community `Community 161`** (1 nodes): `Generate (or regenerate) a trade journal for a given date. Defaults to today.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 162`** (1 nodes): `Submit a preview candidate as a real order.          Safety gates:     1. Confir`
+- **Thin community `Community 162`** (1 nodes): `Live 模式授權狀態 — LIVE-02`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 163`** (1 nodes): `Return a specific date's EOD trade journal.`
+- **Thin community `Community 163`** (1 nodes): `Live 模式授權解鎖 — LIVE-02.     需要雙重確認字串 + 品質閘門通過才能寫入 live_mode.json.     Note: endpo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 164`** (1 nodes): `List all available trade journal dates.`
+- **Thin community `Community 164`** (1 nodes): `觸發 sync_worldmonitor.py --mode daily，立即更新快照`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 165`** (1 nodes): `Generate (or regenerate) a trade journal for a given date. Defaults to today.`
+- **Thin community `Community 165`** (1 nodes): `回傳 worldmonitor 全球風險快照摘要`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 166`** (1 nodes): `# NOTE: shioaji may spawn background threads; in some environments Python finali`
+- **Thin community `Community 166`** (1 nodes): `回傳所有目前 active 的 pending 訊號（含剩餘秒數）`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 167`** (1 nodes): `Three-tier arbitration:       Tier 1: Both agree on symbol + direction -> high c`
+- **Thin community `Community 167`** (1 nodes): `回傳 auto_trade_history.jsonl 最近 N 筆`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 168`** (1 nodes): `Build a dedup key: same date + same symbol + same action = same session decision`
+- **Thin community `Community 168`** (1 nodes): `回傳當前 Phase 2 master switch 與閾值設定`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 169`** (1 nodes): `Check if this session key already exists in today's decision_log.`
+- **Thin community `Community 169`** (1 nodes): `更新 Phase 2 設定（master switch + 自訂閾值）`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 170`** (1 nodes): `Load market_intelligence.json for momentum/sharpe/return data.`
+- **Thin community `Community 170`** (1 nodes): `回傳 peak_tracker 當前狀態，供 UI 顯示每檔 stop_price`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 171`** (1 nodes): `TOMO 原則 1：價值被低估 → 殖利率越高越好。      Sources (priority): watchlist yield_pct > shioaj`
+- **Thin community `Community 171`** (1 nodes): `生成 fixture 用的 intraday bars`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 172`** (1 nodes): `TOMO 原則 2：前景看好 → 動能為正且穩定。      Uses momentum_20d from market_intelligence.     A`
+- **Thin community `Community 172`** (1 nodes): `單一檔跌 2.5% 應觸發 4000 TWD 買入訊號`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 173`** (1 nodes): `TOMO 原則 3：過往紀錄良好 → 夏普值高、1年報酬正。      Uses sharpe_30d and return_1y from market_in`
+- **Thin community `Community 173`** (1 nodes): `賣出 cooldown 期間，即使 VWAP 跌幅達標也不應重新入 queue。`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 174`** (1 nodes): `Poll an order status repeatedly.`
+- **Thin community `Community 174`** (1 nodes): `sizing limit 擋下 → 不入 queue，寫 history (gate_blocked)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 175`** (1 nodes): `Build a complete provenance record from request + response + optional scan conte`
+- **Thin community `Community 175`** (1 nodes): `謹慎/高風險情境下，growth 類跌幅未達加嚴門檻時不入 queue。`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 176`** (1 nodes): `Append a provenance record to the JSONL file.`
+- **Thin community `Community 176`** (1 nodes): `sizing limit 擋下 → 不入 queue，寫 history (gate_blocked)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 177`** (1 nodes): `Find a provenance record by decision_id. Returns the record or None.`
+- **Thin community `Community 177`** (1 nodes): `master switch off → 整體跳過`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 178`** (1 nodes): `Update a specific review slot in a provenance record.      Since JSONL is append`
+- **Thin community `Community 178`** (1 nodes): `測試 venv_executor.py 腳本`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 179`** (1 nodes): `Set the outcome_final field on a provenance record.`
+- **Thin community `Community 179`** (1 nodes): `測試 state_reconciliation_enhanced.py 腳本`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 180`** (1 nodes): `Quick summary of recent provenance records for dashboard / memory context.`
+- **Thin community `Community 180`** (1 nodes): `Submit the current preview candidate as a real order.     Requires explicit conf`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 181`** (1 nodes): `Returns the directory for the current agent instance.`
+- **Thin community `Community 181`** (1 nodes): `Helper: run rule engine scan (which includes consensus arbitration with AI Bridg`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 182`** (1 nodes): `Returns the state directory for the current instance.`
+- **Thin community `Community 182`** (1 nodes): `Submit a preview candidate as a real order.          Safety gates:     1. Confir`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 183`** (1 nodes): `Returns the private directory for certificates and secrets.`
+- **Thin community `Community 183`** (1 nodes): `Return a specific date's EOD trade journal.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 184`** (1 nodes): `Returns the log directory for the current instance.`
+- **Thin community `Community 184`** (1 nodes): `List all available trade journal dates.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 185`** (1 nodes): `Returns the temp directory for the current instance.`
+- **Thin community `Community 185`** (1 nodes): `Generate (or regenerate) a trade journal for a given date. Defaults to today.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 186`** (1 nodes): `Returns the runtime (PID, lock) directory for the current instance.`
+- **Thin community `Community 186`** (1 nodes): `# NOTE: shioaji may spawn background threads; in some environments Python finali`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 187`** (1 nodes): `Returns the config file path for the current instance.`
+- **Thin community `Community 187`** (1 nodes): `Three-tier arbitration:       Tier 1: Both agree on symbol + direction -> high c`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 188`** (1 nodes): `Loads the broker configuration for the current instance.`
+- **Thin community `Community 188`** (1 nodes): `Build a dedup key: same date + same symbol + same action = same session decision`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 189`** (1 nodes): `Returns the locked port for the current instance, defaults to 5055 in Hermes.`
+- **Thin community `Community 189`** (1 nodes): `Check if this session key already exists in today's decision_log.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 190`** (1 nodes): `Return True if a Series-like has at least one non-NaN value.`
+- **Thin community `Community 190`** (1 nodes): `Load market_intelligence.json for momentum/sharpe/return data.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 191`** (1 nodes): `Broker Adapter Pattern`
+- **Thin community `Community 191`** (1 nodes): `TOMO 原則 1：價值被低估 → 殖利率越高越好。      Sources (priority): watchlist yield_pct > shioaj`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 192`** (1 nodes): `Watchlist (18 ETFs across 5 groups)`
+- **Thin community `Community 192`** (1 nodes): `TOMO 原則 2：前景看好 → 動能為正且穩定。      Uses momentum_20d from market_intelligence.     A`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 193`** (1 nodes): `Human Readable Name`
+- **Thin community `Community 193`** (1 nodes): `TOMO 原則 3：過往紀錄良好 → 夏普值高、1年報酬正。      Uses sharpe_30d and return_1y from market_in`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 194`** (1 nodes): `ETF_TW v1.0`
+- **Thin community `Community 194`** (1 nodes): `Poll an order status repeatedly.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 195`** (1 nodes): `Taiwan ETF Types`
+- **Thin community `Community 195`** (1 nodes): `Build a complete provenance record from request + response + optional scan conte`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 196`** (1 nodes): `DCA Strategy`
+- **Thin community `Community 196`** (1 nodes): `Append a provenance record to the JSONL file.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 197`** (1 nodes): `Shioaji Snapshots API`
+- **Thin community `Community 197`** (1 nodes): `Find a provenance record by decision_id. Returns the record or None.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 198`** (1 nodes): `Six Development Phases (P1-P6)`
+- **Thin community `Community 198`** (1 nodes): `Update a specific review slot in a provenance record.      Since JSONL is append`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 199`** (1 nodes): `Normalized Order Schema`
+- **Thin community `Community 199`** (1 nodes): `Set the outcome_final field on a provenance record.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 200`** (1 nodes): `Plugin Readiness 65% Overall`
+- **Thin community `Community 200`** (1 nodes): `Quick summary of recent provenance records for dashboard / memory context.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 201`** (1 nodes): `10-Script Refresh Pipeline`
+- **Thin community `Community 201`** (1 nodes): `Returns the directory for the current agent instance.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 202`** (1 nodes): `Signal Thresholds (BUY/HOLD/SELL)`
+- **Thin community `Community 202`** (1 nodes): `Returns the state directory for the current instance.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 203`** (1 nodes): `Hot Scanner Scoring System`
+- **Thin community `Community 203`** (1 nodes): `Returns the private directory for certificates and secrets.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 204`** (1 nodes): `Technical Indicators (RSI/MACD/BB/VWAP/ATR)`
+- **Thin community `Community 204`** (1 nodes): `Returns the log directory for the current instance.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 205`** (1 nodes): `Comparable Company Analysis (Comps)`
+- **Thin community `Community 205`** (1 nodes): `Returns the temp directory for the current instance.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 206`** (1 nodes): `Catalyst Calendar`
+- **Thin community `Community 206`** (1 nodes): `Returns the runtime (PID, lock) directory for the current instance.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 207`** (1 nodes): `Deal Materials (CIM/Teaser/Pitch Deck)`
+- **Thin community `Community 207`** (1 nodes): `Returns the config file path for the current instance.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 208`** (1 nodes): `Unit Economics (LTV/CAC/IRR/MOIC)`
+- **Thin community `Community 208`** (1 nodes): `Loads the broker configuration for the current instance.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 209`** (1 nodes): `Merger Model (Accretion/Dilution)`
+- **Thin community `Community 209`** (1 nodes): `Returns the locked port for the current instance, defaults to 5055 in Hermes.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 210`** (1 nodes): `ETF_TW Improvement Plan v3.1`
+- **Thin community `Community 210`** (1 nodes): `Return True if a Series-like has at least one non-NaN value.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 211`** (1 nodes): `Dashboard State Source Rule`
+- **Thin community `Community 211`** (1 nodes): `Broker Adapter Pattern`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 212`** (1 nodes): `Symbol Normalization Rule`
+- **Thin community `Community 212`** (1 nodes): `Watchlist (18 ETFs across 5 groups)`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 213`** (1 nodes): `Human Readable Name`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 214`** (1 nodes): `ETF_TW v1.0`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 215`** (1 nodes): `Taiwan ETF Types`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 216`** (1 nodes): `DCA Strategy`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 217`** (1 nodes): `Shioaji Snapshots API`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 218`** (1 nodes): `Six Development Phases (P1-P6)`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 219`** (1 nodes): `Normalized Order Schema`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 220`** (1 nodes): `Plugin Readiness 65% Overall`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 221`** (1 nodes): `10-Script Refresh Pipeline`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 222`** (1 nodes): `Signal Thresholds (BUY/HOLD/SELL)`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 223`** (1 nodes): `Hot Scanner Scoring System`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 224`** (1 nodes): `Technical Indicators (RSI/MACD/BB/VWAP/ATR)`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 225`** (1 nodes): `Comparable Company Analysis (Comps)`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 226`** (1 nodes): `Catalyst Calendar`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 227`** (1 nodes): `Deal Materials (CIM/Teaser/Pitch Deck)`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 228`** (1 nodes): `Unit Economics (LTV/CAC/IRR/MOIC)`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 229`** (1 nodes): `Merger Model (Accretion/Dilution)`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 230`** (1 nodes): `ETF_TW Improvement Plan v3.1`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 231`** (1 nodes): `Dashboard State Source Rule`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 232`** (1 nodes): `Symbol Normalization Rule`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `run()` connect `Community 6` to `Community 0`, `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 37`, `Community 38`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 5`, `Community 17`, `Community 23`, `Community 26`, `Community 27`, `Community 28`?**
-  _High betweenness centrality (0.270) - this node is a cross-community bridge._
-- **Why does `safe_load_json()` connect `Community 5` to `Community 3`, `Community 37`, `Community 6`, `Community 7`, `Community 8`, `Community 10`, `Community 13`, `Community 16`, `Community 17`, `Community 19`, `Community 26`?**
-  _High betweenness centrality (0.136) - this node is a cross-community bridge._
-- **Why does `main()` connect `Community 4` to `Community 9`, `Community 20`, `Community 6`?**
-  _High betweenness centrality (0.111) - this node is a cross-community bridge._
-- **Are the 188 inferred relationships involving `Order` (e.g. with `Bypass pre_flight_gate trading hours check for all tests.` and `Happy path: submit succeeds, verify confirms order → orders_open.json written.`) actually correct?**
-  _`Order` has 188 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 105 inferred relationships involving `BaseAdapter` (e.g. with `AccountManager` and `Manages multiple trading accounts across different brokers.          Features:`) actually correct?**
-  _`BaseAdapter` has 105 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 81 inferred relationships involving `PortfolioStore` (e.g. with `StockData` and `CryptoFundamentals`) actually correct?**
-  _`PortfolioStore` has 81 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 89 inferred relationships involving `Position` (e.g. with `SinopacAdapter` and `SinoPac Securities (Shioaji) adapter.     包含漲跌停檢查與完整訂單驗證`) actually correct?**
-  _`Position` has 89 INFERRED edges - model-reasoned connections that need verification._
+- **Why does `run()` connect `Community 5` to `Community 32`, `Community 0`, `Community 2`, `Community 1`, `Community 4`, `Community 3`, `Community 38`, `Community 37`, `Community 6`, `Community 56`, `Community 10`, `Community 11`, `Community 22`, `Community 24`, `Community 26`, `Community 27`, `Community 29`?**
+  _High betweenness centrality (0.318) - this node is a cross-community bridge._
+- **Why does `safe_load_json()` connect `Community 6` to `Community 4`, `Community 5`, `Community 37`, `Community 7`, `Community 10`, `Community 11`, `Community 12`, `Community 16`, `Community 19`, `Community 26`, `Community 28`?**
+  _High betweenness centrality (0.151) - this node is a cross-community bridge._
+- **Why does `get_state_dir()` connect `Community 10` to `Community 3`, `Community 4`, `Community 37`, `Community 6`, `Community 7`, `Community 5`, `Community 39`, `Community 42`, `Community 11`, `Community 12`, `Community 9`, `Community 19`, `Community 22`, `Community 23`, `Community 26`, `Community 28`, `Community 31`?**
+  _High betweenness centrality (0.142) - this node is a cross-community bridge._
+- **Are the 208 inferred relationships involving `Order` (e.g. with `_Const` and `_FakeApi`) actually correct?**
+  _`Order` has 208 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 112 inferred relationships involving `BaseAdapter` (e.g. with `AccountManager` and `Manages multiple trading accounts across different brokers.          Features:`) actually correct?**
+  _`BaseAdapter` has 112 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 96 inferred relationships involving `Position` (e.g. with `SinopacAdapter` and `SinoPac Securities (Shioaji) adapter.     包含漲跌停檢查與完整訂單驗證`) actually correct?**
+  _`Position` has 96 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 96 inferred relationships involving `AccountBalance` (e.g. with `SinopacAdapter` and `SinoPac Securities (Shioaji) adapter.     包含漲跌停檢查與完整訂單驗證`) actually correct?**
+  _`AccountBalance` has 96 INFERRED edges - model-reasoned connections that need verification._

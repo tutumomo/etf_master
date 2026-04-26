@@ -1,5 +1,26 @@
 # CHANGELOG
 
+## v1.7.0 — 2026-04-27
+
+### Added
+- **股/張單位安全回歸測試**：新增 `tests/test_sinopac_unit_safety.py`，鎖定 50 股零股不可被送成 1 張、2000 股整股需送成 2 張、1500 股混合單位必須拒絕。
+- **完整 ETF universe watchlist 支援**：Dashboard 新增關注標的時合併 `data/etf_universe_tw.json` 與精選 `data/etfs.json`，讓 `00720B` 等債券 ETF 可被正常加入與分組。
+- **同輪自動買入累計額度檢查**：`buy_scanner.py` 在每筆候選入隊前檢查今日 pending/acked/executed 金額加上本筆是否超過 `settlement_safe_cash × max_buy_amount_pct`。
+- **左側欄收合互動**：左側版面配色、基本資訊、資金快照、券商設定接入既有 `toggleCard()` 與 localStorage 狀態記憶。
+
+### Changed
+- **可交割金額成為硬基準**：`pre_flight_gate.py` 只要收到 `settlement_safe_cash` 就以它為 sizing base；即使為 0 或負數也不再 fallback 到帳面現金。
+- **Live Submit SOP gate context 補齊**：`live_submit_sop.py` 送 pre-flight 時帶入 account snapshot、positions inventory、safety redlines 與 state_dir，避免未來免人工確認入口繞過紅線設定。
+- **Dashboard 資訊架構收斂**：原右側「狀態中心」合併進左側「基本資訊」，「持倉快照」改為 full width，降低重複資訊並提升持倉表可讀性。
+
+### Fixed
+- **Legacy enhanced adapter 零股風險**：修正 `sinopac_adapter_enhanced.py` 原本 `quantity < 1000` 會送 `quantity=1` 且未指定 `order_lot` 的危險邏輯。
+- **當前 Sinopac adapter 底層防線**：`sinopac_adapter.py` 在 `_submit_order_impl` 也拒絕 1000 以上但非整張的混合單位，避免直接呼叫底層方法繞過 pre-flight。
+
+### Tests
+- **全測驗證**：`579 passed`。
+- **Graphify 同步**：重建 graphify code graph，產出 3561 nodes / 6567 edges / 233 communities。
+
 ## v1.6.0 — 2026-04-26
 
 ### Added

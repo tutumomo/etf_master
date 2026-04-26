@@ -1,4 +1,4 @@
-# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.6.0)
+# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.7.0)
 
 `ETF_Master` 是一款專為台灣 ETF 投資者設計的 AI 輔助決策與資產管理系統。本專案秉持「**交易安全優先於功能完備**」的核心價值，透過「三層真相層級」治理與「雙鏈決策仲裁」機制，為投資者提供一個穩定、透明且具備深度洞察的投資工作台。
 
@@ -108,6 +108,15 @@ AGENT_ID=etf_master .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.
 ---
 
 ## 📦 版本紀錄
+
+### v1.7.0 (2026-04-27)
+- safety(trade): 正式送單前 `pre_flight_gate` 改為嚴格使用 `settlement_safe_cash`，可交割金額為 0 或負數時不再 fallback 到帳面現金。
+- safety(auto_trade): Phase 2 買入掃描新增「今日已入隊/已 ack/已執行 + 本筆」累計額度檢查，避免多檔候選同輪超過可交割金額比例。
+- safety(broker): 永豐 Shioaji adapter 與 legacy enhanced adapter 鎖定股/張轉換規則，零股以 `IntradayOdd + 股數` 送出，整股以 `Common + 張數` 送出，混合單位直接拒絕。
+- feat(watchlist): Dashboard 新增關注標的改為合併完整 `etf_universe_tw.json` 與精選 `etfs.json`，支援 `00720B` 等未列入精選清單的 ETF。
+- ux(dashboard): 左側基本資訊合併原狀態中心，持倉快照改為 full width；左側版面配色、基本資訊、資金快照、券商設定皆支援點擊收合並記憶狀態。
+- chore(graphify): 重新產生 graphify 知識圖譜與報告，保持 clone 後可取得最新 dashboard / trading gate 知識。
+- test: 新增並擴充股張單位、Phase 2 ack、可交割金額、同輪自動買入累計額度、live submit SOP 與 dashboard watchlist/sidebar 回歸測試；全測 `579 passed`。
 
 ### v1.6.0 (2026-04-26)
 - feat(auto_trade): Phase 2 買入掃描導入策略感知調整，依 `base_strategy`、`scenario_overlay`、市場風險與 defensive tilt 調整原始 VWAP 階梯金額。

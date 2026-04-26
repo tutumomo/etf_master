@@ -193,13 +193,15 @@ def check_order(order: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any
     if side == 'buy':
         cash = context.get('cash', 0.0)
         # 優先使用「可交割金額」(settlement_safe_cash = cash 扣除 T+1/T+2 淨額)
-        # 若 context 未提供或為 0，fallback 到帳面現金
+        # 若 context 有提供，即使為 0 或負值也必須以它為準，避免用帳面現金繞過交割限制。
         settlement_safe_cash = context.get('settlement_safe_cash')
-        sizing_base = settlement_safe_cash if (settlement_safe_cash is not None and settlement_safe_cash > 0) else cash
+        has_settlement_safe_cash = settlement_safe_cash is not None
+        sizing_base = settlement_safe_cash if has_settlement_safe_cash else cash
+        sizing_base = max(0.0, float(sizing_base or 0.0))
         max_conc = context.get('max_concentration_pct')
         max_single = context.get('max_single_limit_twd')
 
-        if max_conc is not None and sizing_base > 0:
+        if max_conc is not None:
             allowed_amount = sizing_base * max_conc
             allowed_shares = int(allowed_amount // price) if price > 0 else 0
             # Round down to nearest board lot if lot_type is board
@@ -210,7 +212,7 @@ def check_order(order: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any
                     'allowed': allowed_shares,
                     'requested': quantity,
                     'max_amount_twd': allowed_amount,
-                    'sizing_base': 'settlement_safe_cash' if (settlement_safe_cash is not None and settlement_safe_cash > 0) else 'cash',
+                    'sizing_base': 'settlement_safe_cash' if has_settlement_safe_cash else 'cash',
                 })
 
         if max_single is not None and price > 0:

@@ -37,3 +37,49 @@ def test_dynamic_sizing_policy():
     # 這次買 3張 = 45萬，不超過 50萬 (50%)
     res_v2 = check_order(order_3_lots, context_v2)
     assert res_v2['passed'] is True
+
+
+def test_settlement_safe_cash_zero_blocks_even_when_cash_exists():
+    context = {
+        'cash': 1000000.0,
+        'settlement_safe_cash': 0.0,
+        'max_concentration_pct': 0.5,
+        'max_single_limit_twd': 500000.0,
+        'force_trading_hours': False,
+        '_skip_safety_redlines': True,
+    }
+    order = {
+        'symbol': '0050', 'side': 'buy', 'quantity': 100,
+        'price': 100, 'lot_type': 'odd',
+        'is_submit': False,
+    }
+
+    res = check_order(order, context)
+
+    assert res['passed'] is False
+    assert res['reason'] == 'exceeds_sizing_limit'
+    assert res['details']['allowed'] == 0
+    assert res['details']['sizing_base'] == 'settlement_safe_cash'
+
+
+def test_settlement_safe_cash_caps_order_below_account_cash():
+    context = {
+        'cash': 1000000.0,
+        'settlement_safe_cash': 10000.0,
+        'max_concentration_pct': 0.5,
+        'max_single_limit_twd': 500000.0,
+        'force_trading_hours': False,
+        '_skip_safety_redlines': True,
+    }
+    order = {
+        'symbol': '0050', 'side': 'buy', 'quantity': 100,
+        'price': 100, 'lot_type': 'odd',
+        'is_submit': False,
+    }
+
+    res = check_order(order, context)
+
+    assert res['passed'] is False
+    assert res['reason'] == 'exceeds_sizing_limit'
+    assert res['details']['allowed'] == 50
+    assert res['details']['sizing_base'] == 'settlement_safe_cash'

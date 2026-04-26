@@ -47,6 +47,31 @@ def _check_live_mode_enabled(state_dir: Path) -> tuple[bool, str]:
     return True, "ok"
 
 
+def _build_gate_context(state_dir: Path) -> dict:
+    account = safe_load_json(state_dir / "account_snapshot.json", default={})
+    positions = safe_load_json(state_dir / "positions.json", default={})
+    redlines = safe_load_json(state_dir / "safety_redlines.json", default={})
+
+    max_conc = redlines.get("max_buy_amount_pct")
+    if max_conc is None or not (0 < max_conc <= 1):
+        max_conc = 0.5
+
+    inventory = {
+        str(p.get("symbol", "")).upper(): float(p.get("quantity") or 0)
+        for p in positions.get("positions", [])
+    }
+
+    return {
+        "cash": float(account.get("cash") or 0),
+        "settlement_safe_cash": account.get("settlement_safe_cash"),
+        "inventory": inventory,
+        "max_concentration_pct": max_conc,
+        "max_single_limit_twd": redlines.get("max_buy_amount_twd", 1_000_000.0),
+        "force_trading_hours": True,
+        "state_dir": state_dir,
+    }
+
+
 async def submit_live_order(order: dict, adapter=None, state_dir: Path = None) -> dict:
     """
     Submit a live order through the full safety pipeline.
@@ -69,8 +94,13 @@ async def submit_live_order(order: dict, adapter=None, state_dir: Path = None) -
         return {"success": False, "reason": reason, "step": "live_mode_gate"}
 
     # Step 2: pre_flight_gate
-    gate_context = {"force_trading_hours": True}
-    gate_result = check_order(order, gate_context)
+    gate_order = {
+        **order,
+        "is_submit": True,
+        "is_confirmed": bool(order.get("is_confirmed", False)),
+    }
+    gate_context = _build_gate_context(state_dir)
+    gate_result = check_order(gate_order, gate_context)
     if not gate_result["passed"]:
         return {
             "success": False,

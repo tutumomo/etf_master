@@ -58,6 +58,39 @@ def test_phase2_ack_blocks_outside_trading_hours_before_subprocess(tmp_path, mon
     assert called is False
 
 
+def test_phase2_ack_blocks_when_settlement_safe_cash_is_zero(tmp_path, monkeypatch):
+    signal = _enqueue_signal(tmp_path)
+    _write_json(tmp_path / "account_snapshot.json", {"cash": 100000, "settlement_safe_cash": 0})
+    _write_json(tmp_path / "positions.json", {"positions": []})
+    _write_json(tmp_path / "safety_redlines.json", {
+        "max_buy_amount_pct": 0.5,
+        "max_buy_amount_twd": 500000,
+        "max_buy_shares": 1000,
+    })
+
+    called = False
+
+    def fake_run(*args, **kwargs):
+        nonlocal called
+        called = True
+        raise AssertionError("complete_trade.py must not run with zero settlement-safe cash")
+
+    monkeypatch.setattr(ack_handler.subprocess, "run", fake_run)
+    monkeypatch.setattr(
+        ack_handler.pre_flight,
+        "get_trading_hours_info",
+        lambda: {"is_trading_hours": True, "current_time": "2026-04-26T10:00:00+08:00"},
+    )
+
+    result = ack_handler.ack_signal(signal["id"], state_dir=tmp_path)
+
+    assert result["ok"] is False
+    assert result["status"] == "gate_blocked"
+    assert result["reason"] == "exceeds_sizing_limit"
+    assert result["gate_details"]["sizing_base"] == "settlement_safe_cash"
+    assert called is False
+
+
 def test_phase2_complete_trade_command_matches_dashboard_submit_shape(tmp_path, monkeypatch):
     _write_json(
         tmp_path / "trading_mode.json",

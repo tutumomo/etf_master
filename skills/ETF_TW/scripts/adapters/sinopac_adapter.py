@@ -456,7 +456,7 @@ class SinopacAdapter(BaseAdapter):
                 # 整股交易：單位為「張」
                 lots = order.quantity // 1000
                 order_lot = StockOrderLot.Common
-            else:
+            elif 1 <= order.quantity <= 999:
                 # 零股交易：單位為「股」
                 # 注意：盤中零股單筆上限通常為 999 股
                 lots = order.quantity
@@ -466,6 +466,10 @@ class SinopacAdapter(BaseAdapter):
                 if price_type != StockPriceType.LMT:
                     print("[SinoPac] IntradayOdd only supports LMT. Overriding price_type.")
                     price_type = StockPriceType.LMT
+            else:
+                order.status = 'rejected'
+                order.error = '非整張數量必須為 1-999 股零股'
+                return order
             
             sj_order = self.api.Order(
                 price=order.price,

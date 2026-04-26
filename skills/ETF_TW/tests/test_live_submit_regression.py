@@ -90,6 +90,46 @@ def bypass_trading_hours(monkeypatch):
     )
 
 
+def test_live_submit_gate_receives_redlines_and_settlement_safe_cash(tmp_path, monkeypatch):
+    """Live submit SOP must pass account/redline context into pre_flight_gate."""
+    make_live_mode_json(tmp_path)
+    (tmp_path / "account_snapshot.json").write_text(json.dumps({
+        "cash": 100000,
+        "settlement_safe_cash": 0,
+    }))
+    (tmp_path / "positions.json").write_text(json.dumps({"positions": []}))
+    (tmp_path / "safety_redlines.json").write_text(json.dumps({
+        "max_buy_amount_pct": 0.5,
+        "max_buy_amount_twd": 500000,
+    }))
+    captured = {}
+
+    def fake_check_order(order, ctx):
+        captured["order"] = order
+        captured["ctx"] = ctx
+        return {
+            "passed": False,
+            "reason": "exceeds_sizing_limit",
+            "details": {"sizing_base": "settlement_safe_cash"},
+        }
+
+    monkeypatch.setattr("live_submit_sop.check_order", fake_check_order)
+    adapter = make_mock_adapter("ORDCTX")
+
+    result = asyncio.run(
+        submit_live_order(make_valid_order("ctx-001"), adapter=adapter, state_dir=tmp_path)
+    )
+
+    assert result["success"] is False
+    assert result["step"] == "pre_flight_gate"
+    assert captured["order"]["is_submit"] is True
+    assert captured["order"]["is_confirmed"] is True
+    assert captured["ctx"]["settlement_safe_cash"] == 0
+    assert captured["ctx"]["max_concentration_pct"] == 0.5
+    assert captured["ctx"]["max_single_limit_twd"] == 500000
+    adapter._submit_order_impl.assert_not_called()
+
+
 # ---------------------------------------------------------------------------
 # Scenario 1: Happy path
 # ---------------------------------------------------------------------------
