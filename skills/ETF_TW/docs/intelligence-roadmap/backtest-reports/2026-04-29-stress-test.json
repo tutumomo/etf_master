@@ -1,0 +1,150 @@
+[
+  {
+    "name": "2008 GFC",
+    "symbol": "^TWII",
+    "symbol_label": "^TWII (台灣加權指數，因 0050 yfinance 資料 2009 起)",
+    "period": "2008-01-01 → 2009-06-30",
+    "narrative": "雷曼破產系統性崩盤，台股加權從 9000+ 跌至 4000 以下、2009 H1 反彈，測試 trailing 是否被連續跌停吞噬、ladder 是否有效逢低布局。",
+    "trading_days": 364,
+    "first_price": 8323.0498046875,
+    "last_price": 6391.14990234375,
+    "buy_hold_return_pct": -23.4,
+    "strategy": {
+      "metrics": {
+        "total_return_pct": -0.32,
+        "max_drawdown_pct": -0.39,
+        "sharpe_ratio": -1.31,
+        "max_consecutive_loss_days": 4,
+        "annualized_return_pct": -0.22,
+        "annualized_volatility_pct": 0.17
+      },
+      "n_buys": 22,
+      "n_sells": 10,
+      "total_fees": 472.78,
+      "final_equity": 996812.08
+    },
+    "buy_and_hold": {
+      "metrics": {
+        "total_return_pct": -23.4,
+        "max_drawdown_pct": -56.01,
+        "sharpe_ratio": -0.39,
+        "max_consecutive_loss_days": 6,
+        "annualized_return_pct": -16.85,
+        "annualized_volatility_pct": 33.24
+      },
+      "final_equity": 764888.95
+    },
+    "alpha_pct": 23.08
+  },
+  {
+    "name": "2020 COVID",
+    "symbol": "0050.TW",
+    "symbol_label": "0050.TW (元大台灣 50)",
+    "period": "2020-01-01 → 2020-12-31",
+    "narrative": "COVID 急跌急回 V 形，2 月底至 3 月暴跌 -30%、4 月起反彈、年末創新高。測試底部是否 panic sell、反彈是否追得上。",
+    "trading_days": 244,
+    "first_price": 24.412500381469727,
+    "last_price": 30.399999618530273,
+    "buy_hold_return_pct": 23.69,
+    "strategy": {
+      "metrics": {
+        "total_return_pct": 1.42,
+        "max_drawdown_pct": -0.34,
+        "sharpe_ratio": 2.36,
+        "max_consecutive_loss_days": 7,
+        "annualized_return_pct": 1.47,
+        "annualized_volatility_pct": 0.62
+      },
+      "n_buys": 41,
+      "n_sells": 5,
+      "total_fees": 497.16,
+      "final_equity": 1014234.11
+    },
+    "buy_and_hold": {
+      "metrics": {
+        "total_return_pct": 23.69,
+        "max_drawdown_pct": -29.81,
+        "sharpe_ratio": 1.08,
+        "max_consecutive_loss_days": 7,
+        "annualized_return_pct": 24.55,
+        "annualized_volatility_pct": 22.81
+      },
+      "final_equity": 1235159.66
+    },
+    "alpha_pct": -22.27
+  },
+  {
+    "name": "2022 Bear",
+    "symbol": "0050.TW",
+    "symbol_label": "0050.TW (元大台灣 50)",
+    "period": "2022-01-01 → 2022-12-31",
+    "narrative": "升息引發慢熊 -25%，全年陰跌不見急跌。測試 ladder 是否被緩跌吃光、trailing 是否頻繁觸發。",
+    "trading_days": 246,
+    "first_price": 36.599998474121094,
+    "last_price": 27.549999237060547,
+    "buy_hold_return_pct": -24.65,
+    "strategy": {
+      "metrics": {
+        "total_return_pct": -0.35,
+        "max_drawdown_pct": -0.47,
+        "sharpe_ratio": -1.38,
+        "max_consecutive_loss_days": 7,
+        "annualized_return_pct": -0.36,
+        "annualized_volatility_pct": 0.26
+      },
+      "n_buys": 66,
+      "n_sells": 9,
+      "total_fees": 695.92,
+      "final_equity": 996488.16
+    },
+    "buy_and_hold": {
+      "metrics": {
+        "total_return_pct": -24.65,
+        "max_drawdown_pct": -36.02,
+        "sharpe_ratio": -1.2,
+        "max_consecutive_loss_days": 9,
+        "annualized_return_pct": -25.17,
+        "annualized_volatility_pct": 22.16
+      },
+      "final_equity": 752438.0
+    },
+    "alpha_pct": 24.3
+  },
+  {
+    "name": "2024 Bull (sample-out)",
+    "symbol": "0050.TW",
+    "symbol_label": "0050.TW (元大台灣 50)",
+    "period": "2024-01-01 → 2024-12-31",
+    "narrative": "AI 推升的長多年，0050 全年 +50%+。測試策略在強多頭中是否會因 trailing 過早平倉而錯失主升段。",
+    "trading_days": 241,
+    "first_price": 33.724998474121094,
+    "last_price": 49.45000076293945,
+    "buy_hold_return_pct": 45.32,
+    "strategy": {
+      "metrics": {
+        "total_return_pct": 0.23,
+        "max_drawdown_pct": -0.24,
+        "sharpe_ratio": 0.78,
+        "max_consecutive_loss_days": 5,
+        "annualized_return_pct": 0.24,
+        "annualized_volatility_pct": 0.31
+      },
+      "n_buys": 37,
+      "n_sells": 5,
+      "total_fees": 507.16,
+      "final_equity": 1002324.59
+    },
+    "buy_and_hold": {
+      "metrics": {
+        "total_return_pct": 45.32,
+        "max_drawdown_pct": -21.4,
+        "sharpe_ratio": 1.7,
+        "max_consecutive_loss_days": 5,
+        "annualized_return_pct": 47.82,
+        "annualized_volatility_pct": 24.98
+      },
+      "final_equity": 1451153.81
+    },
+    "alpha_pct": -45.09
+  }
+]
