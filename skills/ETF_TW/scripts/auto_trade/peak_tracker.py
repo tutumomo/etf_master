@@ -33,21 +33,24 @@ from typing import Any
 
 TW_TZ = ZoneInfo("Asia/Taipei")
 
-# 群組基礎 trailing 百分比（Q2=B）
+# 群組基礎 trailing 百分比 — v2 骨架調整（2026-04-29）
+# v1：core 6 / income 5 / defensive 4 / growth 8 / smart_beta 7 / other 8
+# v2 放寬：C 計畫回測證明 v1 太緊，部位無法累積，多頭時嚴重跟不上
+# 詳見 docs/intelligence-roadmap/backtest-reports/2026-04-29-stress-test.md
 GROUP_TRAILING_PCT: dict[str, float] = {
-    "core":      0.06,
-    "income":    0.05,
-    "defensive": 0.04,
-    "growth":    0.08,
-    "smart_beta": 0.07,
-    "other":     0.08,
+    "core":      0.12,  # 原 0.06
+    "income":    0.10,  # 原 0.05
+    "defensive": 0.08,  # 原 0.04
+    "growth":    0.15,  # 原 0.08
+    "smart_beta": 0.13, # 原 0.07
+    "other":     0.15,  # 原 0.08
 }
 
 # 鎖利模式 trailing 百分比（持倉報酬 ≥ TRAIL_LOCK_THRESHOLD 時收緊）
-TRAIL_LOCK_PCT = 0.03
+TRAIL_LOCK_PCT = 0.05         # 原 0.03 — 鎖利模式也放寬避免一回檔就賣
 TRAIL_LOCK_THRESHOLD = 0.20
 
-DEFAULT_TRAILING_PCT = 0.06  # group=未知時 fallback
+DEFAULT_TRAILING_PCT = 0.12  # 原 0.06 — group=未知時 fallback
 
 
 def _now_iso() -> str:

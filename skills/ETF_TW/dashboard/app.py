@@ -1246,6 +1246,20 @@ def build_overview_model() -> dict:
         phase2_config = auto_cb.load_auto_trade_config(STATE)
     except Exception:
         phase2_config = {"enabled": False}
+    # v2 骨架：附上當前 trailing / ladder / DCA 的實際生效設定
+    try:
+        from scripts.auto_trade.peak_tracker import GROUP_TRAILING_PCT, TRAIL_LOCK_PCT
+        from scripts.auto_trade.buy_scanner import DROP_LADDER_PCT
+        from scripts.auto_trade.initial_dca import load_dca_state
+        phase2_skeleton = {
+            "version": "v2",
+            "trailing_pct": dict(GROUP_TRAILING_PCT),
+            "trailing_lock_pct": TRAIL_LOCK_PCT,
+            "ladder_pct": [{"drop_pct": d, "spend_pct": p} for d, p in DROP_LADDER_PCT],
+            "initial_dca": load_dca_state(STATE),
+        }
+    except Exception as _e:
+        phase2_skeleton = {"version": "v2", "error": f"{type(_e).__name__}: {_e}"}
     try:
         _ssc_for_cb = float(account.get("settlement_safe_cash") or account.get("cash") or 0)
         _cb_eval = auto_cb.evaluate_buy_allowed(STATE, settlement_safe_cash=_ssc_for_cb)
@@ -1314,6 +1328,7 @@ def build_overview_model() -> dict:
         "sensor_health": sensor_health,
         "phase2_pending": phase2_pending,
         "phase2_config": phase2_config,
+        "phase2_skeleton": phase2_skeleton,
         "phase2_circuit_breaker": phase2_circuit_breaker,
     }
 

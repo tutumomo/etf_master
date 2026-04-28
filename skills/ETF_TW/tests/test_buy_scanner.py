@@ -181,13 +181,13 @@ def test_run_buy_scan_drop_2pct_triggers_buy(state_dir):
     sig = res["enqueued"][0]
     assert sig["symbol"] == "0050"
     assert sig["side"] == "buy"
-    # 4000 / 97.5 ≈ 41 股（零股）
-    assert sig["quantity"] == 41
+    # v2: 1% × 100k = 1000 TWD / 97.5 ≈ 10 股（零股）
+    assert sig["quantity"] == 10
     assert sig["lot_type"] == "odd"
     assert "VWAP 跌" in sig["trigger_reason"]
     assert sig["trigger_source"] == "buy_scanner_0930"
     # payload 帶 vwap / drop_pct / ladder_amount
-    assert sig["trigger_payload"]["ladder_amount"] == 4000
+    assert sig["trigger_payload"]["ladder_amount"] == 1000  # v2: 1% × 100k cash
     assert sig["trigger_payload"]["drop_pct"] == pytest.approx(-2.5, abs=0.5)
 
 
@@ -311,9 +311,10 @@ def test_run_buy_scan_applies_strategy_and_overlay_amount_adjustment(state_dir):
 
     assert len(res["enqueued"]) == 1
     sig = res["enqueued"][0]
-    assert sig["quantity"] == 250  # 4000 TWD × 1.25 overlay / 20
-    assert sig["trigger_payload"]["base_ladder_amount"] == 4000
-    assert sig["trigger_payload"]["ladder_amount"] == 5000
+    # v2: base=1% × 100k = 1000，overlay 1.25 → 1250，price=20 → 62 股
+    assert sig["quantity"] == 62
+    assert sig["trigger_payload"]["base_ladder_amount"] == 1000
+    assert sig["trigger_payload"]["ladder_amount"] == 1250
     assert sig["trigger_payload"]["base_strategy"] == "收益優先"
     assert sig["trigger_payload"]["scenario_overlay"] == "收益再投資"
     assert sig["trigger_payload"]["group"] == "income"
@@ -362,7 +363,7 @@ def test_run_buy_scan_gate_blocked_writes_history(state_dir):
     on_date = datetime(2026, 4, 25, 9, 30, tzinfo=TW_TZ)
     bar_start = datetime(2026, 4, 25, 9, 0, tzinfo=TW_TZ)
 
-    # 跌 5% → 階梯 10000；但 settlement_safe_cash 只有 1000，max_conc=0.5 → 上限 500 < 10000
+    # v2: 跌 5% → 階梯 2.5% × 100k = 2500 TWD；max_conc=0.01 → 上限 1000 < 2500 必擋
     intraday = {
         "intraday": {
             "00923": {
@@ -380,10 +381,10 @@ def test_run_buy_scan_gate_blocked_writes_history(state_dir):
     _write_state(state_dir, "market_cache.json", {
         "quotes": {"00923": {"current_price": 33.0, "prev_close": 35.0}}
     })
-    # 可交割只有 1000，買 10000 必擋
-    _write_state(state_dir, "account_snapshot.json", {"cash": 5000, "settlement_safe_cash": 1000})
+    # ssc=100k → ladder=2500；max_conc=0.01 → 上限 1000 < 2500 必擋
+    _write_state(state_dir, "account_snapshot.json", {"cash": 100000, "settlement_safe_cash": 100000})
     _write_state(state_dir, "safety_redlines.json", {
-        "enabled": False, "max_buy_amount_pct": 0.5, "max_buy_amount_twd": 1000000,
+        "enabled": False, "max_buy_amount_pct": 0.01, "max_buy_amount_twd": 1000000,
     })
 
     res = run_buy_scan(
@@ -433,10 +434,12 @@ def test_run_buy_scan_blocks_second_candidate_when_daily_amount_would_exceed_saf
             "00923": {"current_price": 33.0, "prev_close": 35.0},
         }
     })
+    # v2: ladder 跌-5.7% → 2.5% × 30k = 750 TWD/檔
+    # 設 max_buy_amount_pct=0.04 → 上限 1200，兩檔 1500 > 1200 必擋第二
     _write_state(state_dir, "account_snapshot.json", {"cash": 100000, "settlement_safe_cash": 30000})
     _write_state(state_dir, "safety_redlines.json", {
         "enabled": True,
-        "max_buy_amount_pct": 0.5,
+        "max_buy_amount_pct": 0.04,
         "max_buy_amount_twd": 1000000,
         "max_buy_shares": 1000,
         "daily_max_buy_submits": 10,
@@ -450,7 +453,7 @@ def test_run_buy_scan_blocks_second_candidate_when_daily_amount_would_exceed_saf
     assert len(res["enqueued"]) == 1
     assert len(res["blocked"]) == 1
     assert res["blocked"][0]["reason"] == "daily_buy_amount_limit"
-    assert res["blocked"][0]["details"]["limit"] == 15000
+    assert res["blocked"][0]["details"]["limit"] == 1200  # v2: 30k × 0.04
     assert res["blocked"][0]["details"]["used_today"] > 0
 
 

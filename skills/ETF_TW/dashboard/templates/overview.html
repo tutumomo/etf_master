@@ -334,6 +334,54 @@
       </div>
       {% endif %}
 
+      <!-- v2 骨架（trailing / ladder / DCA）-->
+      {% if phase2_skeleton and not phase2_skeleton.error %}
+      <details style="margin-bottom:10px; border:1px solid rgba(139,143,255,0.2); border-radius:8px; padding:6px 10px;">
+        <summary style="cursor:pointer; font-weight:600; color:#8b8fff; padding:8px 0;">
+          ⚙ 策略骨架 {{ phase2_skeleton.version }}
+          {% if phase2_skeleton.initial_dca and phase2_skeleton.initial_dca.enabled %}
+            <span class="tag" style="background:rgba(53,212,154,0.18);color:#35d49a;margin-left:6px;">
+              DCA 進行中 {{ phase2_skeleton.initial_dca.days_done }}/{{ phase2_skeleton.initial_dca.target_days }}
+            </span>
+          {% else %}
+            <span class="tag" style="background:rgba(255,255,255,0.06);color:#9aa3b2;margin-left:6px;">DCA 未啟用</span>
+          {% endif %}
+        </summary>
+        <div style="font-size:12px; padding:8px 4px; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <div>
+            <div style="color:#7cd6ff; margin-bottom:4px;">Trailing Stop（依群組）</div>
+            <div style="display:flex; flex-wrap:wrap; gap:4px;">
+              {% for grp, pct in phase2_skeleton.trailing_pct.items() %}
+              <span class="tag" style="background:rgba(255,255,255,0.05);">{{ grp }}：{{ '%.0f'|format(pct*100) }}%</span>
+              {% endfor %}
+              <span class="tag" style="background:rgba(255,209,102,0.15);color:#ffd166;">
+                鎖利模式 ≥+20% → {{ '%.0f'|format(phase2_skeleton.trailing_lock_pct*100) }}%
+              </span>
+            </div>
+          </div>
+          <div>
+            <div style="color:#7cd6ff; margin-bottom:4px;">Ladder Buy（按可用現金 %）</div>
+            <div style="display:flex; flex-wrap:wrap; gap:4px;">
+              {% for step in phase2_skeleton.ladder_pct %}
+              <span class="tag" style="background:rgba(255,255,255,0.05);">
+                跌 {{ '%.0f'|format(-step.drop_pct) }}% → {{ '%.1f'|format(step.spend_pct*100) }}%
+              </span>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        {% if phase2_skeleton.initial_dca and phase2_skeleton.initial_dca.enabled %}
+        <div style="font-size:12px; padding:8px 4px; border-top:1px dashed rgba(139,143,255,0.2); margin-top:6px;">
+          <div style="color:#35d49a; margin-bottom:4px;">📍 初始建倉 DCA</div>
+          <div>目標金額：{{ '{:,.0f}'.format(phase2_skeleton.initial_dca.total_target_twd) }} TWD　|
+               目標天數：{{ phase2_skeleton.initial_dca.target_days }}　|
+               已完成：{{ phase2_skeleton.initial_dca.days_done }} 天 / 已花 {{ '{:,.0f}'.format(phase2_skeleton.initial_dca.twd_spent) }} TWD　|
+               輪流標的：{{ phase2_skeleton.initial_dca.symbol_priority|join(' → ') }}</div>
+        </div>
+        {% endif %}
+      </details>
+      {% endif %}
+
       <!-- 熔斷器 7 個檢查 -->
       <details style="margin-bottom:10px;">
         <summary style="cursor:pointer; font-weight:600; color:#7cd6ff; padding:8px 0;">

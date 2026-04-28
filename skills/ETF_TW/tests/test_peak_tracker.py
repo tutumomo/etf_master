@@ -18,24 +18,24 @@ TW_TZ = ZoneInfo("Asia/Taipei")
 # ---------------------------------------------------------------------------
 
 def test_trailing_pct_core():
-    assert pt.get_trailing_pct("core") == 0.06
+    assert pt.get_trailing_pct("core") == 0.12  # v2: 原 0.06
 
 
 def test_trailing_pct_income():
-    assert pt.get_trailing_pct("income") == 0.05
+    assert pt.get_trailing_pct("income") == 0.10  # v2: 原 0.05
 
 
 def test_trailing_pct_defensive():
-    assert pt.get_trailing_pct("defensive") == 0.04
+    assert pt.get_trailing_pct("defensive") == 0.08  # v2: 原 0.04
 
 
 def test_trailing_pct_growth_and_smart_beta():
-    assert pt.get_trailing_pct("growth") == 0.08
-    assert pt.get_trailing_pct("smart_beta") == 0.07
+    assert pt.get_trailing_pct("growth") == 0.15      # v2: 原 0.08
+    assert pt.get_trailing_pct("smart_beta") == 0.13  # v2: 原 0.07
 
 
 def test_trailing_pct_other():
-    assert pt.get_trailing_pct("other") == 0.08
+    assert pt.get_trailing_pct("other") == 0.15  # v2: 原 0.08
 
 
 def test_trailing_pct_unknown_falls_back():
@@ -45,20 +45,20 @@ def test_trailing_pct_unknown_falls_back():
 
 def test_trailing_pct_lock_in_below_threshold():
     """報酬 < 20% 不啟動鎖利"""
-    assert pt.get_trailing_pct("core", return_pct=0.15) == 0.06
-    assert pt.get_trailing_pct("income", return_pct=0.19) == 0.05
+    assert pt.get_trailing_pct("core", return_pct=0.15) == 0.12  # v2
+    assert pt.get_trailing_pct("income", return_pct=0.19) == 0.10  # v2
 
 
 def test_trailing_pct_lock_in_at_threshold():
-    """報酬 ≥ 20% 一律收緊到 3%"""
-    assert pt.get_trailing_pct("core", return_pct=0.20) == 0.03
-    assert pt.get_trailing_pct("income", return_pct=0.30) == 0.03
-    assert pt.get_trailing_pct("defensive", return_pct=0.50) == 0.03
+    """報酬 ≥ 20% 一律收緊至 TRAIL_LOCK_PCT (v2: 0.05)"""
+    assert pt.get_trailing_pct("core", return_pct=0.20) == 0.05
+    assert pt.get_trailing_pct("income", return_pct=0.30) == 0.05
+    assert pt.get_trailing_pct("defensive", return_pct=0.50) == 0.05
 
 
 def test_trailing_pct_case_insensitive():
-    assert pt.get_trailing_pct("CORE") == 0.06
-    assert pt.get_trailing_pct("Income") == 0.05
+    assert pt.get_trailing_pct("CORE") == 0.12
+    assert pt.get_trailing_pct("Income") == 0.10
 
 
 # ---------------------------------------------------------------------------
@@ -114,8 +114,8 @@ def test_upsert_creates_new_entry():
     assert entry["group"] == "income"
     assert entry["peak_close"] == 35.0
     assert entry["peak_close_date"] == "2026-04-20"
-    assert entry["trailing_pct"] == 0.05  # income
-    assert entry["stop_price"] == pytest.approx(35.0 * 0.95)
+    assert entry["trailing_pct"] == 0.10  # v2: income 0.10
+    assert entry["stop_price"] == pytest.approx(35.0 * 0.90)
     assert entry["is_locked_in"] is False
 
 
@@ -151,8 +151,8 @@ def test_upsert_syncs_group_change():
         group="core", today_close=35.0, today=date(2026, 4, 17),
     )
     assert tracker["00923"]["group"] == "core"
-    assert tracker["00923"]["trailing_pct"] == 0.06  # core
-    assert tracker["00923"]["stop_price"] == pytest.approx(35.0 * 0.94)
+    assert tracker["00923"]["trailing_pct"] == 0.12  # v2: core 0.12
+    assert tracker["00923"]["stop_price"] == pytest.approx(35.0 * 0.88)
 
 
 # ---------------------------------------------------------------------------
@@ -168,7 +168,7 @@ def test_update_close_updates_peak_when_higher():
     entry = pt.update_close(tracker, symbol="00923", close_price=37.0, on_date=date(2026, 4, 17))
     assert entry["peak_close"] == 37.0
     assert entry["peak_close_date"] == "2026-04-17"
-    assert entry["stop_price"] == pytest.approx(37.0 * 0.95)
+    assert entry["stop_price"] == pytest.approx(37.0 * 0.90)  # v2: income 0.10
 
 
 def test_update_close_keeps_peak_when_lower():
@@ -198,13 +198,13 @@ def test_update_close_lock_in_engaged_and_irreversible():
     # 報酬 25% 進入鎖利
     e1 = pt.update_close(tracker, symbol="0050", close_price=125.0, return_pct=0.25)
     assert e1["is_locked_in"] is True
-    assert e1["trailing_pct"] == 0.03
-    assert e1["stop_price"] == pytest.approx(125.0 * 0.97)
+    assert e1["trailing_pct"] == 0.05  # v2: TRAIL_LOCK_PCT 0.05
+    assert e1["stop_price"] == pytest.approx(125.0 * 0.95)
 
     # 隔日報酬退回 15%（< 20%），鎖利不解除
     e2 = pt.update_close(tracker, symbol="0050", close_price=115.0, return_pct=0.15)
     assert e2["is_locked_in"] is True
-    assert e2["trailing_pct"] == 0.03  # 保持鎖利
+    assert e2["trailing_pct"] == 0.05  # v2: 保持鎖利
     # peak 仍是 125，所以 stop 仍是 125 × 0.97
     assert e2["peak_close"] == 125.0
 
@@ -217,7 +217,7 @@ def test_update_close_no_lock_when_return_below_threshold():
     )
     e = pt.update_close(tracker, symbol="0050", close_price=110.0, return_pct=0.10)
     assert e["is_locked_in"] is False
-    assert e["trailing_pct"] == 0.06  # 仍是 core 的基礎
+    assert e["trailing_pct"] == 0.12  # v2: core 基礎
 
 
 # ---------------------------------------------------------------------------
@@ -276,9 +276,9 @@ def test_sync_creates_new_entries(state_dir):
     # peak 應該 = today_close
     assert tracker["0050"]["peak_close"] == 90.0
     assert tracker["00923"]["peak_close"] == 35.0
-    # stop = peak × (1 - trailing_pct)
-    assert tracker["0050"]["stop_price"] == pytest.approx(90.0 * 0.94)
-    assert tracker["00923"]["stop_price"] == pytest.approx(35.0 * 0.95)
+    # stop = peak × (1 - trailing_pct)，v2: core=0.12, income=0.10
+    assert tracker["0050"]["stop_price"] == pytest.approx(90.0 * 0.88)
+    assert tracker["00923"]["stop_price"] == pytest.approx(35.0 * 0.90)
 
 
 def test_sync_removes_sold_positions(state_dir):
@@ -321,5 +321,5 @@ def test_sync_lock_in_engages_via_return_pct(state_dir):
     )
 
     assert tracker["0050"]["is_locked_in"] is True
-    assert tracker["0050"]["trailing_pct"] == 0.03
-    assert tracker["0050"]["stop_price"] == pytest.approx(100.0 * 0.97)
+    assert tracker["0050"]["trailing_pct"] == 0.05  # v2: TRAIL_LOCK_PCT
+    assert tracker["0050"]["stop_price"] == pytest.approx(100.0 * 0.95)

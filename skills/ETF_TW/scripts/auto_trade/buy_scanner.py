@@ -55,14 +55,23 @@ from scripts.auto_trade.vwap_calculator import (
 # 跌幅階梯（金額 TWD）
 # ---------------------------------------------------------------------------
 
+# v2 (2026-04-29): 改用「現金比例」而非寫死 TWD，隨資金規模自動 scale。
+# 寫死 TWD 表是 v1 的退路（available_cash 沒提供時）。
+# 詳見 docs/intelligence-roadmap/backtest-reports/2026-04-29-stress-test.md
+DROP_LADDER_PCT: list[tuple[float, float]] = [
+    (-1.0, 0.005),   # 跌 1% → 0.5% 現金
+    (-2.0, 0.010),   # 跌 2% → 1.0%
+    (-3.0, 0.015),   # 跌 3% → 1.5%
+    (-4.0, 0.020),
+    (-5.0, 0.025),   # ≥ 5% → 2.5%
+]
 DROP_LADDER: list[tuple[float, int]] = [
-    # (max_drop_pct_inclusive, amount_twd)
-    # 跌 1.0% 含以上、< 2.0% → 2000；以此類推
+    # v1 fallback：available_cash 為 None 時使用寫死金額
     (-1.0, 2000),
     (-2.0, 4000),
     (-3.0, 6000),
     (-4.0, 8000),
-    (-5.0, 10000),  # ≥ 5% 都用 10000
+    (-5.0, 10000),
 ]
 
 # 觸發最小跌幅（負值表示「跌至少這個百分比」）
@@ -96,16 +105,26 @@ RISK_TEMPERATURE_MULTIPLIER = {
 CAUTIOUS_GROWTH_MIN_DROP = -3.0
 
 
-def ladder_amount(drop_pct: float) -> int:
+def ladder_amount(drop_pct: float, available_cash: float | None = None) -> int:
     """
     依跌幅決定買入金額。drop_pct 為負值代表跌幅。
-    例：drop_pct=-2.5 → 4000（落在 -2.0 ~ -3.0 區間）
+
+    v2 行為：若提供 available_cash，按 DROP_LADDER_PCT 的比例計算。
+    v1 行為（available_cash=None）：用 DROP_LADDER 寫死金額。
     若 drop_pct > MIN_DROP_TO_TRIGGER（沒跌夠 1%）→ 0
     """
     drop_pct = round(drop_pct, 6)
     if drop_pct > MIN_DROP_TO_TRIGGER:
         return 0
-    # 從最劇烈往最溫和找
+
+    # v2: 按比例
+    if available_cash is not None and available_cash > 0:
+        for threshold, pct in reversed(DROP_LADDER_PCT):
+            if drop_pct <= threshold:
+                return int(available_cash * pct)
+        return 0
+
+    # v1 fallback：寫死 TWD
     for threshold, amount in reversed(DROP_LADDER):
         if drop_pct <= threshold:
             return amount
@@ -452,7 +471,9 @@ def run_buy_scan(
             continue
 
         drop_pct = (vwap_res.vwap - prev_close) / prev_close * 100
-        amount = ladder_amount(drop_pct)
+        # v2: ladder 按可用現金（settlement_safe_cash 優先）比例計算
+        sizing_cash = ssc if ssc > 0 else cash
+        amount = ladder_amount(drop_pct, available_cash=sizing_cash)
 
         if amount == 0:
             result["below_threshold"].append({
