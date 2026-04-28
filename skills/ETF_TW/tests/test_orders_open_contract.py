@@ -12,7 +12,13 @@ REQUIRED_ORDER_FIELDS = {
     "status",
     "source",
 }
-OPTIONAL_BROKER_FIELDS = {"ordno", "seqno", "account", "account_id", "broker_id", "price", "order_lot", "order_type", "price_type", "name"}
+OPTIONAL_BROKER_FIELDS = {
+    "ordno", "seqno", "account", "account_id", "broker_id",
+    "price", "order_lot", "order_type", "price_type", "name",
+    # broker verification fields added in v1.5.1
+    "observed_at", "verified", "broker_status", "broker_order_id",
+    "raw_status", "source_type",
+}
 
 
 def test_orders_open_file_contains_valid_shape():

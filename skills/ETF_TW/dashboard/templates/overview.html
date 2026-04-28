@@ -662,7 +662,7 @@ function phase2RefreshAll() {
             <td colspan="7">
               <div style="padding:16px; background:rgba(124,214,255,0.05); border:1px solid rgba(124,214,255,0.15); border-radius:12px; margin:8px 0;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                  <div style="font-weight:700; color:#7cd6ff; font-size:16px;">快速交易票據：{{ s.symbol }} {{ s.name }} <span class="tag" style="background:rgba(255,107,129,0.15); color:#ff6b81; border:1px solid rgba(255,107,129,0.25);">Preview Only</span></div>
+                  <div style="font-weight:700; color:#7cd6ff; font-size:16px;">快速交易票據：{{ s.symbol }} {{ s.name }} <span class="tag" style="background:rgba(255,209,102,0.12); color:var(--warn); border:1px solid rgba(255,209,102,0.28);">Preview + Submit</span></div>
                   <div class="tag">Watchlist Ticket</div>
                 </div>
                 
@@ -704,7 +704,7 @@ function phase2RefreshAll() {
                   <div data-preview-content="{{ clean_id }}" class="status-list" style="margin-top:0;"></div>
                   <div style="display:flex; gap:10px; margin-top:16px;">
                     <button onclick="cancelPreview('{{ clean_id }}')" style="padding:10px 20px; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:transparent; color:#fff; cursor:pointer;">重新修改</button>
-                    <span style="color:var(--muted); font-size:12px; align-self:center;">⚠️ 儀表板目前僅支援預覽，正式下單請使用 CLI 或 Agent。</span>
+                    <span style="color:var(--muted); font-size:12px; align-self:center;">正式送出前會再次檢查確認文字、預覽 ID 與交易安全紅線。</span>
                   </div>
                 </div>
               </div>
@@ -1269,7 +1269,7 @@ function phase2RefreshAll() {
             <td colspan="11">
               <div style="padding:16px; background:rgba(124,214,255,0.05); border:1px solid rgba(124,214,255,0.15); border-radius:12px; margin:8px 0;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                  <div style="font-weight:700; color:#7cd6ff; font-size:16px;">快速交易票據：{{ p.symbol }} {{ p.name }} <span class="tag" style="background:rgba(255,107,129,0.15); color:#ff6b81; border:1px solid rgba(255,107,129,0.25);">Preview Only</span></div>
+                  <div style="font-weight:700; color:#7cd6ff; font-size:16px;">快速交易票據：{{ p.symbol }} {{ p.name }} <span class="tag" style="background:rgba(255,209,102,0.12); color:var(--warn); border:1px solid rgba(255,209,102,0.28);">Preview + Submit</span></div>
                   <div class="tag">Inline Ticket</div>
                 </div>
 
@@ -1313,7 +1313,7 @@ function phase2RefreshAll() {
 
                   <div style="display:flex; gap:10px; margin-top:16px;">
                     <button onclick="cancelPreview('{{ clean_id }}')" style="padding:10px 20px; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:transparent; color:#fff; cursor:pointer;">重新修改</button>
-                    <span style="color:var(--muted); font-size:12px; align-self:center;">⚠️ 儀表板目前僅支援預覽 (Preview Only)，正式下單請使用 CLI 指令或透過 Agent 執行。</span>
+                    <span style="color:var(--muted); font-size:12px; align-self:center;">正式送出前會再次檢查確認文字、預覽 ID 與交易安全紅線。</span>
                   </div>
                 </div>
               </div>
@@ -1482,6 +1482,34 @@ function phase2RefreshAll() {
               <div style="padding:12px; border-radius:12px; background:rgba(124,214,255,0.04); border:1px solid rgba(124,214,255,0.1); font-size:12px;">
                  <div style="color:#7cd6ff; margin-bottom:4px;">台股脈絡</div>
                  {{ market_context_taiwan.get('context_summary', '尚無數據') }}
+                 {% set _macro = market_context_taiwan.get('macro_signals') %}
+                 {% if _macro and _macro.get('macro_score') is not none %}
+                 <div style="margin-top:10px; padding-top:10px; border-top:1px dashed rgba(124,214,255,0.18); display:flex; flex-wrap:wrap; gap:6px;"
+                      title="總體擇時三訊號（A 計畫）：TWII vs 200MA + VIX + 60 日百分位">
+                   {% set _ma = _macro.get('twii_vs_200ma_pct') %}
+                   {% if _ma is not none %}
+                   <span class="tag" style="background:{% if _ma > 25 %}rgba(255,107,129,0.2);color:#ff6b81{% elif _ma > 5 %}rgba(53,212,154,0.18);color:#35d49a{% elif _ma < -5 %}rgba(255,209,102,0.18);color:#ffd166{% else %}rgba(255,255,255,0.08);color:#cfd8e3{% endif %};">
+                     TWII vs 200MA：{{ '%+.1f'|format(_ma) }}%{% if _ma > 25 %} ⚠過熱{% endif %}
+                   </span>
+                   {% endif %}
+                   {% set _vix = _macro.get('vix') %}
+                   {% if _vix is not none %}
+                   <span class="tag" style="background:{% if _vix > 30 %}rgba(255,107,129,0.2);color:#ff6b81{% elif _vix < 20 %}rgba(53,212,154,0.18);color:#35d49a{% else %}rgba(255,255,255,0.08);color:#cfd8e3{% endif %};">
+                     VIX：{{ '%.1f'|format(_vix) }}
+                   </span>
+                   {% endif %}
+                   {% set _pct = _macro.get('twii_60d_percentile') %}
+                   {% if _pct is not none %}
+                   <span class="tag" style="background:{% if _pct > 70 %}rgba(53,212,154,0.18);color:#35d49a{% elif _pct < 30 %}rgba(255,209,102,0.18);color:#ffd166{% else %}rgba(255,255,255,0.08);color:#cfd8e3{% endif %};">
+                     60D 百分位：{{ '%.0f'|format(_pct) }}%
+                   </span>
+                   {% endif %}
+                   {% set _ms = _macro.get('macro_score') %}
+                   <span class="tag" style="background:rgba(139,143,255,0.18);color:#8b8fff;font-weight:700;">
+                     macro_score：{{ '%+d'|format(_ms) }}（{{ _macro.get('macro_label','-') }}）
+                   </span>
+                 </div>
+                 {% endif %}
               </div>
               <div style="padding:12px; border-radius:12px; background:rgba(139,143,255,0.04); border:1px solid rgba(139,143,255,0.1); font-size:12px;">
                  <div style="color:#8b8fff; margin-bottom:4px;">外部宏觀</div>
@@ -2123,7 +2151,7 @@ async function previewTrade(symbol, cleanId) {
                 <input data-large-order-confirm="${cleanId}" placeholder="大額交易才需輸入 CONFIRM LARGE ORDER" autocomplete="off"
                        style="width:100%; margin-top:8px; padding:10px; border-radius:8px; background:var(--input-bg); border:1px solid var(--input-border); color:var(--text);">
                 <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
-                    <button id="submit-btn-${cleanId}" onclick="executeTrade('${symbol}')" style="padding:10px 16px; border-radius:8px; border:1px solid rgba(255,209,102,0.35); background:rgba(255,209,102,0.14); color:var(--warn); font-weight:900; cursor:pointer;">正式下單 (Submit)</button>
+                    <button id="submit-btn-${cleanId}" onclick="executeTrade('${symbol}', '${cleanId}')" style="padding:10px 16px; border-radius:8px; border:1px solid rgba(255,209,102,0.35); background:rgba(255,209,102,0.14); color:var(--warn); font-weight:900; cursor:pointer;">正式下單 (Submit)</button>
                     <span class="muted" style="font-size:12px; align-self:center;">送出後仍需券商回報驗證，未驗證不會顯示為成功落地。</span>
                 </div>
             </div>`;
@@ -2174,8 +2202,8 @@ function cancelPreview(cleanId) {
     if (confirmCheck) confirmCheck.checked = false;
 }
 
-async function executeTrade(symbol) {
-    const cleanId = symbol.replace('.', '');
+async function executeTrade(symbol, cleanIdOverride) {
+    const cleanId = cleanIdOverride || symbol.replace('.', '');
     const side = document.querySelector(`input[name="side-${cleanId}"]:checked`).value;
     const qty = document.querySelector(`input[data-ticket-id="${cleanId}"][data-field="qty"]`).value;
     const price = document.querySelector(`input[data-ticket-id="${cleanId}"][data-field="price"]`).value;

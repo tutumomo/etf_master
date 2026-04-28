@@ -215,13 +215,18 @@ def _compute_group_trends(intel: dict, watchlist_items: list) -> dict:
 
 def _determine_regime_from_signals(rsi_dist: dict, macd_breadth: dict,
                                     sma_struct: dict, vol: dict,
-                                    event_ctx: dict) -> tuple:
+                                    event_ctx: dict,
+                                    macro_score: int = 0) -> tuple:
     """Determine market_regime, risk_temperature, and tilts from real signals.
 
-    Returns: (market_regime, risk_temperature, defensive_tilt, income_tilt, core_tilt)
+    Args:
+        macro_score: -3..+3 from auto_trade.macro_regime_signals (top-down macro
+                     vote: TWII vs 200MA + VIX + 60D percentile). 0 when no data.
+
+    Returns: (market_regime, risk_temperature, defensive_tilt, income_tilt, core_tilt, score)
     """
     # Weighted scoring system
-    score = 0  # -5 to +5 range
+    score = 0  # bottom-up score; macro adds on top
 
     # RSI signal (-2 to +2)
     avg_rsi = rsi_dist.get('avg', 50)
@@ -258,11 +263,17 @@ def _determine_regime_from_signals(rsi_dist: dict, macd_breadth: dict,
     elif event_regime == 'risk-on':
         score += 1
 
-    # Clamp
-    score = max(-5, min(5, score))
+    # Macro top-down signals (-3 to +3) — TWII vs 200MA + VIX + 60D percentile
+    score += int(macro_score or 0)
+
+    # Clamp (extended range to accommodate macro contribution)
+    score = max(-8, min(8, score))
 
     # Map score to regime
-    if score >= 3:
+    # Range expanded to -8..+8 after macro_score (-3..+3) was added.
+    # Thresholds proportionally widened so non-macro behavior stays roughly
+    # equivalent when macro_score == 0.
+    if score >= 4:
         market_regime = 'bullish'
         risk_temperature = 'normal'
         defensive_tilt = 'low'
@@ -280,7 +291,7 @@ def _determine_regime_from_signals(rsi_dist: dict, macd_breadth: dict,
         defensive_tilt = 'medium'
         income_tilt = 'medium'
         core_tilt = 'medium'
-    elif score >= -2:
+    elif score >= -3:
         market_regime = 'cautious'
         risk_temperature = 'elevated'
         defensive_tilt = 'high'
@@ -320,10 +331,38 @@ def main() -> int:
     volatility = _compute_volatility(intel)
     group_trends = _compute_group_trends(intel, wl_items)
 
+    # === Macro top-down signals (TWII vs 200MA + VIX + 60D percentile) ===
+    # See docs/intelligence-roadmap/2026-04-28-A-to-G-plan.md (item A v2)
+    try:
+        from scripts.auto_trade.macro_regime_signals import (
+            fetch_macro_signals,
+            compute_macro_score,
+            classify_macro_regime,
+        )
+        macro_signals = fetch_macro_signals()
+        macro_score = compute_macro_score(macro_signals)
+        macro_label = classify_macro_regime(macro_signals)
+        macro_block = {
+            **macro_signals.to_dict(),
+            'macro_score': macro_score,
+            'macro_label': macro_label,
+        }
+    except Exception as exc:
+        macro_score = 0
+        macro_block = {
+            'twii_vs_200ma_pct': None,
+            'vix': None,
+            'twii_60d_percentile': None,
+            'macro_score': 0,
+            'macro_label': 'macro_neutral',
+            'error': f'{type(exc).__name__}: {exc}',
+        }
+
     # === Determine regime from real signals ===
     (market_regime, risk_temperature, defensive_tilt,
      income_tilt, core_tilt, regime_score) = _determine_regime_from_signals(
-        rsi_dist, macd_breadth, sma_struct, volatility, event_ctx
+        rsi_dist, macd_breadth, sma_struct, volatility, event_ctx,
+        macro_score=macro_score,
     )
 
     # === Build risks list ===
@@ -402,6 +441,8 @@ def main() -> int:
             'group_trends': group_trends,
             'regime_score': regime_score,
         },
+        # Macro top-down signals (item A from intelligence roadmap)
+        'macro_signals': macro_block,
         'updated_at': now.isoformat(),
         'source': 'taiwan-market-context-v2',
     }
