@@ -11,17 +11,17 @@
     "buy_hold_return_pct": -23.4,
     "strategy": {
       "metrics": {
-        "total_return_pct": -0.32,
-        "max_drawdown_pct": -0.39,
-        "sharpe_ratio": -1.31,
-        "max_consecutive_loss_days": 4,
-        "annualized_return_pct": -0.22,
-        "annualized_volatility_pct": 0.17
+        "total_return_pct": 2.55,
+        "max_drawdown_pct": -9.75,
+        "sharpe_ratio": 0.28,
+        "max_consecutive_loss_days": 6,
+        "annualized_return_pct": 1.76,
+        "annualized_volatility_pct": 7.26
       },
-      "n_buys": 22,
-      "n_sells": 10,
-      "total_fees": 472.78,
-      "final_equity": 996812.08
+      "n_buys": 76,
+      "n_sells": 8,
+      "total_fees": 4178.14,
+      "final_equity": 1025476.01
     },
     "buy_and_hold": {
       "metrics": {
@@ -34,7 +34,7 @@
       },
       "final_equity": 764888.95
     },
-    "alpha_pct": 23.08
+    "alpha_pct": 25.95
   },
   {
     "name": "2020 COVID",
@@ -48,17 +48,17 @@
     "buy_hold_return_pct": 23.69,
     "strategy": {
       "metrics": {
-        "total_return_pct": 1.42,
-        "max_drawdown_pct": -0.34,
-        "sharpe_ratio": 2.36,
+        "total_return_pct": 0.89,
+        "max_drawdown_pct": -5.72,
+        "sharpe_ratio": 0.24,
         "max_consecutive_loss_days": 7,
-        "annualized_return_pct": 1.47,
-        "annualized_volatility_pct": 0.62
+        "annualized_return_pct": 0.92,
+        "annualized_volatility_pct": 4.28
       },
-      "n_buys": 41,
-      "n_sells": 5,
-      "total_fees": 497.16,
-      "final_equity": 1014234.11
+      "n_buys": 61,
+      "n_sells": 2,
+      "total_fees": 2347.28,
+      "final_equity": 1008914.05
     },
     "buy_and_hold": {
       "metrics": {
@@ -71,7 +71,7 @@
       },
       "final_equity": 1235159.66
     },
-    "alpha_pct": -22.27
+    "alpha_pct": -22.8
   },
   {
     "name": "2022 Bear",
@@ -85,17 +85,17 @@
     "buy_hold_return_pct": -24.65,
     "strategy": {
       "metrics": {
-        "total_return_pct": -0.35,
-        "max_drawdown_pct": -0.47,
-        "sharpe_ratio": -1.38,
-        "max_consecutive_loss_days": 7,
-        "annualized_return_pct": -0.36,
-        "annualized_volatility_pct": 0.26
+        "total_return_pct": -8.09,
+        "max_drawdown_pct": -9.42,
+        "sharpe_ratio": -1.95,
+        "max_consecutive_loss_days": 8,
+        "annualized_return_pct": -8.28,
+        "annualized_volatility_pct": 4.41
       },
-      "n_buys": 66,
-      "n_sells": 9,
-      "total_fees": 695.92,
-      "final_equity": 996488.16
+      "n_buys": 86,
+      "n_sells": 4,
+      "total_fees": 3310.08,
+      "final_equity": 919054.47
     },
     "buy_and_hold": {
       "metrics": {
@@ -108,7 +108,7 @@
       },
       "final_equity": 752438.0
     },
-    "alpha_pct": 24.3
+    "alpha_pct": 16.56
   },
   {
     "name": "2024 Bull (sample-out)",
@@ -122,17 +122,17 @@
     "buy_hold_return_pct": 45.32,
     "strategy": {
       "metrics": {
-        "total_return_pct": 0.23,
-        "max_drawdown_pct": -0.24,
-        "sharpe_ratio": 0.78,
+        "total_return_pct": 27.31,
+        "max_drawdown_pct": -5.31,
+        "sharpe_ratio": 2.44,
         "max_consecutive_loss_days": 5,
-        "annualized_return_pct": 0.24,
-        "annualized_volatility_pct": 0.31
+        "annualized_return_pct": 28.72,
+        "annualized_volatility_pct": 10.64
       },
-      "n_buys": 37,
-      "n_sells": 5,
-      "total_fees": 507.16,
-      "final_equity": 1002324.59
+      "n_buys": 57,
+      "n_sells": 2,
+      "total_fees": 3757.83,
+      "final_equity": 1273052.13
     },
     "buy_and_hold": {
       "metrics": {
@@ -145,6 +145,6 @@
       },
       "final_equity": 1451153.81
     },
-    "alpha_pct": -45.09
+    "alpha_pct": -18.01
   }
 ]

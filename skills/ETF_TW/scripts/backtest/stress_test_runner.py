@@ -81,7 +81,9 @@ def run_scenario(scenario: dict, *, initial_cash: float = 1_000_000.0,
     cfg = SimulationConfig(
         initial_cash=initial_cash,
         symbol_group=symbol_group,
-        max_position_pct=0.50,
+        max_position_pct=0.95,           # 放寬，骨架調整 v2 後允許部位真的長大
+        initial_dca_target_pct=0.60,     # 用 60% 資金做初始建倉
+        initial_dca_days=20,              # 分 20 個交易日完成
     )
     strat = simulate(prices, cfg)
     bah = simulate_buy_and_hold(prices, initial_cash=initial_cash)
@@ -129,7 +131,7 @@ def format_report_md(results: list[dict], generated_at: str) -> str:
     lines.append("")
     lines.append(f"**產出時間：** {generated_at}")
     lines.append("**初始資金：** 1,000,000 TWD")
-    lines.append("**策略：** ladder buy（跌幅階梯）+ trailing stop（core 群組 6%，鎖利模式 ≥+20% 收緊至 3%）")
+    lines.append("**策略 (v2 骨架調整)：** 初始建倉 DCA 60% / 20 日 + ladder buy（按現金比例）+ trailing stop（core 12%，DCA 期間凍結；鎖利 ≥+20% 收緊至 5%）")
     lines.append("**手續費假設：** 買賣 0.1425% 券商 + 賣出 0.1% 證交稅")
     lines.append("**對照組：** Buy-and-Hold（首日全買、末日全賣）")
     lines.append("")

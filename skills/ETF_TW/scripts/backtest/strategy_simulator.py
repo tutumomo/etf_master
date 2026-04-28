@@ -26,7 +26,17 @@ from typing import Optional
 # 規則常數（與 scripts/auto_trade/buy_scanner.py & peak_tracker.py 同步）
 # ---------------------------------------------------------------------------
 
-# 買入階梯：跌幅 → 金額 (TWD)
+# 買入階梯 — 骨架調整 v2（2026-04-29）
+# v1：寫死 TWD 金額（2000-10000），與資金規模無關 → 部位永遠長不大
+# v2：按可用現金的百分比計算，隨資金成長自動 scale
+DROP_LADDER_PCT: list[tuple[float, float]] = [
+    (-1.0, 0.005),   # 跌 1% → 投入 0.5% 現金
+    (-2.0, 0.010),   # 跌 2% → 投入 1.0%
+    (-3.0, 0.015),   # 跌 3% → 投入 1.5%
+    (-4.0, 0.020),   # 跌 4% → 投入 2.0%
+    (-5.0, 0.025),   # ≥ 5% → 投入 2.5%
+]
+# 保留舊常數供生產 buy_scanner 過渡期使用（會在後續 commit 同步調整）
 DROP_LADDER: list[tuple[float, int]] = [
     (-1.0, 2000),
     (-2.0, 4000),
@@ -36,17 +46,19 @@ DROP_LADDER: list[tuple[float, int]] = [
 ]
 MIN_DROP_TO_TRIGGER = -1.0
 
-# 賣出 trailing
+# 賣出 trailing — 骨架調整 v2（2026-04-29）
+# 原值（v1）：core 6 / income 5 / defensive 4 / growth 8 / smart_beta 7 / other 8
+# 調整理由：C 計畫回測顯示 v1 太緊，部位無法累積，多頭時嚴重跟不上
 GROUP_TRAILING_PCT: dict[str, float] = {
-    "core":      0.06,
-    "income":    0.05,
-    "defensive": 0.04,
-    "growth":    0.08,
-    "smart_beta": 0.07,
-    "other":     0.08,
+    "core":      0.12,  # 原 0.06
+    "income":    0.10,  # 原 0.05
+    "defensive": 0.08,  # 原 0.04
+    "growth":    0.15,  # 原 0.08
+    "smart_beta": 0.13, # 原 0.07
+    "other":     0.15,  # 原 0.08
 }
-DEFAULT_TRAILING_PCT = 0.06
-TRAIL_LOCK_PCT = 0.03
+DEFAULT_TRAILING_PCT = 0.12  # 原 0.06
+TRAIL_LOCK_PCT = 0.05        # 原 0.03（鎖利模式也放寬一點，避免一回檔就賣）
 TRAIL_LOCK_THRESHOLD = 0.20
 
 # 手續費
@@ -80,6 +92,13 @@ class SimulationConfig:
     custom_trailing_pct: Optional[float] = None  # 覆蓋 group default
     allow_odd_lot: bool = True  # ladder 金額不足 1 張時，是否允許 1-999 股（零股交易）
 
+    # 骨架調整 v2：初始建倉（DCA 啟動）
+    # initial_dca_target_pct = 0.5 表示「最多把 initial_cash 的 50% 用在初始建倉」
+    # initial_dca_days = 20 表示分 20 個交易日完成
+    # 設 0 → 關閉初始建倉（v1 行為）
+    initial_dca_target_pct: float = 0.0
+    initial_dca_days: int = 20
+
 
 @dataclass
 class SimulationResult:
@@ -95,11 +114,23 @@ class SimulationResult:
 # Pure rule functions
 # ---------------------------------------------------------------------------
 
-def ladder_amount(drop_pct: float) -> int:
-    """跌幅 → 買入金額 (TWD)。drop_pct 為負值。沒跌夠 1% → 0。"""
+def ladder_amount(drop_pct: float, available_cash: Optional[float] = None) -> int:
+    """跌幅 → 買入金額 (TWD)。drop_pct 為負值。沒跌夠 1% → 0。
+
+    Args:
+        drop_pct: 負值百分比（-2.5 表示跌 2.5%）
+        available_cash: 若給定，按 DROP_LADDER_PCT 比例計算（v2 行為）；
+                        若 None，回傳 DROP_LADDER 寫死金額（v1 相容）
+    """
     drop_pct = round(drop_pct, 6)
     if drop_pct > MIN_DROP_TO_TRIGGER:
         return 0
+    if available_cash is not None and available_cash > 0:
+        for threshold, pct in reversed(DROP_LADDER_PCT):
+            if drop_pct <= threshold:
+                return int(available_cash * pct)
+        return 0
+    # v1 fallback：寫死 TWD
     for threshold, amount in reversed(DROP_LADDER):
         if drop_pct <= threshold:
             return amount
@@ -169,13 +200,44 @@ def simulate(prices, config: SimulationConfig) -> SimulationResult:
     closes = prices["Close"].astype(float)
     prev_close = None
 
+    # === 初始建倉 (DCA 啟動) ===
+    # 在前 N 個交易日，每日固定買入 initial_dca_total / N 的金額。
+    # 這個邏輯會在 ladder 觸發之前執行；ladder 仍可在同一天疊加。
+    dca_total = float(config.initial_cash) * float(config.initial_dca_target_pct or 0.0)
+    dca_days_target = int(config.initial_dca_days or 0)
+    dca_daily_amount = (dca_total / dca_days_target) if dca_days_target > 0 and dca_total > 0 else 0.0
+    dca_days_done = 0
+
     for date, close in closes.items():
         date_str = str(date.date()) if hasattr(date, "date") else str(date)
+
+        # === Initial DCA buy ===
+        if dca_daily_amount > 0 and dca_days_done < dca_days_target and cash >= dca_daily_amount * 0.5:
+            spend = min(dca_daily_amount, cash)
+            dca_shares = shares_from_amount(spend, close, allow_odd_lot=config.allow_odd_lot)
+            if dca_shares >= 1:
+                cost = dca_shares * close
+                fee = cost * BROKER_FEE_RATE
+                total_out = cost + fee
+                if cash >= total_out:
+                    new_total_shares = shares + dca_shares
+                    avg_cost = (avg_cost * shares + cost) / new_total_shares if new_total_shares > 0 else close
+                    cash -= total_out
+                    shares = new_total_shares
+                    trades.append(Trade(
+                        date=date_str, side="buy",
+                        price=close, shares=dca_shares,
+                        cash_flow=-total_out, fee=fee,
+                        note=f"initial_dca day {dca_days_done + 1}/{dca_days_target}",
+                    ))
+                    peak_close = max(peak_close, close)
+            dca_days_done += 1
 
         # === Buy logic ===
         if prev_close is not None:
             drop_pct = (close - prev_close) / prev_close * 100.0
-            buy_amount = ladder_amount(drop_pct)
+            # v2: ladder 金額按目前可用現金比例
+            buy_amount = ladder_amount(drop_pct, available_cash=cash)
 
             if buy_amount > 0:
                 # 受 max_position_pct 限制
@@ -210,6 +272,8 @@ def simulate(prices, config: SimulationConfig) -> SimulationResult:
             peak_close = max(peak_close, close)
 
             # === Trailing sell ===
+            # v2: DCA 建倉期間不觸發 trailing（讓部位先建立起來，避免在初期被洗出場）
+            in_dca_phase = dca_daily_amount > 0 and dca_days_done < dca_days_target
             return_pct = (close - avg_cost) / avg_cost if avg_cost > 0 else 0.0
             trailing_pct = get_trailing_pct(
                 config.symbol_group,
@@ -217,7 +281,7 @@ def simulate(prices, config: SimulationConfig) -> SimulationResult:
                 custom=config.custom_trailing_pct,
             )
             stop_price = peak_close * (1 - trailing_pct)
-            if close <= stop_price:
+            if not in_dca_phase and close <= stop_price:
                 proceeds = shares * close
                 fee = proceeds * (BROKER_FEE_RATE + SELL_TAX_RATE)
                 net = proceeds - fee

@@ -72,19 +72,13 @@ def test_simulate_steady_uptrend_no_buys_but_no_sells():
 
 
 def test_simulate_drop_triggers_buy():
-    """Day 2 drops -2% → ladder buys 4000 TWD worth (rounded down to lot of 1000).
-
-    With price 98.0 and 4000 TWD: 4000/98 = 40.8 shares → rounded to 0 (no full lot).
-    So we need higher initial cash impact... actually with our ladder system buying TWD,
-    we test that the buy happens when affordable.
-    """
-    # Use small price so that 4000 TWD ÷ price > 1000 shares → board lot = 1000 shares
-    # price=2 TWD: 4000/2 = 2000 shares → 2 lots = 2000 shares
+    """v2: ladder 按 cash 比例。-2% 跌幅 → 1% × 1M cash = 10,000 TWD。
+    price=2 → 10,000/2 = 5000 股 → 5 lots = 5000 股。"""
     prices = _make_prices([2.0, 1.96])  # -2% drop
     result = simulate(prices, _default_config())
     buys = [t for t in result.trades if t.side == "buy"]
     assert len(buys) == 1
-    assert buys[0].shares == 2000  # 2 lots
+    assert buys[0].shares == 5000  # 5 lots @ price 1.96 from 10,000 TWD budget
     assert buys[0].price == pytest.approx(1.96)
 
 
@@ -97,21 +91,17 @@ def test_simulate_drop_below_1pct_no_buy():
 
 def test_simulate_trailing_triggers_sell():
     """
-    Buy on day 2 (-2%), price climbs to peak, then drops > 6% from peak (core group).
+    v2: core trailing 從 6% 改 12%。peak=2.10，stop=2.10×0.88=1.848。
+    所以 close=1.80 才會觸發 trailing。
     """
-    # Day 0: 2.0
-    # Day 1: 1.96 (-2% → buy)
-    # Day 2-4: climb to 2.10 (peak)
-    # Day 5: 1.97 (drop -6.2% from peak → trailing fires)
-    closes = [2.0, 1.96, 2.00, 2.05, 2.10, 1.97]
+    closes = [2.0, 1.96, 2.00, 2.05, 2.10, 1.80]
     prices = _make_prices(closes)
     result = simulate(prices, _default_config())
     buys = [t for t in result.trades if t.side == "buy"]
     sells = [t for t in result.trades if t.side == "sell"]
     assert len(buys) >= 1
     assert len(sells) >= 1
-    # Sell price ~ 1.97, peak ~ 2.10, drop = -6.2%
-    assert sells[0].price == pytest.approx(1.97)
+    assert sells[0].price == pytest.approx(1.80)
 
 
 def test_simulate_no_buy_when_insufficient_cash():
@@ -127,10 +117,7 @@ def test_simulate_no_buy_when_insufficient_cash():
 
 
 def test_simulate_odd_lot_buy_when_high_price():
-    """High price (e.g. 0050 @ 24) where ladder amount=4000 only buys ~166 shares,
-    not enough for 1 lot. With allow_odd_lot=True, should buy as odd lot."""
-    # Day 0 close=24.5, Day 1 close=24.0 → drop -2.04% → ladder=4000 TWD
-    # 4000/24 = 166 shares (odd lot)
+    """v2: cash=100k, drop -2.04% → 1% × 100k = 1000 TWD。1000/24 = 41 shares (odd lot)."""
     cfg = SimulationConfig(initial_cash=100_000.0, symbol_group="core",
                            max_position_pct=0.95, allow_odd_lot=True)
     prices = _make_prices([24.5, 24.0])
@@ -138,7 +125,7 @@ def test_simulate_odd_lot_buy_when_high_price():
     buys = [t for t in result.trades if t.side == "buy"]
     assert len(buys) == 1
     assert 1 <= buys[0].shares < 1000  # odd lot
-    assert buys[0].shares == 166  # 4000 // 24
+    assert buys[0].shares == 41  # 1000 TWD // 24
 
 
 def test_simulate_odd_lot_disabled_skips_when_under_lot():
@@ -230,6 +217,86 @@ def test_fees_buy():
         # cost = shares × price + fee
         expected_fee = buy.shares * buy.price * BROKER_FEE_RATE
         assert buy.fee == pytest.approx(expected_fee, abs=0.01)
+
+
+# ---------------------------------------------------------------------------
+# v2 骨架調整測試（2026-04-29）
+# ---------------------------------------------------------------------------
+
+def test_v2_ladder_cash_proportional():
+    """ladder 金額按 cash 比例：跌 -2% 應投入 1% × cash。"""
+    from scripts.backtest.strategy_simulator import ladder_amount
+
+    assert ladder_amount(-2.0, available_cash=1_000_000) == 10_000  # 1% × 1M
+    assert ladder_amount(-2.0, available_cash=500_000) == 5_000     # 1% × 500k
+    assert ladder_amount(-5.0, available_cash=1_000_000) == 25_000  # 2.5% × 1M
+    assert ladder_amount(-0.5, available_cash=1_000_000) == 0       # 沒跌夠
+
+
+def test_v2_ladder_v1_compatibility_when_no_cash():
+    """若不傳 available_cash，回退舊行為（寫死 TWD）。"""
+    from scripts.backtest.strategy_simulator import ladder_amount
+
+    assert ladder_amount(-2.0) == 4000   # v1 寫死
+    assert ladder_amount(-5.0) == 10000  # v1 寫死
+
+
+def test_v2_trailing_widened():
+    """v2: core 從 0.06 改 0.12。"""
+    from scripts.backtest.strategy_simulator import GROUP_TRAILING_PCT
+
+    assert GROUP_TRAILING_PCT["core"] == 0.12
+    assert GROUP_TRAILING_PCT["income"] == 0.10
+    assert GROUP_TRAILING_PCT["growth"] == 0.15
+
+
+def test_v2_initial_dca_buys_each_day():
+    """初始建倉啟動：在前 N 天每天買固定金額。"""
+    cfg = SimulationConfig(
+        initial_cash=1_000_000.0,
+        symbol_group="core",
+        max_position_pct=0.95,
+        initial_dca_target_pct=0.5,   # 用 50% 資金做初始建倉 → 500k
+        initial_dca_days=10,           # 分 10 天 → 每日 50k
+    )
+    # 持平價格 → 沒有 ladder 觸發、純測 DCA
+    prices = _make_prices([10.0] * 12)
+    result = simulate(prices, cfg)
+    dca_buys = [t for t in result.trades if "initial_dca" in t.note]
+    assert len(dca_buys) == 10  # 10 天都該買
+    # 每天 50k 預算 / 10 元 = 5000 股
+    for t in dca_buys:
+        assert t.shares == 5000
+
+
+def test_v2_initial_dca_disabled_when_pct_zero():
+    """initial_dca_target_pct=0（預設）→ 不啟動初始建倉。"""
+    cfg = SimulationConfig(
+        initial_cash=1_000_000.0,
+        symbol_group="core",
+        max_position_pct=0.95,
+        initial_dca_target_pct=0.0,   # 關閉
+    )
+    prices = _make_prices([10.0] * 12)
+    result = simulate(prices, cfg)
+    assert len([t for t in result.trades if "initial_dca" in t.note]) == 0
+
+
+def test_v2_initial_dca_and_ladder_coexist():
+    """DCA 與 ladder 可在同一天同時觸發（DCA 在 ladder 之前）。"""
+    cfg = SimulationConfig(
+        initial_cash=1_000_000.0,
+        symbol_group="core",
+        max_position_pct=0.95,
+        initial_dca_target_pct=0.3,
+        initial_dca_days=5,
+    )
+    # Day 0=10, Day 1=9.7 (-3% drop) → 觸發 DCA + ladder
+    prices = _make_prices([10.0, 9.7])
+    result = simulate(prices, cfg)
+    notes = [t.note for t in result.trades]
+    assert any("initial_dca" in n for n in notes)
+    assert any("ladder" in n for n in notes)
 
 
 def test_fees_sell_includes_tax():
