@@ -1,6 +1,6 @@
 ---
 name: ETF_TW
-version: v1.7.0
+version: v1.8.0
 description: 台灣 ETF 投資助理技能（包含 state-driven dashboard、orders_open lifecycle、callback/polling reconciliation、交易流程驗證、回測去重與報酬回補、worldmonitor 全球風險雷達整合）
 ---
 
@@ -848,6 +848,14 @@ cd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/refre
 - 若 tag 已推送後才補文件，需把 tag 移到最新 commit 並 force push tag；同時明確回報這是 tag 重定位，不是改寫 main history。
 
 ## 版本歷史
+
+- **v1.8.0**（2026-04-29）：v2 自動交易骨架 + live submit 安全收斂 + production replay 審計
+  - A/B/C 計畫加入 top-down macro regime、壓力情境回測與 production replay 對照
+  - DCA 初始建倉、寬 trailing、比例 ladder、macro buy gate 與 Phase 2 DCA dashboard 控制接線完成
+  - 正式送單統一走 `live_submit_sop.py`；未驗證 live 回報進 ghost log，不落入 `orders_open.json`
+  - 修正 `UNVERIFIED` 被字串包含誤判為 `VERIFIED` 的 ghost order 風險
+  - `sell_scanner` 支援 mixed lot board/odd 拆單，避免 odd lot 超量被 pre-flight gate 擋下
+  - 新增交錯修改整合審計與 ETF 獲利手段 wiki；全測 660 passed，graphify 3894 nodes / 7146 edges
 
 - **v1.7.0**（2026-04-27）：正式下單安全閘門 + Dashboard 資訊架構整理
   - 可交割金額成為 pre-flight sizing 硬基準；0 或負數不再 fallback 到帳面現金

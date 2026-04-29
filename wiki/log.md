@@ -84,3 +84,9 @@
 - 更新 `concepts/settlement-t2.md` — 併入結算 API（SettlementV1）欄位說明
 - 精簡 `entities/shioaji.md` — 使用限制/結算改為摘要+交叉引用，指向拆分頁
 - 更新 `index.md`：頁面數 33 → 34
+
+## [2026-04-29] update | ETF 交易獲利手段沉澱
+
+- 更新 `investment-strategies.md` 與 `concepts/investment-strategies.md`
+- 新增「ETF 交易獲利手段（系統化視角）」：價差、配息、資產配置、DCA、再平衡、波段交易、避險與少虧
+- 補充 ETF_TW 實作準則：核心持有、DCA 初始建倉、配息再投入、再平衡、受控波段、交易紅線與股數單位檢查

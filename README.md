@@ -1,4 +1,4 @@
-# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.7.0)
+# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.8.0)
 
 `ETF_Master` 是一款專為台灣 ETF 投資者設計的 AI 輔助決策與資產管理系統。本專案秉持「**交易安全優先於功能完備**」的核心價值，透過「三層真相層級」治理與「雙鏈決策仲裁」機制，為投資者提供一個穩定、透明且具備深度洞察的投資工作台。
 
@@ -108,6 +108,15 @@ AGENT_ID=etf_master .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.
 ---
 
 ## 📦 版本紀錄
+
+### v1.8.0 (2026-04-29)
+- feat(strategy): 完成 A/B/C 計畫與 v2 骨架接線，新增 top-down 總體情境、壓力情境回測、DCA 初始建倉、寬 trailing 與比例 ladder。
+- feat(auto_trade): Dashboard 接通 DCA 啟停/狀態顯示，Phase 2 接入 macro buy gate、DCA 全鏈路與 ghost order tracking。
+- safety(live): 正式下單改走 `live_submit_sop.py` 單一路徑，未驗證委託不再落入 `orders_open.json`，避免 `UNVERIFIED` 被誤判為 `VERIFIED` 造成幽靈單。
+- fix(sell): `sell_scanner` 支援 mixed lot 賣出拆單，將整張與零股分成 board / odd 兩筆訊號，避免 odd lot 超過 999 股被 pre-flight gate 擋下。
+- audit(replay): 新增 production replay 對照與交錯修改整合審計，校正 replay cooldown 保留行為與回測報告敘述。
+- docs(knowledge): ETF 獲利手段沉澱到 wiki，並重建 graphify 知識圖譜，保持 clone 後可取得最新策略/程式背景。
+- test: 全測 `660 passed`；graphify rebuild 產出 3894 nodes / 7146 edges / 327 communities。
 
 ### v1.7.0 (2026-04-27)
 - safety(trade): 正式送單前 `pre_flight_gate` 改為嚴格使用 `settlement_safe_cash`，可交割金額為 0 或負數時不再 fallback 到帳面現金。

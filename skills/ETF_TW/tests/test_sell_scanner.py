@@ -234,6 +234,40 @@ def test_run_sell_scan_inventory_check_passes(state_dir):
     assert res["enqueued"][0]["lot_type"] == "board"
 
 
+def test_run_sell_scan_splits_mixed_board_and_odd_lot_position(state_dir):
+    """混合部位（整張 + 零股）應拆成 board 與 odd 兩筆，避免 odd >999 被 gate 擋下。"""
+    on_date = datetime(2026, 4, 25, 13, 15, tzinfo=TW_TZ)
+
+    _write(state_dir, "positions.json", {"positions": [
+        {"symbol": "00923", "quantity": 15763, "average_cost": 30, "entry_date": "2026-04-15"},
+    ]})
+    _write(state_dir, "intraday_quotes_1m.json", _make_intraday("00923", 33.0))
+    _write(state_dir, "market_cache.json", {"quotes": {}})
+    pt.save_tracker(state_dir, {
+        "00923": {
+            "entry_date": "2026-04-15",
+            "tracking_start_date": "2026-04-16",
+            "group": "income",
+            "peak_close": 35.0,
+            "peak_close_date": "2026-04-22",
+            "trailing_pct": 0.05,
+            "stop_price": 33.25,
+            "is_locked_in": False,
+        }
+    })
+
+    res = ss.run_sell_scan(state_dir=state_dir, on_date=on_date)
+
+    assert res["blocked"] == []
+    assert len(res["enqueued"]) == 2
+    assert [(sig["quantity"], sig["lot_type"]) for sig in res["enqueued"]] == [
+        (15000, "board"),
+        (763, "odd"),
+    ]
+    assert res["enqueued"][0]["trigger_payload"]["split_part"] == "primary"
+    assert res["enqueued"][1]["trigger_payload"]["split_part"] == "secondary"
+
+
 def test_run_sell_scan_locked_in_signal_in_reason(state_dir):
     """鎖利狀態下觸發應在 trigger_reason 標示 locked-in"""
     on_date = datetime(2026, 4, 25, 13, 15, tzinfo=TW_TZ)

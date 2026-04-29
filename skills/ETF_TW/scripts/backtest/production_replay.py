@@ -186,7 +186,11 @@ def write_daily_state(
     _write_json(state_dir / "auto_trade_phase2_config.json", {"enabled": True})
 
     # cooldown / sensor / event
-    _write_json(state_dir / "position_cooldown.json", {})
+    # Preserve cooldown across replay days; otherwise sell ack side effects are erased
+    # before the next buy scan and the replay no longer matches production behavior.
+    cooldown_path = state_dir / "position_cooldown.json"
+    if not cooldown_path.exists():
+        _write_json(cooldown_path, {})
     _write_json(state_dir / "sensor_health.json", {"overall": "healthy"})
     _write_json(state_dir / "weekly_pnl.json", {"weekly_loss_triggered": False})
     _write_json(state_dir / "consecutive_loss_days.json", {"consecutive_buy_days": 0})

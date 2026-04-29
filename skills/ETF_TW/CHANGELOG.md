@@ -1,5 +1,26 @@
 # CHANGELOG
 
+## v1.8.0 — 2026-04-29
+
+### Added
+- **A/B/C 策略驗證鏈**：加入 top-down macro regime、壓力情境回測與 production replay，讓 simulator 與生產 scanner 行為能被對照。
+- **v2 自動交易骨架**：接入 DCA 初始建倉、寬 trailing、比例 ladder、macro buy gate 與 Phase 2 DCA dashboard 啟停/狀態 API。
+- **交錯修改整合審計**：新增 `docs/intelligence-roadmap/2026-04-29-interleaved-change-audit.md`，記錄 Codex / Claude-code 交錯修改後的風險邊界、修正與待辦。
+- **ETF 獲利手段 wiki**：將 DCA、配置再平衡、折溢價、配息、趨勢與風控出場等知識沉澱到 wiki。
+
+### Changed
+- **Live submit 單一路徑**：Dashboard 與 Phase 2 ack 的正式送單改走 `scripts/live_submit_sop.py`，未驗證回報進 ghost log，不落入 `orders_open.json`。
+- **Production replay cooldown 保留**：replay 不再每日清空 `position_cooldown.json`，使回放結果更接近真實 ack 後的生產狀態。
+- **Replay 報告校正**：修正過度樂觀敘述，明確標示 production 在 2024 Bull 多頭報酬落後 simulator / BAH，但回撤控制有效。
+
+### Fixed
+- **Ghost order 誤判**：修正 `"VERIFIED" in stdout` 會把 `UNVERIFIED` 誤判為已驗證的問題，避免永豐查不到的正式委託被寫成 open order。
+- **Mixed lot trailing sell**：`sell_scanner` 現在會把 15,763 股這類混合部位拆成 15,000 股 board 與 763 股 odd，避免 odd lot 超量被 pre-flight gate 擋下。
+
+### Tests
+- **全測驗證**：`660 passed`。
+- **Graphify 同步**：重建 graphify code graph，產出 3894 nodes / 7146 edges / 327 communities。
+
 ## v1.7.0 — 2026-04-27
 
 ### Added
