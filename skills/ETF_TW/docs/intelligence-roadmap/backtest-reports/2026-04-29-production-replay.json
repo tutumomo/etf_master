@@ -1,0 +1,47 @@
+[
+  {
+    "name": "2024 Bull",
+    "rep_return": 7.2,
+    "sim_return": 27.31,
+    "bah_return": 45.32,
+    "gap": -20.11,
+    "rep_dd": -4.36,
+    "sim_dd": -5.31,
+    "rep_buys": 57,
+    "sim_buys": 57,
+    "rep_sells": 8,
+    "sim_sells": 2,
+    "rep_dca": 20,
+    "sim_dca": 20
+  },
+  {
+    "name": "2022 Bear",
+    "rep_return": -5.97,
+    "sim_return": -8.09,
+    "bah_return": -24.65,
+    "gap": 2.12,
+    "rep_dd": -6.7,
+    "sim_dd": -9.42,
+    "rep_buys": 86,
+    "sim_buys": 86,
+    "rep_sells": 9,
+    "sim_sells": 4,
+    "rep_dca": 20,
+    "sim_dca": 20
+  },
+  {
+    "name": "2020 COVID",
+    "rep_return": -3.87,
+    "sim_return": 0.89,
+    "bah_return": 23.69,
+    "gap": -4.76,
+    "rep_dd": -5.03,
+    "sim_dd": -5.72,
+    "rep_buys": 61,
+    "sim_buys": 61,
+    "rep_sells": 11,
+    "sim_sells": 2,
+    "rep_dca": 20,
+    "sim_dca": 20
+  }
+]

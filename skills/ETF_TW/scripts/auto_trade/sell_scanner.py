@@ -226,8 +226,24 @@ def run_sell_scan(
             continue
 
         # ── 觸發 ────────────────────────────────────────────────────────────
-        sell_qty = int(qty)
-        lot_type = "board" if sell_qty >= 1000 and sell_qty % 1000 == 0 else "odd"
+        # v2 修正：若部位有混合（整張 + 零股），需拆兩筆訊號
+        # 因 pre_flight_gate 規定 odd lot 必須 1-999 股，超過要走 board lot
+        total_qty = int(qty)
+        sell_orders: list[tuple[int, str]] = []   # [(quantity, lot_type), ...]
+        if total_qty >= 1000 and total_qty % 1000 == 0:
+            sell_orders.append((total_qty, "board"))
+        elif total_qty < 1000:
+            sell_orders.append((total_qty, "odd"))
+        else:
+            # mixed：先拆整張，再剩餘零股
+            board_qty = (total_qty // 1000) * 1000
+            odd_qty = total_qty - board_qty
+            sell_orders.append((board_qty, "board"))
+            if odd_qty > 0:
+                sell_orders.append((odd_qty, "odd"))
+
+        # 主訊號（第一筆，通常是整張部分）— 後續若有零股訊號跟著一起 enqueue
+        sell_qty, lot_type = sell_orders[0]
         order = {
             "symbol": sym,
             "side": "sell",
@@ -292,10 +308,57 @@ def run_sell_scan(
                 "is_locked_in": is_locked,
                 "return_pct": return_pct,
                 "average_cost": float(p.get("average_cost") or 0),
+                "split_part": "primary" if len(sell_orders) > 1 else "single",
+                "split_total": len(sell_orders),
             },
             now=now,
         )
         result["enqueued"].append(signal)
+
+        # v2: 若是 mixed 部位，疊上零股部分（已過 gate 一次，主訊號既然能過、零股也能過）
+        for extra_qty, extra_lot in sell_orders[1:]:
+            extra_order = {
+                "symbol": sym,
+                "side": "sell",
+                "quantity": extra_qty,
+                "price": current_price,
+                "order_type": "market",
+                "lot_type": extra_lot,
+            }
+            extra_gate = pre_flight.check_order(extra_order, gate_ctx)
+            if not extra_gate.get("passed"):
+                result["blocked"].append({
+                    "symbol": sym,
+                    "reason": extra_gate.get("reason"),
+                    "details": extra_gate.get("details", {}),
+                    "split_part": "extra",
+                })
+                continue
+            extra_signal = pending_queue.enqueue(
+                queue_path=queue_path,
+                history_path=history_path,
+                side="sell",
+                symbol=sym,
+                quantity=extra_qty,
+                price=current_price,
+                order_type="market",
+                lot_type=extra_lot,
+                trigger_source="sell_scanner_1315",
+                trigger_reason=reason_str + f" (split:{extra_lot})",
+                trigger_payload={
+                    "current_price": current_price,
+                    "stop_price": stop_price,
+                    "peak_close": peak_close,
+                    "trailing_pct": trailing_pct,
+                    "is_locked_in": is_locked,
+                    "return_pct": return_pct,
+                    "average_cost": float(p.get("average_cost") or 0),
+                    "split_part": "secondary",
+                    "split_total": len(sell_orders),
+                },
+                now=now,
+            )
+            result["enqueued"].append(extra_signal)
 
     return result
 
