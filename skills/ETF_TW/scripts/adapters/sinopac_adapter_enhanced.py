@@ -21,6 +21,11 @@ except ImportError:
 
 from .base import BaseAdapter, Order, Position, AccountBalance
 
+try:
+    from ..trading_hours_gate import get_trading_hours_info
+except ImportError:
+    from trading_hours_gate import get_trading_hours_info
+
 class SinopacAdapterEnhanced(BaseAdapter):
     """
     Enhanced SinoPac Securities (Shioaji) adapter.
@@ -241,13 +246,14 @@ class SinopacAdapterEnhanced(BaseAdapter):
             
             # 4. 建立訂單
             # 台股內部統一以「股」表示；送 Shioaji 時才依市場別轉換：
-            # Common 整股用「張」，IntradayOdd 零股用「股」。
+            # Common 整股用「張」；零股用「股」，盤中 IntradayOdd、盤後 Odd。
             if order.quantity % 1000 == 0:
                 lots = order.quantity // 1000
                 order_lot = StockOrderLot.Common
             elif 1 <= order.quantity <= 999:
                 lots = order.quantity
-                order_lot = StockOrderLot.IntradayOdd
+                hours_info = get_trading_hours_info()
+                order_lot = StockOrderLot.Odd if hours_info.get("in_after_hours") else StockOrderLot.IntradayOdd
                 if price_type != StockPriceType.LMT:
                     price_type = StockPriceType.LMT
             else:

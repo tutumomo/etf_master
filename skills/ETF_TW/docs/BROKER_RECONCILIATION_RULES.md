@@ -107,6 +107,18 @@
 - `raw_status`
 - `observed_at`
 
+### submit response row
+應包含：
+- `source_type = submit_response`
+- `raw_status`
+- `observed_at`
+- `order_id`
+- `broker_order_id`（若 adapter 有回傳）
+- `verified = false`
+- `landed = false`
+
+`submit_response` 只代表 adapter / SDK 已回應，不代表券商已受理成可查委託。它可寫入 `submission_journal.jsonl` 做 audit trail，但不可單獨寫入 `orders_open.json`；必須等 `submit_verification`、`broker_polling` 或 `broker_callback` 證明落地。
+
 ---
 
 ## 當前實作狀態
@@ -119,6 +131,7 @@
 - source priority
 - partial fill monotonicity 基礎護欄
 - callback / polling / submit metadata contract
+- submit_response metadata contract
 - fills ledger state IO
 - callback partial fill → fills ledger sync
 - polling partial fill → fills ledger sync
@@ -128,5 +141,4 @@
 
 待補：
 - 更完整 broker event timestamp 對齊
-- submit_response metadata contract
 - broker source priority 文檔持續對齊更多 broker adapter

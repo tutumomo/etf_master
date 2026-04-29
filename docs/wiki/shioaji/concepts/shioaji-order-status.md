@@ -1,7 +1,7 @@
 ---
 title: Shioaji 委託狀態說明 (Order Status)
 created: 2026-04-16
-updated: 2026-04-16
+updated: 2026-04-29
 type: concept
 tags: [shioaji.order]
 quality: primary
@@ -27,5 +27,6 @@ sources: [raw/specs/shioaji-official-docs-2026.md]
 ## 關鍵注意事項
 - **真相驗證**：只有狀態為 `Filled` 或 `PartiallyFilled` 時，庫存才會發生變動。
 - **落地確認**：建議在接收到 `Submitted` 後，透過 `list_trades` 再次確認委託確實存在於櫃檯。
+- **送單回應不等於落地**：若 SDK 回應後仍查不到 ordno，且券商網站也查無委託，應視為未受理 / ghost，不可寫入 open order。
 
 相關頁面：[[shioaji-unit-safety]]

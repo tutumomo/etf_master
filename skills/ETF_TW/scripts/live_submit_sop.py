@@ -29,6 +29,11 @@ from etf_core import context as _ctx
 from etf_core.state_io import safe_load_json, atomic_save_json, safe_append_jsonl
 from daily_order_limits import increment_daily_submit_count
 from orders_open_state import build_orders_open_payload, merge_open_orders
+from submission_journal import append_submission_journal, build_submit_response_row
+try:
+    from account_manager import get_account_manager
+except ImportError:
+    from scripts.account_manager import get_account_manager
 
 TW_TZ = ZoneInfo("Asia/Taipei")
 
@@ -87,19 +92,37 @@ async def _build_default_adapter(order: dict):
     from adapters import get_adapter
 
     broker_id = order.get("broker_id") or order.get("broker") or "sinopac"
-    account_id = order.get("account_id") or order.get("account") or "sinopac_01"
-    adapter = get_adapter(
-        broker_id,
-        {
-            "account_id": account_id,
-            "mode": "live",
-            "api_key": os.environ.get("SINOPAC_API_KEY"),
-            "secret_key": os.environ.get("SINOPAC_SECRET_KEY"),
-            "password": os.environ.get("SINOPAC_PASSWORD"),
-        },
-    )
+    account_alias = order.get("account_id") or order.get("account") or "sinopac_01"
+
+    adapter = None
+    account_manager_error = ""
+    try:
+        adapter = get_account_manager().get_adapter(account_alias)
+    except Exception as exc:
+        account_manager_error = f"{type(exc).__name__}: {exc}"
+
+    if adapter is None:
+        api_key = os.environ.get("SINOPAC_API_KEY")
+        secret_key = os.environ.get("SINOPAC_SECRET_KEY") or os.environ.get("SINOPAC_API_SECRET")
+        if not api_key or not secret_key:
+            hint = "missing instance_config credentials and SINOPAC_API_KEY/SINOPAC_SECRET_KEY env"
+            if account_manager_error:
+                hint = f"{hint}; AccountManager: {account_manager_error}"
+            return None, f"{broker_id} authenticate config error: {hint}"
+
+        adapter = get_adapter(
+            broker_id,
+            {
+                "account_id": account_alias,
+                "mode": "live",
+                "api_key": api_key,
+                "secret_key": secret_key,
+                "password": os.environ.get("SINOPAC_PASSWORD"),
+            },
+        )
+
     if not await adapter.authenticate():
-        return None, f"{broker_id} authenticate failed"
+        return None, f"{broker_id} authenticate failed for account {account_alias}"
     return adapter, "ok"
 
 
@@ -118,10 +141,22 @@ async def submit_live_order(order: dict, adapter=None, state_dir: Path = None) -
     """
     if state_dir is None:
         state_dir = _ctx.get_state_dir()
+    internal_order_id = order.get("order_id", "")
 
     # Step 1: live mode gate
     enabled, reason = _check_live_mode_enabled(state_dir)
     if not enabled:
+        append_submission_journal(state_dir, {
+            "event": "blocked",
+            "step": "live_mode_gate",
+            "order_id": internal_order_id,
+            "symbol": order.get("symbol"),
+            "action": order.get("side"),
+            "quantity": order.get("quantity"),
+            "price": order.get("price"),
+            "success": False,
+            "reason": reason,
+        })
         return {"success": False, "reason": reason, "step": "live_mode_gate"}
 
     # Step 2: pre_flight_gate
@@ -133,6 +168,18 @@ async def submit_live_order(order: dict, adapter=None, state_dir: Path = None) -
     gate_context = _build_gate_context(state_dir)
     gate_result = check_order(gate_order, gate_context)
     if not gate_result["passed"]:
+        append_submission_journal(state_dir, {
+            "event": "blocked",
+            "step": "pre_flight_gate",
+            "order_id": internal_order_id,
+            "symbol": order.get("symbol"),
+            "action": order.get("side"),
+            "quantity": order.get("quantity"),
+            "price": order.get("price"),
+            "success": False,
+            "reason": f"pre_flight_gate: {gate_result['reason']}",
+            "gate_details": gate_result.get("details", {}),
+        })
         return {
             "success": False,
             "reason": f"pre_flight_gate: {gate_result['reason']}",
@@ -142,23 +189,57 @@ async def submit_live_order(order: dict, adapter=None, state_dir: Path = None) -
 
     # Step 3: human confirm check
     if not order.get("is_confirmed", False):
+        append_submission_journal(state_dir, {
+            "event": "blocked",
+            "step": "human_confirm",
+            "order_id": internal_order_id,
+            "symbol": order.get("symbol"),
+            "action": order.get("side"),
+            "quantity": order.get("quantity"),
+            "price": order.get("price"),
+            "success": False,
+            "reason": "is_confirmed=False. Human confirmation required.",
+        })
         return {"success": False, "reason": "is_confirmed=False. Human confirmation required.", "step": "human_confirm"}
 
     # Step 4: submit via adapter
     if adapter is None:
         adapter, adapter_reason = await _build_default_adapter(order)
         if adapter is None:
+            append_submission_journal(state_dir, {
+                "event": "blocked",
+                "step": "authenticate",
+                "order_id": internal_order_id,
+                "symbol": order.get("symbol"),
+                "action": order.get("side"),
+                "quantity": order.get("quantity"),
+                "price": order.get("price"),
+                "success": False,
+                "reason": adapter_reason,
+            })
             return {"success": False, "reason": adapter_reason, "step": "authenticate"}
 
     try:
         submitted = await adapter._submit_order_impl(order)
     except Exception as e:
+        append_submission_journal(state_dir, {
+            "event": "submit_error",
+            "step": "submit",
+            "order_id": internal_order_id,
+            "symbol": order.get("symbol"),
+            "action": order.get("side"),
+            "quantity": order.get("quantity"),
+            "price": order.get("price"),
+            "success": False,
+            "reason": f"Adapter submit error: {e}",
+        })
         return {"success": False, "reason": f"Adapter submit error: {e}", "step": "submit"}
 
     increment_daily_submit_count(state_dir / "daily_order_limits.json", order.get("side", ""))
 
     broker_order_id = getattr(submitted, "broker_order_id", "") or ""
-    internal_order_id = order.get("order_id", "")
+    submit_response_row = build_submit_response_row(order, submitted)
+    append_submission_journal(state_dir, submit_response_row)
 
     # Step 5: verify order landed
     verify_result = await adapter.verify_order_landed(broker_order_id)
@@ -177,7 +258,8 @@ async def submit_live_order(order: dict, adapter=None, state_dir: Path = None) -
                 "verified": True,
                 "ghost": False,
                 "order_id": internal_order_id,
-                "reason": "duplicate: order_id already in orders_open"
+                "reason": "duplicate: order_id already in orders_open",
+                "submit_response": submit_response_row,
             }
         order_row = {
             "order_id": internal_order_id,
@@ -198,12 +280,28 @@ async def submit_live_order(order: dict, adapter=None, state_dir: Path = None) -
         }
         payload = build_orders_open_payload(merge_open_orders(orders_open, order_row), source="live_broker")
         atomic_save_json(state_dir / "orders_open.json", payload)
+        append_submission_journal(state_dir, {
+            "event": "submit_verified",
+            "source_type": "submit_verification",
+            "raw_status": "submitted",
+            "status": "submitted",
+            "order_id": internal_order_id,
+            "broker_order_id": broker_order_id,
+            "symbol": order.get("symbol"),
+            "action": order.get("side"),
+            "quantity": order.get("quantity"),
+            "price": order.get("price"),
+            "success": True,
+            "verified": True,
+            "ghost": False,
+        })
         return {
             "success": True,
             "broker_order_id": broker_order_id,
             "verified": True,
             "ghost": False,
-            "order_id": internal_order_id
+            "order_id": internal_order_id,
+            "submit_response": submit_response_row,
         }
     else:
         # Ghost order — log to ghost_orders.jsonl, do NOT write to orders_open
@@ -214,13 +312,31 @@ async def submit_live_order(order: dict, adapter=None, state_dir: Path = None) -
             "ghost_detected_at": now_iso,
             "verify_polls": verify_result.get("polls", 3)
         })
+        append_submission_journal(state_dir, {
+            "event": "submit_ghost",
+            "source_type": "submit_verification",
+            "raw_status": "unverified",
+            "status": "rejected",
+            "order_id": internal_order_id,
+            "broker_order_id": broker_order_id,
+            "symbol": order.get("symbol"),
+            "action": order.get("side"),
+            "quantity": order.get("quantity"),
+            "price": order.get("price"),
+            "success": False,
+            "verified": False,
+            "ghost": True,
+            "reason": "verify_order_landed: ordno not found after 3 polls",
+            "verify_polls": verify_result.get("polls", 3),
+        })
         return {
             "success": False,
             "broker_order_id": broker_order_id,
             "verified": False,
             "ghost": True,
             "reason": "verify_order_landed: ordno not found after 3 polls",
-            "order_id": internal_order_id
+            "order_id": internal_order_id,
+            "submit_response": submit_response_row,
         }
 
 

@@ -1,7 +1,7 @@
 ---
 title: Shioaji 交易單位安全規則 (Unit Safety)
 created: 2026-04-16
-updated: 2026-04-16
+updated: 2026-04-29
 type: concept
 tags: [shioaji.order, shioaji.account]
 quality: primary
@@ -22,6 +22,17 @@ sources: [raw/specs/shioaji-official-docs-2026.md]
   - 1 張 = 1000 股。
 - **零股下單 (`StockOrderLot.IntradayOdd` / `StockOrderLot.Odd`)**:
   - `quantity` 的單位是 **「股」**。
+
+## 1.1 零股市場別
+
+零股下單不只要確認 quantity 單位是「股」，也要依交易時段選對 `order_lot`：
+
+| 時段 | `order_lot` | 用途 |
+| :--- | :--- | :--- |
+| 09:00-13:30 | `StockOrderLot.IntradayOdd` | 盤中零股 |
+| 13:40-14:30 | `StockOrderLot.Odd` | 盤後零股 |
+
+若在盤後零股時段仍送 `IntradayOdd`，券商端可能不受理成可查委託。ETF_TW 於 2026-04-29 的 006208 賣出 1 股測試即因此被驗證為 ghost，永豐網站亦查無委託。
 
 ### 安全警告 ⚠️
 **錯誤範例**：若想買 100 股，卻設定為 `Common` 並給予 `quantity=100`，則會誤下單買入 **100 張 (即 100,000 股)**。

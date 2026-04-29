@@ -1,4 +1,4 @@
-# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.8.0)
+# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.8.1)
 
 `ETF_Master` 是一款專為台灣 ETF 投資者設計的 AI 輔助決策與資產管理系統。本專案秉持「**交易安全優先於功能完備**」的核心價值，透過「三層真相層級」治理與「雙鏈決策仲裁」機制，為投資者提供一個穩定、透明且具備深度洞察的投資工作台。
 
@@ -108,6 +108,14 @@ AGENT_ID=etf_master .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.
 ---
 
 ## 📦 版本紀錄
+
+### v1.8.1 (2026-04-29)
+- safety(live): `live_submit_sop.py` 優先使用 instance account credentials，避免 dashboard process env 缺少 Sinopac key 時誤報 authenticate failed。
+- safety(broker): 盤後零股時段改用 `StockOrderLot.Odd`，盤中零股維持 `IntradayOdd`，避免 13:40-14:30 零股委託未被券商受理。
+- safety(state): `sync_orders_open_state.py` 讀取券商成交紀錄清除已成交 open order，避免成交後仍被 cron / dashboard 判成幽靈掛單。
+- audit(live): 新增 `submission_journal.jsonl` 與 `submit_response` metadata contract，區分 adapter 回應、驗證落地、ghost 與 gate block。
+- docs(knowledge): 沉澱 006208 盤後零股未受理事件到 Shioaji wiki，並同步 ETF_TW references 知識文件與 graphify 輸出。
+- test: 全測 `666 passed`；graphify rebuild 產出 3766 nodes / 6483 edges / 447 communities。
 
 ### v1.8.0 (2026-04-29)
 - feat(strategy): 完成 A/B/C 計畫與 v2 骨架接線，新增 top-down 總體情境、壓力情境回測、DCA 初始建倉、寬 trailing 與比例 ladder。

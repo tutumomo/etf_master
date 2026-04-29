@@ -32,6 +32,7 @@ sys.path.append(str(ROOT))
 sys.path.append(str(SCRIPTS_DIR))
 from orders_open_callback import handle_order_event
 from sinopac_callback_normalizer import normalize_sinopac_callback
+from trading_hours_gate import get_trading_hours_info
 
 class SinopacAdapter(BaseAdapter):
     """
@@ -451,20 +452,21 @@ class SinopacAdapter(BaseAdapter):
                 return order
                 
             # --- 修正後的單位與市場別判定邏輯 (WR-01) ---
-            # 依據台股規則：1000 股為 1 張 (Common)，1-999 股為零股 (IntradayOdd)
+            # 依據台股規則：1000 股為 1 張 (Common)，1-999 股為零股。
+            # 盤中零股用 IntradayOdd；盤後零股時段 (13:40-14:30) 必須用 Odd。
             if order.quantity % 1000 == 0:
                 # 整股交易：單位為「張」
                 lots = order.quantity // 1000
                 order_lot = StockOrderLot.Common
             elif 1 <= order.quantity <= 999:
                 # 零股交易：單位為「股」
-                # 注意：盤中零股單筆上限通常為 999 股
                 lots = order.quantity
-                order_lot = StockOrderLot.IntradayOdd
+                hours_info = get_trading_hours_info()
+                order_lot = StockOrderLot.Odd if hours_info.get("in_after_hours") else StockOrderLot.IntradayOdd
                 
-                # 盤中零股 (IntradayOdd) 在 Shioaji 僅支援 LMT 限價 (FUSE-03)
+                # 零股交易在 Shioaji 僅支援 LMT 限價 (FUSE-03)
                 if price_type != StockPriceType.LMT:
-                    print("[SinoPac] IntradayOdd only supports LMT. Overriding price_type.")
+                    print("[SinoPac] Odd-lot orders only support LMT. Overriding price_type.")
                     price_type = StockPriceType.LMT
             else:
                 order.status = 'rejected'

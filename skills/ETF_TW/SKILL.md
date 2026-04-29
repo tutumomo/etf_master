@@ -1,6 +1,6 @@
 ---
 name: ETF_TW
-version: v1.8.0
+version: v1.8.1
 description: 台灣 ETF 投資助理技能（包含 state-driven dashboard、orders_open lifecycle、callback/polling reconciliation、交易流程驗證、回測去重與報酬回補、worldmonitor 全球風險雷達整合）
 ---
 
@@ -148,7 +148,28 @@ ETF_TW/
 │   ├── data-sources.md        # 資料來源與更新規則
 │   ├── source_health_matrix.md # Source Health Matrix 報表
 │   ├── live-trading-sop.md    # Live 交易標準作業程序（Shioaji 實戰萃取）
-│   └── roadmap.md             # 發展路線圖
+│   ├── roadmap.md             # 發展路線圖
+│   ├── decision-engine-v2-architecture.md  # 決策引擎 v2 架構（三原則量化+LLM增強）
+│   ├── market-context-pipeline-roadmap.md  # 市場情境管線三階段 roadmap
+│   ├── cron-path-fixes-and-script-substitutions.md  # Cron 腳本替代與路徑修正備忘
+│   ├── intraday-smart-scan-cron-workflow.md  # 盤中智慧掃描 cron 流程
+│   ├── morning-briefing-cron-workflow.md  # 早班準備 cron 流程
+│   ├── post-market-review-cron-workflow.md  # 盤後收工 cron 流程
+│   ├── weekly-deep-review-cron-workflow.md  # 每週深度復盤 cron 流程
+│   ├── worldmonitor-daily-patrol-cron-workflow.md  # WorldMonitor 每日巡檢 cron 流程
+│   ├── worldmonitor-rollout-audit-checklist.md  # WorldMonitor 落地驗收缺口盤點
+│   ├── order-submit-monitor-workflow.md  # 下單監控完整流程
+│   ├── p2-reconciliation-dashboard-hardening.md  # P2 資料流審計與 dashboard 強化
+│   ├── state-monitoring-audit-workflow.md  # State/Dashboard/監控審計工作流
+│   ├── openclaw-to-hermes-migration-cleanup.md  # OpenClaw→Hermes 遷移清理
+│   ├── wiki-knowledge-pipeline-architecture.md  # Wiki 知識沉澱→AI Decision Bridge 完整鏈路
+│   ├── graphify-cooccurrence-bias-lesson.md  # Graphify ETF 共現偏差教訓
+│   ├── intraday-wiki-risk-flagging.md  # 盤中掃描 wiki 風險標記
+│   ├── market-prediction-workflow.md  # 隔日行情預測標準化流程
+│   ├── portfolio-rebalancing-advice-workflow.md  # 資產重配置建議流程
+│   ├── system-health-check.md  # 系統健康巡檢
+│   ├── system-health-check-notes.md  # 健康巡檢補充備忘
+│   └── undervaluation-scan-model.md  # ETF 低估排行 6 因子評分模型
 └── TASKS.md                   # 實作待辦清單
 
 ---
@@ -849,6 +870,13 @@ cd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/refre
 
 ## 版本歷史
 
+- **v1.8.1**（2026-04-29）：live submit 盤後零股修正 + submission journal + orders_open 清理
+  - `live_submit_sop.py` 優先使用 instance account credentials，env vars 僅作 fallback
+  - 盤後零股時段改用 `StockOrderLot.Odd`，盤中零股維持 `IntradayOdd`
+  - `sync_orders_open_state.py` 讀取券商成交紀錄清除已成交 open order
+  - 新增 `submission_journal.jsonl` audit trail 與 `submit_response` metadata contract
+  - 沉澱 006208 盤後零股未受理事件到 Shioaji wiki，並同步 references / graphify；全測 666 passed
+
 - **v1.8.0**（2026-04-29）：v2 自動交易骨架 + live submit 安全收斂 + production replay 審計
   - A/B/C 計畫加入 top-down macro regime、壓力情境回測與 production replay 對照
   - DCA 初始建倉、寬 trailing、比例 ladder、macro buy gate 與 Phase 2 DCA dashboard 控制接線完成
@@ -982,3 +1010,36 @@ cd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/refre
 ## 聯絡與回饋
 
 如有功能建議或發現問題，請透過 Hermes Agent 反饋，或更新 `TASKS.md` 與 `roadmap.md`。
+
+## 知識庫 references/ 索引（2026-04-29 傘狀整理）
+
+主技能 ETF_TW 已吸收下列窄域技能為 references/ 知識庫文件。需要特定工作流細節時可直接查 `references/`：
+
+| 原技能名稱 | references/ 檔案 | 內容 |
+|-----------|-----------------|------|
+| etf-decision-engine-v2 | decision-engine-v2-architecture.md | 決策引擎 v2 架構（三原則量化+LLM增強） |
+| etf-market-context-pipeline | market-context-pipeline-roadmap.md | 市場情境管線三階段 roadmap |
+| etf-tw-cron-path-fixes | cron-path-fixes-and-script-substitutions.md | Cron 腳本替代與路徑修正 |
+| etf-tw-graphify-lesson | graphify-cooccurrence-bias-lesson.md | Graphify ETF 共現偏差教訓 |
+| etf-tw-health-check | system-health-check.md | 系統健康巡檢 9 項 SOP |
+| etf-tw-health-check-notes | system-health-check-notes.md | 健康巡檢補充備忘 |
+| etf-tw-hermes-migration-cleanup | openclaw-to-hermes-migration-cleanup.md | OpenClaw→Hermes 遷移清理 |
+| etf-tw-intraday-smart-scan | intraday-smart-scan-cron-workflow.md | 盤中智慧掃描 cron 流程 |
+| etf-tw-intraday-wiki-risk-flagging | intraday-wiki-risk-flagging.md | 盤中掃描 wiki 風險標記 |
+| etf-tw-market-prediction-workflow | market-prediction-workflow.md | 隔日行情預測標準化流程 |
+| etf-tw-morning-briefing | morning-briefing-cron-workflow.md | 早班準備 cron 流程 |
+| etf-tw-order-submit-monitor | order-submit-monitor-workflow.md | 下單監控完整流程 |
+| etf-tw-p2-reconciliation-dashboard-hardening | p2-reconciliation-dashboard-hardening.md | P2 資料流審計與 dashboard 強化 |
+| etf-tw-portfolio-rebalancing-advice | portfolio-rebalancing-advice-workflow.md | 資產重配置建議流程 |
+| etf-tw-post-market-review | post-market-review-cron-workflow.md | 盤後收工 cron 流程 |
+| etf-tw-state-monitoring-audit | state-monitoring-audit-workflow.md | State/Dashboard/監控審計 |
+| etf-tw-undervaluation-scan | undervaluation-scan-model.md | ETF 低估排行 6 因子評分 |
+| etf-tw-weekly-deep-review | weekly-deep-review-cron-workflow.md | 每週深度復盤 cron 流程 |
+| etf-tw-wiki-knowledge-pipeline | wiki-knowledge-pipeline-architecture.md | Wiki→AI Decision Bridge 鏈路 |
+| etf-tw-worldmonitor-daily-patrol | worldmonitor-daily-patrol-cron-workflow.md | WorldMonitor 每日巡檢 |
+| etf-tw-worldmonitor-rollout-audit | worldmonitor-rollout-audit-checklist.md | WorldMonitor 落地驗收缺口盤點 |
+
+**保留的獨立子技能**（具備獨立操作價值，不適合完全吸收）：
+- `etf-tw-trading-rules`：交易規則知識庫（委託類型、時段、零股、交割規則）
+- `etf-tw-live-query`：即時持倉與掛單查詢（live broker API 繞過 state）
+- `etf-tw-p0-remediation`：P0 交易致命錯誤收斂流程（含五步驟+最小驗證）

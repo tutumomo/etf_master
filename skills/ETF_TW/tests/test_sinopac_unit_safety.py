@@ -20,6 +20,7 @@ class _Const:
     MKT = "MKT"
     ROD = "ROD"
     Common = "Common"
+    Odd = "Odd"
     IntradayOdd = "IntradayOdd"
 
 
@@ -71,6 +72,7 @@ def _make_legacy_adapter():
 
 
 def test_current_adapter_sends_odd_lot_as_shares():
+    current.get_trading_hours_info = lambda: {"in_after_hours": False}
     adapter = _make_current_adapter()
     order = Order(symbol="0050", action="buy", quantity=50, price=150.0)
 
@@ -79,6 +81,18 @@ def test_current_adapter_sends_odd_lot_as_shares():
     assert result.status == "submitted"
     assert adapter.api.orders[-1]["quantity"] == 50
     assert adapter.api.orders[-1]["order_lot"] == _Const.IntradayOdd
+
+
+def test_current_adapter_uses_after_hours_odd_lot_session():
+    current.get_trading_hours_info = lambda: {"in_after_hours": True}
+    adapter = _make_current_adapter()
+    order = Order(symbol="0050", action="sell", quantity=1, price=150.0)
+
+    result = asyncio.run(current.SinopacAdapter._submit_order_impl(adapter, order))
+
+    assert result.status == "submitted"
+    assert adapter.api.orders[-1]["quantity"] == 1
+    assert adapter.api.orders[-1]["order_lot"] == _Const.Odd
 
 
 def test_current_adapter_sends_board_lot_as_lots():
@@ -103,6 +117,7 @@ def test_current_adapter_rejects_mixed_lot_quantity_at_submit_impl():
 
 
 def test_legacy_enhanced_adapter_no_longer_turns_odd_lot_into_one_board_lot():
+    legacy.get_trading_hours_info = lambda: {"in_after_hours": False}
     adapter = _make_legacy_adapter()
     order = Order(symbol="0050", action="buy", quantity=50, price=150.0)
 
@@ -111,6 +126,18 @@ def test_legacy_enhanced_adapter_no_longer_turns_odd_lot_into_one_board_lot():
     assert result.status == "submitted"
     assert adapter.api.orders[-1]["quantity"] == 50
     assert adapter.api.orders[-1]["order_lot"] == _Const.IntradayOdd
+
+
+def test_legacy_enhanced_adapter_uses_after_hours_odd_lot_session():
+    legacy.get_trading_hours_info = lambda: {"in_after_hours": True}
+    adapter = _make_legacy_adapter()
+    order = Order(symbol="0050", action="sell", quantity=1, price=150.0)
+
+    result = asyncio.run(legacy.SinopacAdapterEnhanced.submit_order(adapter, order))
+
+    assert result.status == "submitted"
+    assert adapter.api.orders[-1]["quantity"] == 1
+    assert adapter.api.orders[-1]["order_lot"] == _Const.Odd
 
 
 def test_legacy_enhanced_adapter_rejects_mixed_lot_quantity():

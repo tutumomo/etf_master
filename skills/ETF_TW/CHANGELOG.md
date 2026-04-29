@@ -1,5 +1,25 @@
 # CHANGELOG
 
+## v1.8.1 — 2026-04-29
+
+### Added
+- **Submission journal**：新增 `scripts/submission_journal.py`，讓 live submit SOP 將 gate block、adapter submit response、submit verification 與 ghost 結果寫入 `submission_journal.jsonl`。
+- **Submit response contract**：`submit_response` 正式納入 broker reconciliation metadata contract，明確標示 `verified=false`、`landed=false`，不可單獨寫入 `orders_open.json`。
+- **盤後零股事故 wiki**：新增 2026-04-29 006208 盤後零股未受理事件紀錄，沉澱永豐網站查無委託與系統 ghost 驗證一致的處理規則。
+
+### Changed
+- **Live submit credentials**：`live_submit_sop.py` 優先從 instance `AccountManager` 建立 broker adapter，env vars 僅作 fallback，避免 dashboard 正式下單因 process env 缺 key 失敗。
+- **Orders open lifecycle**：`sync_orders_open_state.py` 在 live-ready mode 讀取券商成交紀錄，將已成交的本地 open order 轉為 terminal 並清除。
+- **ETF_TW references 同步**：納入 ETF_TW references 知識文件索引，讓 clone 後可取得 cron、reconciliation、worldmonitor、wiki pipeline 等補充知識。
+
+### Fixed
+- **盤後零股 order_lot**：Sinopac adapter 在 13:40-14:30 改用 `StockOrderLot.Odd`，盤中零股維持 `StockOrderLot.IntradayOdd`。
+- **成交後 ghost 誤報**：已成交委託不再長期殘留於 `orders_open.json`，降低 cron 巡檢誤報幽靈單的機率。
+
+### Tests
+- **全測驗證**：`666 passed`。
+- **Graphify 同步**：重建 graphify code graph，產出 3766 nodes / 6483 edges / 447 communities。
+
 ## v1.8.0 — 2026-04-29
 
 ### Added

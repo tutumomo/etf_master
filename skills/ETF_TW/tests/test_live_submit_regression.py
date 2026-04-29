@@ -27,6 +27,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
+import live_submit_sop
 from live_submit_sop import submit_live_order
 from adapters.base import Order
 
@@ -75,6 +76,16 @@ def make_mock_adapter(
         }
     adapter.verify_order_landed = AsyncMock(return_value=verify_result)
     return adapter
+
+
+class _FakeAccountManager:
+    def __init__(self, adapter):
+        self.adapter = adapter
+        self.requested_alias = None
+
+    def get_adapter(self, alias=None):
+        self.requested_alias = alias
+        return self.adapter
 
 
 # ---------------------------------------------------------------------------
@@ -130,6 +141,28 @@ def test_live_submit_gate_receives_redlines_and_settlement_safe_cash(tmp_path, m
     adapter._submit_order_impl.assert_not_called()
 
 
+def test_default_adapter_uses_instance_account_credentials_before_env(monkeypatch):
+    """Live submit SOP should use AccountManager/instance_config credentials before env fallback."""
+    for name in ("SINOPAC_API_KEY", "SINOPAC_SECRET_KEY", "SINOPAC_API_SECRET", "SINOPAC_PASSWORD"):
+        monkeypatch.delenv(name, raising=False)
+
+    adapter = make_mock_adapter("ORDCFG")
+    adapter.authenticate = AsyncMock(return_value=True)
+    manager = _FakeAccountManager(adapter)
+
+    monkeypatch.setattr(live_submit_sop, "get_account_manager", lambda: manager)
+
+    result_adapter, reason = asyncio.run(live_submit_sop._build_default_adapter({
+        "broker_id": "sinopac",
+        "account_id": "sinopac_01",
+    }))
+
+    assert reason == "ok"
+    assert result_adapter is adapter
+    assert manager.requested_alias == "sinopac_01"
+    adapter.authenticate.assert_awaited_once()
+
+
 # ---------------------------------------------------------------------------
 # Scenario 1: Happy path
 # ---------------------------------------------------------------------------
@@ -153,6 +186,15 @@ def test_happy_path_order_written_to_orders_open(tmp_path):
     assert any(
         o.get("broker_order_id") == "ORD001" for o in orders_open
     ), "ORD001 must appear in orders_open.json"
+
+    journal_path = tmp_path / "submission_journal.jsonl"
+    journal_rows = [json.loads(line) for line in journal_path.read_text().splitlines()]
+    assert [row["event"] for row in journal_rows] == ["submit_response", "submit_verified"]
+    assert journal_rows[0]["source_type"] == "submit_response"
+    assert journal_rows[0]["verified"] is False
+    assert journal_rows[0]["landed"] is False
+    assert journal_rows[1]["source_type"] == "submit_verification"
+    assert result["submit_response"]["source_type"] == "submit_response"
 
 
 # ---------------------------------------------------------------------------
@@ -181,6 +223,14 @@ def test_ghost_order_logged_not_in_orders_open(tmp_path):
     assert ghost_log.exists(), "ghost_orders.jsonl must be created for ghost orders"
     last_record = json.loads(ghost_log.read_text().strip().splitlines()[-1])
     assert last_record["broker_order_id"] == "ORD002"
+
+    journal_rows = [
+        json.loads(line)
+        for line in (tmp_path / "submission_journal.jsonl").read_text().splitlines()
+    ]
+    assert [row["event"] for row in journal_rows] == ["submit_response", "submit_ghost"]
+    assert journal_rows[-1]["ghost"] is True
+    assert journal_rows[-1]["verified"] is False
 
     # orders_open.json must NOT contain this broker_order_id
     orders_open_path = tmp_path / "orders_open.json"
@@ -215,6 +265,12 @@ def test_preflight_gate_blocks_submit(tmp_path, monkeypatch):
     assert result["success"] is False
     assert result["step"] == "pre_flight_gate"
     adapter._submit_order_impl.assert_not_called()
+    journal_rows = [
+        json.loads(line)
+        for line in (tmp_path / "submission_journal.jsonl").read_text().splitlines()
+    ]
+    assert journal_rows[-1]["event"] == "blocked"
+    assert journal_rows[-1]["step"] == "pre_flight_gate"
 
 
 # ---------------------------------------------------------------------------
