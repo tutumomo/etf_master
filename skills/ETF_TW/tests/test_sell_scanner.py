@@ -82,6 +82,47 @@ def test_run_sell_scan_triggers_when_below_stop(state_dir):
     assert sig["trigger_payload"]["stop_price"] == 33.25
 
 
+def test_run_sell_scan_skips_trailing_during_active_initial_dca(state_dir):
+    """初始 DCA 建倉期間應凍結 trailing sell，避免還在建倉就被洗出場。"""
+    on_date = datetime(2026, 4, 29, 13, 15, tzinfo=TW_TZ)
+
+    _write(state_dir, "positions.json", {"positions": [
+        {"symbol": "00923", "quantity": 200, "average_cost": 30, "entry_date": "2026-04-15"},
+    ]})
+    _write(state_dir, "intraday_quotes_1m.json", _make_intraday("00923", 33.0))
+    _write(state_dir, "market_cache.json", {"quotes": {}})
+    _write(state_dir, "initial_dca_state.json", {
+        "enabled": True,
+        "total_target_twd": 10000,
+        "target_days": 10,
+        "started_on": "2026-04-29",
+        "days_done": 2,
+        "twd_spent": 2000,
+        "completed": False,
+        "symbol_priority": ["00923"],
+    })
+
+    pt.save_tracker(state_dir, {
+        "00923": {
+            "entry_date": "2026-04-15",
+            "tracking_start_date": "2026-04-16",
+            "group": "income",
+            "peak_close": 35.0,
+            "peak_close_date": "2026-04-22",
+            "trailing_pct": 0.05,
+            "stop_price": 33.25,
+            "is_locked_in": False,
+            "last_updated": on_date.isoformat(),
+        }
+    })
+
+    res = ss.run_sell_scan(state_dir=state_dir, on_date=on_date)
+
+    assert res["enqueued"] == []
+    assert len(res["dca_trailing_frozen"]) == 1
+    assert res["dca_trailing_frozen"][0]["symbol"] == "00923"
+
+
 def test_run_sell_scan_above_stop_no_trigger(state_dir):
     on_date = datetime(2026, 4, 25, 13, 15, tzinfo=TW_TZ)
 

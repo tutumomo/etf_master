@@ -52,6 +52,7 @@ from trading_hours_gate import check_trading_hours_gate
 
 
 ORDERS_OPEN_PATH = context.get_state_dir() / "orders_open.json"
+GHOST_ORDERS_PATH = context.get_state_dir() / "ghost_orders.jsonl"
 
 
 def load_orders_open() -> dict:
@@ -97,6 +98,12 @@ def build_submit_order_row(
         "account": account_id,
         "broker_id": broker_id,
     }
+
+
+def append_ghost_order(row: dict) -> None:
+    GHOST_ORDERS_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with GHOST_ORDERS_PATH.open("a", encoding="utf-8") as fh:
+        fh.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
 async def execute_trade(
@@ -219,28 +226,41 @@ async def execute_trade(
     submitted_order.status = normalize_order_status(getattr(submitted_order, 'status', None))
 
     broker_order = None
-    if getattr(submitted_order, 'order_id', None):
+    submitted_order_id = getattr(submitted_order, 'order_id', None)
+    broker_order_id = getattr(submitted_order, 'broker_order_id', None)
+    if submitted_order_id:
         try:
-            broker_order = await adapter.get_order_status(submitted_order.order_id)
+            broker_order = await adapter.get_order_status(submitted_order_id)
         except Exception:
             broker_order = None
 
     verify = verification_payload(submitted_order, broker_order)
+    if broker_order_id and hasattr(adapter, "verify_order_landed"):
+        try:
+            landed_verify = await adapter.verify_order_landed(broker_order_id)
+            verify["verified"] = bool(landed_verify.get("verified"))
+            verify["broker_order_id"] = broker_order_id
+            verify["broker_status"] = submitted_order.status if verify["verified"] else verify.get("broker_status")
+        except Exception:
+            verify["broker_order_id"] = broker_order_id
 
     # Fallback verification by live positions when broker order lookup is unavailable
     landed_by_position = False
     try:
-        if hasattr(adapter, 'get_positions'):
+        if mode != "live" and hasattr(adapter, 'get_positions'):
             positions = await adapter.get_positions(account_id)
             landed_by_position = any(str(getattr(pos, 'symbol', '')).split('.')[0] == symbol.split('.')[0] and int(getattr(pos, 'quantity', 0) or 0) >= quantity for pos in positions)
     except Exception:
         landed_by_position = False
 
-    landed = verify['verified'] or landed_by_position or submitted_order.status in {'submitted', 'filled', 'partial_filled', 'cancelled', 'rejected', 'pending'}
+    if mode == "live":
+        landed = bool(verify["verified"])
+    else:
+        landed = verify['verified'] or landed_by_position or submitted_order.status in {'submitted', 'filled', 'partial_filled', 'cancelled', 'rejected', 'pending'}
 
     # Log the trade
     if landed:
-        actual_order_id = submitted_order.order_id if hasattr(submitted_order, 'order_id') else 'order_001'
+        actual_order_id = submitted_order_id or broker_order_id
         logger.log_order_submitted(
             order_id=actual_order_id,
             broker_id=broker_id,
@@ -313,8 +333,20 @@ async def execute_trade(
         risk_ctrl.record_order(symbol, action, quantity, submitted_order.filled_price, 'filled')
         print("   ✅ 訂單已成交並記錄")
     else:
+        if mode == "live":
+            append_ghost_order({
+                "order_id": submitted_order_id,
+                "broker_order_id": broker_order_id,
+                "symbol": symbol,
+                "action": action,
+                "quantity": quantity,
+                "price": price,
+                "mode": mode,
+                "ghost_detected_at": datetime.now().astimezone().isoformat(),
+                "reason": "live_submit_unverified",
+            })
         logger.log_order_rejected(
-            order_id=submitted_order.order_id if hasattr(submitted_order, 'order_id') else 'order_001',
+            order_id=submitted_order_id or broker_order_id or "",
             broker_id=broker_id,
             account_id=account_id,
             symbol=symbol,

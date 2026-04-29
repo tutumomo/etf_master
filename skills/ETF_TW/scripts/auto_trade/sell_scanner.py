@@ -33,6 +33,7 @@ from scripts.etf_core import context as ctx_mod
 from scripts.etf_core.state_io import safe_load_json
 import scripts.pre_flight_gate as pre_flight
 from scripts.auto_trade import pending_queue, peak_tracker
+from scripts.auto_trade.initial_dca import is_dca_phase_active, load_dca_state
 from scripts.auto_trade.vwap_calculator import SELL_TRIGGER_TIME, TW_TZ
 
 # 賣出後該檔多少天內不可重新買入（避免 churning）
@@ -123,6 +124,7 @@ def run_sell_scan(
         "blocked": [...],
         "below_stop": [...],         # 跌破 stop 但 gate 擋下的
         "above_stop": [...],          # 還沒跌破
+        "dca_trailing_frozen": [...], # DCA 建倉期，trailing 凍結
         "tracking_not_started": [...],# 持倉未滿一日
         "no_data": [...],
       }
@@ -154,9 +156,12 @@ def run_sell_scan(
         "blocked": [],
         "below_stop": [],
         "above_stop": [],
+        "dca_trailing_frozen": [],
         "tracking_not_started": [],
         "no_data": [],
     }
+    dca_state = load_dca_state(state_dir)
+    dca_active = is_dca_phase_active(dca_state, today=today)
 
     inventory_lookup = {
         str(p.get("symbol", "")).upper(): float(p.get("quantity") or 0)
@@ -185,6 +190,15 @@ def run_sell_scan(
                 "symbol": sym,
                 "tracking_start_date": entry.get("tracking_start_date"),
                 "today": today.isoformat(),
+            })
+            continue
+
+        if dca_active:
+            result["dca_trailing_frozen"].append({
+                "symbol": sym,
+                "reason": "initial_dca_active",
+                "days_done": dca_state.get("days_done"),
+                "target_days": dca_state.get("target_days"),
             })
             continue
 

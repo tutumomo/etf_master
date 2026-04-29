@@ -18,6 +18,7 @@ ack_handler.py — Dashboard ack/reject 訊號的後端處理
 from __future__ import annotations
 
 import json
+import asyncio
 import subprocess
 import sys
 from datetime import datetime
@@ -34,6 +35,7 @@ from scripts.etf_core.state_io import safe_load_json
 import scripts.pre_flight_gate as pre_flight
 from scripts.auto_trade import pending_queue
 from scripts.auto_trade import sell_scanner
+from scripts.auto_trade.initial_dca import load_dca_state, record_dca_buy, save_dca_state
 from scripts.auto_trade.vwap_calculator import TW_TZ
 
 
@@ -94,6 +96,36 @@ def reject_signal(signal_id: str, *, reason: str = "user_rejected", state_dir: P
         signal_id=signal_id,
         new_status="rejected",
         extra={"rejected_reason": reason},
+    )
+
+
+def _record_initial_dca_execution(state_dir: Path, signal: dict, executed_at: datetime) -> None:
+    payload = signal.get("trigger_payload") or {}
+    if signal.get("trigger_source") != "initial_dca" and not payload.get("initial_dca"):
+        return
+
+    amount_twd = payload.get("amount_twd")
+    if amount_twd is None:
+        amount_twd = float(signal.get("quantity") or 0) * float(signal.get("price") or 0)
+    next_symbol_idx = int(payload.get("next_symbol_idx", 0))
+    state = load_dca_state(state_dir)
+    updated = record_dca_buy(
+        state,
+        today=executed_at.date(),
+        amount_twd=float(amount_twd),
+        next_symbol_idx=next_symbol_idx,
+    )
+    save_dca_state(state_dir, updated)
+
+
+def _complete_trade_output_verified(output: str) -> bool:
+    text = output or ""
+    if "UNVERIFIED" in text or "未驗證" in text:
+        return False
+    return (
+        "驗證結果：VERIFIED" in text
+        or "verified=True" in text
+        or '"verified": true' in text.lower()
     )
 
 
@@ -207,9 +239,11 @@ def ack_signal(
             signal_id=signal_id, new_status="executed",
             extra={"execution_output": execution_output[:500]},
         )
+        executed_at = _now()
+        _record_initial_dca_execution(state_dir, signal, executed_at)
         # sell 訊號成交後寫 cooldown
         if side == "sell":
-            sell_scanner.write_sell_cooldown(state_dir, signal["symbol"], sold_on=_now())
+            sell_scanner.write_sell_cooldown(state_dir, signal["symbol"], sold_on=executed_at)
         return {
             "ok": True,
             "status": "executed",
@@ -253,6 +287,32 @@ def _invoke_complete_trade(signal: dict, *, state_dir: Path | None = None) -> tu
     broker = trading_mode.get("default_broker", "sinopac")
     account = trading_mode.get("default_account", "sinopac_01")
 
+    if mode == "live":
+        try:
+            from scripts.live_submit_sop import submit_live_order
+        except ImportError:
+            from live_submit_sop import submit_live_order
+
+        live_result = asyncio.run(
+            submit_live_order(
+                {
+                    "symbol": signal["symbol"],
+                    "side": signal["side"],
+                    "quantity": int(signal["quantity"]),
+                    "price": float(signal["price"]),
+                    "order_type": signal.get("order_type", "limit"),
+                    "lot_type": signal.get("lot_type", "board"),
+                    "is_submit": True,
+                    "is_confirmed": True,
+                    "order_id": signal["id"],
+                    "account_id": account,
+                    "broker_id": broker,
+                },
+                state_dir=(state_dir or ctx_mod.get_state_dir()),
+            )
+        )
+        return json.dumps(live_result, ensure_ascii=False), bool(live_result.get("success"))
+
     cmd = [
         str(venv_python),
         str(ETF_TW_ROOT / "scripts" / "complete_trade.py"),
@@ -277,7 +337,7 @@ def _invoke_complete_trade(signal: dict, *, state_dir: Path | None = None) -> tu
         output = (proc.stdout or "") + ("\n[stderr]\n" + proc.stderr if proc.stderr else "")
         ok = proc.returncode == 0
         if ok and mode == "live":
-            ok = "broker_order_id" in output or "ordno" in output or "VERIFIED" in output
+            ok = _complete_trade_output_verified(output)
         return output.strip(), ok
     except subprocess.TimeoutExpired:
         return "complete_trade.py 執行逾時（60s）", False

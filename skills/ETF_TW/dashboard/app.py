@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import hashlib
+import asyncio
 from pathlib import Path
 from datetime import datetime, timezone, timedelta
 import subprocess
@@ -159,6 +160,38 @@ def build_trade_preview_id(symbol: str, side: str, quantity: int, price: float) 
     }
     raw = json.dumps(payload, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()[:24]
+
+
+def build_live_order_id(prefix: str, symbol: str, side: str, quantity: int, price: float | None, seed: str = "") -> str:
+    payload = {
+        "prefix": prefix,
+        "symbol": normalize_symbol(symbol),
+        "side": side.lower(),
+        "quantity": int(quantity),
+        "price": None if price is None else round(float(price), 4),
+        "seed": seed,
+    }
+    raw = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()[:24]
+
+
+def submit_stdout_verified(stdout: str) -> bool:
+    text = stdout or ""
+    if "UNVERIFIED" in text or "未驗證" in text:
+        return False
+    return (
+        "驗證結果：VERIFIED" in text
+        or "verified=True" in text
+        or '"verified": true' in text.lower()
+    )
+
+
+def live_submit_status_code(result: dict) -> int:
+    if result.get("step") in {"live_mode_gate", "pre_flight_gate", "human_confirm"}:
+        return 403
+    if result.get("ghost"):
+        return 502
+    return 500
 
 
 def load_etf_catalog() -> dict:
@@ -1687,6 +1720,31 @@ def trade_submit(payload: TradeSubmitRequest):
     check_res = pre_flight.check_order(order, context_data)
     if not check_res.get("passed"):
         raise HTTPException(status_code=403, detail=f"Risk check failed: {check_res.get('reason')}")
+
+    if mode == "live":
+        from scripts.live_submit_sop import submit_live_order
+
+        live_order = {
+            **order,
+            "symbol": normalize_symbol(payload.symbol),
+            "order_id": payload.preview_id,
+            "account_id": trading_mode.get("default_account", "sinopac_01"),
+            "broker_id": trading_mode.get("default_broker", "sinopac"),
+        }
+        live_result = asyncio.run(submit_live_order(live_order, state_dir=STATE))
+        if not live_result.get("success"):
+            raise HTTPException(
+                status_code=live_submit_status_code(live_result),
+                detail=live_result.get("reason", "live submit failed"),
+            )
+        return {
+            "ok": True,
+            "verified": True,
+            "status": "VERIFIED",
+            "message": f"委託已驗證落地：{payload.side.upper()} {payload.symbol} {payload.quantity}股 @ {payload.price}",
+            "broker_order_id": live_result.get("broker_order_id"),
+            "order_id": live_result.get("order_id"),
+        }
     
     # Build command for complete_trade.py
     cmd_args = [
@@ -1708,7 +1766,12 @@ def trade_submit(payload: TradeSubmitRequest):
             raise HTTPException(status_code=500, detail=f"交易執行失敗：{detail}")
 
         stdout = result.stdout or ""
-        verified = ("broker_order_id" in stdout or "ordno" in stdout or "VERIFIED" in stdout)
+        verified = submit_stdout_verified(stdout)
+        if mode == "live" and not verified:
+            raise HTTPException(
+                status_code=502,
+                detail="委託未驗證落地，禁止顯示為正式下單成功；請以券商端查詢為準",
+            )
         return {
             "ok": True,
             "verified": verified,
@@ -1720,6 +1783,8 @@ def trade_submit(payload: TradeSubmitRequest):
             ),
             "stdout": stdout[:500]
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -1875,6 +1940,59 @@ async def auto_trade_submit(payload: AutoTradeSubmitRequest):
         state = load_state("auto_trade_state.json")
         if not config.get("live_submit_allowed") or not state.get("live_submit_allowed"):
             raise HTTPException(status_code=403, detail="live_submit_allowed 尚未啟用，禁止真實下單")
+        from scripts.live_submit_sop import submit_live_order
+
+        order_id = build_live_order_id(
+            "auto-preview",
+            payload.symbol,
+            payload.action,
+            payload.quantity,
+            payload.price,
+            seed=str(candidate.get("generated_at") or ""),
+        )
+        live_result = await submit_live_order(
+            {
+                "symbol": normalize_symbol(payload.symbol),
+                "side": payload.action,
+                "quantity": payload.quantity,
+                "price": payload.price,
+                "order_type": "limit" if payload.price else "market",
+                "lot_type": "board" if payload.quantity >= 1000 else "odd",
+                "is_submit": True,
+                "is_confirmed": True,
+                "order_id": order_id,
+                "account_id": load_state("trading_mode.json").get("default_account", "sinopac_01"),
+                "broker_id": load_state("trading_mode.json").get("default_broker", "sinopac"),
+            },
+            state_dir=STATE,
+        )
+
+        import datetime as _dt
+        candidate["not_submitted"] = not bool(live_result.get("success"))
+        candidate["submitted_at"] = _dt.datetime.now().astimezone().isoformat()
+        candidate["submit_mode"] = payload.mode
+        candidate["submit_result_stdout"] = json.dumps(live_result, ensure_ascii=False)[:500]
+        candidate["submit_result_stderr"] = ""
+        candidate["submit_exit_code"] = 0 if live_result.get("success") else 1
+        (STATE / "auto_preview_candidate.json").write_text(
+            json.dumps(candidate, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+        if not live_result.get("success"):
+            return {
+                "ok": False,
+                "message": live_result.get("reason", "live submit failed"),
+                "verified": False,
+                "ghost": bool(live_result.get("ghost")),
+                "candidate_updated": True,
+            }
+        return {
+            "ok": True,
+            "message": f"委託已驗證落地：{payload.symbol} {payload.action} {payload.quantity} @ live",
+            "verified": True,
+            "broker_order_id": live_result.get("broker_order_id"),
+            "candidate_updated": True,
+        }
     
     # Gate 4: Large order check (no CONFIRM LARGE ORDER keyword = block >50% portfolio)
     # (We'll add portfolio percentage check if positions data is available)
@@ -1900,8 +2018,8 @@ async def auto_trade_submit(payload: AutoTradeSubmitRequest):
         stdout = result.stdout.strip()
         stderr = result.stderr.strip()
         
-        # Check for broker_order_id in output (教訓10: no broker_order_id = fake receipt)
-        has_order_id = "broker_order_id" in stdout or "order_id" in stdout or "委託" in stdout
+        # Check verified landing only; UNVERIFIED must not be treated as success.
+        verified = submit_stdout_verified(stdout)
         
         # Update preview candidate as submitted
         candidate["not_submitted"] = False
@@ -1930,7 +2048,7 @@ async def auto_trade_submit(payload: AutoTradeSubmitRequest):
             "price": payload.price,
             "mode": payload.mode,
             "exit_code": result.returncode,
-            "has_order_id": has_order_id,
+            "verified": verified,
         })
         log_path.write_text(json.dumps(log_entries, ensure_ascii=False, indent=2), encoding="utf-8")
         
@@ -1941,11 +2059,20 @@ async def auto_trade_submit(payload: AutoTradeSubmitRequest):
                 "stdout": stdout[:500],
                 "stderr": stderr[:500],
             }
+        if payload.mode == "live" and not verified:
+            return {
+                "ok": False,
+                "message": "委託未驗證落地，禁止顯示為正式下單成功；請以券商端查詢為準",
+                "verified": False,
+                "stdout": stdout[:500],
+                "stderr": stderr[:300] if stderr else None,
+                "candidate_updated": True,
+            }
         
         return {
             "ok": True,
             "message": f"委託已送出：{payload.symbol} {payload.action} {payload.quantity} @ {payload.mode}",
-            "has_order_id": has_order_id,
+            "verified": verified,
             "stdout": stdout[:500],
             "stderr": stderr[:300] if stderr else None,
             "candidate_updated": True,
@@ -2178,8 +2305,29 @@ class Phase2ConfigRequest(BaseModel):
     daily_auto_buy_pct: float | None = None
 
 
+class Phase2DcaStartRequest(BaseModel):
+    total_target_twd: int
+    target_days: int
+    symbol_priority: list[str]
+
+
 class Phase2RejectRequest(BaseModel):
     reason: str | None = None
+
+
+def _load_phase2_dca_state() -> dict:
+    from scripts.auto_trade.initial_dca import load_dca_state
+
+    return load_dca_state(STATE)
+
+
+def _normalize_dca_symbols(symbols: list[str]) -> list[str]:
+    normalized: list[str] = []
+    for symbol in symbols:
+        sym = normalize_symbol(symbol)
+        if sym and sym not in normalized:
+            normalized.append(sym)
+    return normalized
 
 
 @app.get("/api/auto-trade/phase2/pending")
@@ -2247,6 +2395,40 @@ def phase2_set_config(payload: Phase2ConfigRequest):
         existing["daily_auto_buy_pct"] = float(payload.daily_auto_buy_pct)
     cfg_path.write_text(json.dumps(existing, ensure_ascii=False, indent=2), encoding="utf-8")
     return {"ok": True, "config": auto_cb.load_auto_trade_config(STATE)}
+
+
+@app.get("/api/auto-trade/phase2/dca/status")
+def phase2_get_dca_status():
+    return {"ok": True, "dca": _load_phase2_dca_state()}
+
+
+@app.post("/api/auto-trade/phase2/dca/start")
+def phase2_start_dca(payload: Phase2DcaStartRequest):
+    if payload.total_target_twd <= 0:
+        raise HTTPException(status_code=400, detail="DCA 目標金額必須大於 0")
+    if payload.target_days < 1 or payload.target_days > 252:
+        raise HTTPException(status_code=400, detail="DCA 目標天數必須介於 1 到 252")
+
+    symbols = _normalize_dca_symbols(payload.symbol_priority)
+    if not symbols:
+        raise HTTPException(status_code=400, detail="DCA 至少一個輪流標的")
+
+    from scripts.auto_trade.initial_dca import start_dca
+
+    state = start_dca(
+        STATE,
+        total_target_twd=payload.total_target_twd,
+        target_days=payload.target_days,
+        symbol_priority=symbols,
+    )
+    return {"ok": True, "dca": state}
+
+
+@app.post("/api/auto-trade/phase2/dca/stop")
+def phase2_stop_dca():
+    from scripts.auto_trade.initial_dca import stop_dca
+
+    return {"ok": True, "dca": stop_dca(STATE)}
 
 
 @app.post("/api/auto-trade/phase2/ack/{signal_id}")

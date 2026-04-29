@@ -203,8 +203,8 @@ class TestLiveSubmitSop:
         assert result["ghost"] is False
 
         orders_open = json.loads((state_dir / "orders_open.json").read_text())
-        assert isinstance(orders_open, list)
-        assert orders_open[0]["broker_order_id"] == "ORD999"
+        assert isinstance(orders_open, dict)
+        assert orders_open["orders"][0]["broker_order_id"] == "ORD999"
 
     def test_ghost_order_not_written_to_orders_open(self, tmp_path):
         """Ghost order must NOT be written to orders_open.json."""

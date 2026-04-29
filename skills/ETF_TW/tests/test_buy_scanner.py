@@ -191,6 +191,107 @@ def test_run_buy_scan_drop_2pct_triggers_buy(state_dir):
     assert sig["trigger_payload"]["drop_pct"] == pytest.approx(-2.5, abs=0.5)
 
 
+def test_run_buy_scan_enqueues_initial_dca_signal_without_intraday_bars(state_dir):
+    """DCA 啟用時，即使沒有 VWAP intraday bars，也應依 current_price 建立待確認買單。"""
+    on_date = datetime(2026, 4, 29, 9, 30, tzinfo=TW_TZ)
+
+    _write_state(state_dir, "watchlist.json", {"items": [{"symbol": "0050"}]})
+    _write_state(state_dir, "positions.json", {"positions": []})
+    _write_state(state_dir, "intraday_quotes_1m.json", {"intraday": {}})
+    _write_state(state_dir, "market_cache.json", {
+        "quotes": {"0050": {"current_price": 50.0, "prev_close": 51.0}}
+    })
+    _write_state(state_dir, "account_snapshot.json", {"cash": 100000, "settlement_safe_cash": 100000})
+    _write_state(state_dir, "safety_redlines.json", {
+        "enabled": True,
+        "max_buy_amount_pct": 0.5,
+        "max_buy_amount_twd": 1000000,
+        "max_buy_shares": 1000,
+    })
+    _write_state(state_dir, "initial_dca_state.json", {
+        "enabled": True,
+        "total_target_twd": 10000,
+        "target_days": 10,
+        "started_on": "2026-04-29",
+        "days_done": 0,
+        "twd_spent": 0,
+        "completed": False,
+        "last_buy_date": None,
+        "symbol_priority": ["0050"],
+        "next_symbol_idx": 0,
+    })
+
+    res = run_buy_scan(
+        trigger_time=time(9, 30),
+        state_dir=state_dir,
+        on_date=on_date,
+        skip_circuit_breaker=True,
+    )
+
+    assert len(res["enqueued"]) == 1
+    sig = res["enqueued"][0]
+    assert sig["symbol"] == "0050"
+    assert sig["quantity"] == 20
+    assert sig["trigger_source"] == "initial_dca"
+    assert sig["trigger_payload"]["initial_dca"] is True
+    assert sig["trigger_payload"]["amount_twd"] == 1000
+    assert sig["trigger_payload"]["next_symbol_idx"] == 0
+
+
+def test_run_buy_scan_does_not_duplicate_pending_dca_same_day(state_dir):
+    """同一天已有 DCA pending 時，不應在下一個掃描時點重複 enqueue。"""
+    on_date = datetime(2026, 4, 29, 11, 0, tzinfo=TW_TZ)
+    _write_state(state_dir, "watchlist.json", {"items": [{"symbol": "0050"}]})
+    _write_state(state_dir, "positions.json", {"positions": []})
+    _write_state(state_dir, "intraday_quotes_1m.json", {"intraday": {}})
+    _write_state(state_dir, "market_cache.json", {
+        "quotes": {"0050": {"current_price": 50.0, "prev_close": 51.0}}
+    })
+    _write_state(state_dir, "account_snapshot.json", {"cash": 100000, "settlement_safe_cash": 100000})
+    _write_state(state_dir, "safety_redlines.json", {
+        "enabled": True,
+        "max_buy_amount_pct": 0.5,
+        "max_buy_amount_twd": 1000000,
+        "max_buy_shares": 1000,
+    })
+    _write_state(state_dir, "initial_dca_state.json", {
+        "enabled": True,
+        "total_target_twd": 10000,
+        "target_days": 10,
+        "started_on": "2026-04-29",
+        "days_done": 0,
+        "twd_spent": 0,
+        "completed": False,
+        "last_buy_date": None,
+        "symbol_priority": ["0050"],
+        "next_symbol_idx": 0,
+    })
+    _write_state(state_dir, "pending_auto_orders.json", [{
+        "id": "existing-dca",
+        "side": "buy",
+        "symbol": "0050",
+        "quantity": 20,
+        "price": 50.0,
+        "order_type": "limit",
+        "lot_type": "odd",
+        "trigger_source": "initial_dca",
+        "trigger_payload": {"initial_dca": True},
+        "created_at": "2026-04-29T09:30:00+08:00",
+        "expires_at": "2026-04-29T09:45:00+08:00",
+        "status": "pending",
+    }])
+
+    res = run_buy_scan(
+        trigger_time=time(11, 0),
+        state_dir=state_dir,
+        on_date=on_date,
+        skip_circuit_breaker=True,
+    )
+
+    assert res["enqueued"] == []
+    assert res["dca"]["skipped"] == "already_pending_or_done_today"
+
+
 def test_run_buy_scan_below_threshold_no_signal(state_dir):
     """跌幅 < 1% → 不觸發"""
     on_date = datetime(2026, 4, 25, 9, 30, tzinfo=TW_TZ)
@@ -319,6 +420,86 @@ def test_run_buy_scan_applies_strategy_and_overlay_amount_adjustment(state_dir):
     assert sig["trigger_payload"]["scenario_overlay"] == "收益再投資"
     assert sig["trigger_payload"]["group"] == "income"
     assert sig["trigger_payload"]["overlay_multiplier"] == 1.25
+
+
+def test_run_buy_scan_macro_cautious_blocks_all_buy_signals(state_dir):
+    """macro_cautious 應是明確買入 gate：不產生任何 buy pending。"""
+    on_date = datetime(2026, 4, 25, 9, 30, tzinfo=TW_TZ)
+    bar_start = datetime(2026, 4, 25, 9, 0, tzinfo=TW_TZ)
+
+    _write_state(state_dir, "watchlist.json", {"items": [{"symbol": "0050", "group": "core"}]})
+    _write_state(state_dir, "positions.json", {"positions": []})
+    _write_state(state_dir, "intraday_quotes_1m.json", {
+        "intraday": {
+            "0050": {
+                "ticker_used": "0050.TW",
+                "bars": _make_intraday("0050", bar_start, [97.5] * 30, volume=1000),
+                "bar_count": 30,
+            }
+        }
+    })
+    _write_state(state_dir, "market_cache.json", {
+        "quotes": {"0050": {"current_price": 97.5, "prev_close": 100.0}}
+    })
+    _write_state(state_dir, "account_snapshot.json", {"cash": 100000, "settlement_safe_cash": 100000})
+    _write_state(state_dir, "safety_redlines.json", {
+        "enabled": True, "max_buy_amount_pct": 0.5, "max_buy_amount_twd": 1000000,
+    })
+    _write_state(state_dir, "market_context_taiwan.json", {
+        "macro_signals": {"macro_label": "macro_cautious", "macro_score": -2}
+    })
+
+    res = run_buy_scan(
+        trigger_time=time(9, 30),
+        state_dir=state_dir,
+        on_date=on_date,
+        skip_circuit_breaker=True,
+    )
+
+    assert res["enqueued"] == []
+    assert res["skipped"] == "macro_regime_gate"
+    assert res["macro_gate"]["action"] == "block_buy"
+
+
+def test_run_buy_scan_macro_neutral_halves_ladder_amount(state_dir):
+    """macro_neutral 應把買入 sizing 減半，但仍允許進入紅線檢查。"""
+    on_date = datetime(2026, 4, 25, 9, 30, tzinfo=TW_TZ)
+    bar_start = datetime(2026, 4, 25, 9, 0, tzinfo=TW_TZ)
+
+    _write_state(state_dir, "watchlist.json", {"items": [{"symbol": "0050", "group": "core"}]})
+    _write_state(state_dir, "positions.json", {"positions": []})
+    _write_state(state_dir, "intraday_quotes_1m.json", {
+        "intraday": {
+            "0050": {
+                "ticker_used": "0050.TW",
+                "bars": _make_intraday("0050", bar_start, [97.5] * 30, volume=1000),
+                "bar_count": 30,
+            }
+        }
+    })
+    _write_state(state_dir, "market_cache.json", {
+        "quotes": {"0050": {"current_price": 50.0, "prev_close": 100.0}}
+    })
+    _write_state(state_dir, "account_snapshot.json", {"cash": 100000, "settlement_safe_cash": 100000})
+    _write_state(state_dir, "safety_redlines.json", {
+        "enabled": True, "max_buy_amount_pct": 0.5, "max_buy_amount_twd": 1000000,
+    })
+    _write_state(state_dir, "market_context_taiwan.json", {
+        "macro_signals": {"macro_label": "macro_neutral", "macro_score": 0}
+    })
+
+    res = run_buy_scan(
+        trigger_time=time(9, 30),
+        state_dir=state_dir,
+        on_date=on_date,
+        skip_circuit_breaker=True,
+    )
+
+    assert len(res["enqueued"]) == 1
+    sig = res["enqueued"][0]
+    assert sig["trigger_payload"]["base_ladder_amount"] == 1000
+    assert sig["trigger_payload"]["ladder_amount"] == 500
+    assert sig["trigger_payload"]["macro_multiplier"] == 0.5
 
 
 def test_run_buy_scan_skips_growth_in_cautious_market_until_deeper_drop(state_dir):

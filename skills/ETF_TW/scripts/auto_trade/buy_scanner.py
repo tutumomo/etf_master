@@ -44,6 +44,7 @@ from scripts.etf_core import context as ctx_mod
 from scripts.etf_core.state_io import safe_load_json
 import scripts.pre_flight_gate as pre_flight
 from scripts.auto_trade import pending_queue
+from scripts.auto_trade.initial_dca import dca_should_trigger, load_dca_state
 from scripts.auto_trade.vwap_calculator import (
     BUY_TRIGGER_TIMES,
     TW_TZ,
@@ -234,6 +235,7 @@ def _phase2_buy_adjustment(
     market_regime = str(market_context.get("market_regime") or market_context.get("event_regime") or "").lower()
     risk_temperature = str(market_context.get("risk_temperature") or "normal").lower()
     defensive_tilt = str(market_context.get("defensive_tilt") or "").lower()
+    macro_gate = _macro_buy_gate(market_context)
 
     strategy_multiplier = STRATEGY_GROUP_MULTIPLIER.get(base_strategy, STRATEGY_GROUP_MULTIPLIER["平衡配置"]).get(group, 0.5)
     overlay_multiplier = OVERLAY_GROUP_MULTIPLIER.get(scenario_overlay, {}).get(group, 1.0)
@@ -263,7 +265,8 @@ def _phase2_buy_adjustment(
             }
         threshold_note = f"{group} 已符合謹慎情境加嚴門檻"
 
-    final_multiplier = strategy_multiplier * overlay_multiplier * risk_multiplier * defensive_boost
+    macro_multiplier = float(macro_gate.get("multiplier", 1.0))
+    final_multiplier = strategy_multiplier * overlay_multiplier * risk_multiplier * defensive_boost * macro_multiplier
     final_amount = int(base_amount * final_multiplier)
 
     if final_amount <= 0:
@@ -279,6 +282,7 @@ def _phase2_buy_adjustment(
             "overlay_multiplier": overlay_multiplier,
             "risk_multiplier": risk_multiplier,
             "defensive_boost": defensive_boost,
+            "macro_multiplier": macro_multiplier,
             "market_regime": market_regime,
             "risk_temperature": risk_temperature,
             "threshold_note": threshold_note,
@@ -295,9 +299,47 @@ def _phase2_buy_adjustment(
         "overlay_multiplier": overlay_multiplier,
         "risk_multiplier": risk_multiplier,
         "defensive_boost": defensive_boost,
+        "macro_multiplier": macro_multiplier,
         "market_regime": market_regime,
         "risk_temperature": risk_temperature,
         "threshold_note": threshold_note,
+    }
+
+
+def _macro_buy_gate(market_context: dict) -> dict:
+    """Translate explicit macro_signals into a buy gate action."""
+    macro = market_context.get("macro_signals")
+    if not isinstance(macro, dict):
+        return {"action": "allow", "multiplier": 1.0, "source": "missing_macro_signals"}
+
+    label = str(macro.get("macro_label") or "").lower()
+    try:
+        score = int(macro.get("macro_score", 0))
+    except (TypeError, ValueError):
+        score = 0
+
+    if label == "macro_cautious" or score <= -2:
+        return {
+            "action": "block_buy",
+            "multiplier": 0.0,
+            "source": "macro_signals",
+            "macro_label": label or None,
+            "macro_score": score,
+        }
+    if label == "macro_neutral" or -1 <= score <= 1:
+        return {
+            "action": "haircut",
+            "multiplier": 0.5,
+            "source": "macro_signals",
+            "macro_label": label or None,
+            "macro_score": score,
+        }
+    return {
+        "action": "allow",
+        "multiplier": 1.0,
+        "source": "macro_signals",
+        "macro_label": label or None,
+        "macro_score": score,
     }
 
 
@@ -318,6 +360,142 @@ def _get_current_price(market_cache: dict, symbol: str, vwap: float | None) -> f
     if cp and float(cp) > 0:
         return float(cp)
     return vwap if vwap and vwap > 0 else None
+
+
+def _normalize_symbol(symbol: str) -> str:
+    sym = str(symbol or "").strip().upper()
+    for suffix in (".TW", ".TWO"):
+        if sym.endswith(suffix):
+            return sym[:-len(suffix)]
+    return sym
+
+
+def _has_dca_signal_for_date(queue_path: Path, target_date: str) -> bool:
+    data = safe_load_json(queue_path, default=[])
+    items = data if isinstance(data, list) else data.get("pending", []) if isinstance(data, dict) else []
+    for item in items:
+        if item.get("side") != "buy":
+            continue
+        if item.get("trigger_source") != "initial_dca" and not item.get("trigger_payload", {}).get("initial_dca"):
+            continue
+        if item.get("status") not in {"pending", "acked", "executed"}:
+            continue
+        created_at = str(item.get("created_at") or "")
+        if created_at.startswith(target_date):
+            return True
+    return False
+
+
+def _enqueue_initial_dca_if_due(
+    *,
+    state_dir: Path,
+    queue_path: Path,
+    history_path: Path,
+    market_cache: dict,
+    account: dict,
+    redlines: dict,
+    inventory: dict,
+    cash: float,
+    settlement_safe_cash: float,
+    max_conc_pct: float,
+    max_single_twd: float,
+    macro_gate: dict,
+    now: datetime,
+) -> tuple[dict | None, dict]:
+    today = now.date()
+    today_iso = today.isoformat()
+    status: dict[str, Any] = {"checked": True, "enqueued": False}
+
+    if _has_dca_signal_for_date(queue_path, today_iso):
+        return None, {**status, "skipped": "already_pending_or_done_today"}
+
+    dca_state = load_dca_state(state_dir)
+    action = dca_should_trigger(dca_state, today=today, available_cash=settlement_safe_cash)
+    if not action:
+        return None, {**status, "skipped": "not_due"}
+
+    if macro_gate.get("action") == "block_buy":
+        return None, {**status, "skipped": "macro_regime_gate", "macro_gate": macro_gate}
+
+    symbol = _normalize_symbol(action.get("symbol", ""))
+    if not symbol:
+        return None, {**status, "skipped": "missing_symbol"}
+
+    current_price = _get_current_price(market_cache, symbol, None)
+    if not current_price:
+        return None, {**status, "skipped": "no_current_price", "symbol": symbol}
+
+    amount = int(float(action["amount_twd"]) * float(macro_gate.get("multiplier", 1.0)))
+    lot_type, quantity = _calc_lot_type_and_quantity(amount, current_price)
+    if quantity <= 0:
+        return None, {**status, "skipped": "amount_too_small", "symbol": symbol, "amount_twd": amount}
+
+    order = {
+        "symbol": symbol,
+        "side": "buy",
+        "quantity": quantity,
+        "price": current_price,
+        "order_type": "limit",
+        "lot_type": lot_type,
+    }
+    gate_ctx = {
+        "state_dir": state_dir,
+        "cash": cash,
+        "settlement_safe_cash": settlement_safe_cash,
+        "inventory": inventory,
+        "max_concentration_pct": max_conc_pct,
+        "max_single_limit_twd": max_single_twd,
+        "force_trading_hours": False,
+    }
+    gate_res = pre_flight.check_order(order, gate_ctx)
+    if not gate_res.get("passed"):
+        return None, {
+            **status,
+            "skipped": "gate_blocked",
+            "symbol": symbol,
+            "reason": gate_res.get("reason"),
+            "details": gate_res.get("details", {}),
+        }
+
+    used_today = pending_queue.sum_today_buy_amount(queue_path, on_date=today_iso)
+    order_amount = float(quantity) * float(current_price)
+    aggregate_limit = max(0.0, settlement_safe_cash) * max_conc_pct
+    if used_today + order_amount > aggregate_limit:
+        return None, {
+            **status,
+            "skipped": "daily_buy_amount_limit",
+            "symbol": symbol,
+            "used_today": round(used_today, 2),
+            "order_amount": round(order_amount, 2),
+            "limit": round(aggregate_limit, 2),
+        }
+
+    signal = pending_queue.enqueue(
+        queue_path=queue_path,
+        history_path=history_path,
+        side="buy",
+        symbol=symbol,
+        quantity=quantity,
+        price=current_price,
+        order_type="limit",
+        lot_type=lot_type,
+        trigger_source="initial_dca",
+        trigger_reason=(
+            f"初始 DCA 第 {action['day_index']}/{action['of_total']} 天："
+            f"{symbol} 約 {amount} TWD"
+        ),
+        trigger_payload={
+            "initial_dca": True,
+            "amount_twd": amount,
+            "day_index": action["day_index"],
+            "of_total": action["of_total"],
+            "next_symbol_idx": action["next_symbol_idx"],
+            "settlement_safe_cash": settlement_safe_cash,
+            "macro_multiplier": float(macro_gate.get("multiplier", 1.0)),
+        },
+        now=now,
+    )
+    return signal, {**status, "enqueued": True, "symbol": symbol, "amount_twd": amount}
 
 
 def _calc_lot_type_and_quantity(amount_twd: int, price: float) -> tuple[str, int]:
@@ -368,7 +546,8 @@ def run_buy_scan(
           "blocked": [{symbol, reason}, ...],# pre_flight_gate 擋下的
           "below_threshold": [...],          # 跌幅不足跳過
           "cooldown": [...],                 # 賣出後冷卻中跳過
-          "strategy_skipped": [...],          # 策略/情境調整後跳過
+        "strategy_skipped": [...],          # 策略/情境調整後跳過
+          "dca": {...},                      # 初始 DCA 啟用時的處理狀態
           "no_data": [...],                  # 無資料跳過
         }
     """
@@ -390,6 +569,8 @@ def run_buy_scan(
         "below_threshold": [],
         "cooldown": [],
         "strategy_skipped": [],
+        "dca": {"checked": False},
+        "macro_gate": {"action": "allow", "multiplier": 1.0, "source": "not_loaded"},
         "no_data": [],
     }
 
@@ -418,6 +599,11 @@ def run_buy_scan(
     redlines = safe_load_json(state_dir / "safety_redlines.json", default={})
     strategy = _load_strategy_link(state_dir)
     market_context = _load_market_context(state_dir)
+    macro_gate = _macro_buy_gate(market_context)
+    result["macro_gate"] = macro_gate
+    if macro_gate.get("action") == "block_buy":
+        result["skipped"] = "macro_regime_gate"
+        return result
 
     cash = float(account.get("cash", 0))
     ssc = float(account.get("settlement_safe_cash") or 0)
@@ -429,6 +615,25 @@ def run_buy_scan(
     if max_conc_pct is None or not (0 < max_conc_pct <= 1):
         max_conc_pct = 0.5
     max_single_twd = redlines.get("max_buy_amount_twd", 1_000_000.0)
+
+    dca_signal, dca_status = _enqueue_initial_dca_if_due(
+        state_dir=state_dir,
+        queue_path=queue_path,
+        history_path=history_path,
+        market_cache=market_cache,
+        account=account,
+        redlines=redlines,
+        inventory=inventory,
+        cash=cash,
+        settlement_safe_cash=ssc,
+        max_conc_pct=max_conc_pct,
+        max_single_twd=max_single_twd,
+        macro_gate=macro_gate,
+        now=now,
+    )
+    result["dca"] = dca_status
+    if dca_signal:
+        result["enqueued"].append(dca_signal)
 
     # ── Step 3: 對每檔掃描 ─────────────────────────────────────────────
     intraday_data = intraday.get("intraday", {})
@@ -636,6 +841,7 @@ def run_buy_scan(
                 "overlay_multiplier": adjustment["overlay_multiplier"],
                 "risk_multiplier": adjustment["risk_multiplier"],
                 "defensive_boost": adjustment["defensive_boost"],
+                "macro_multiplier": adjustment.get("macro_multiplier", 1.0),
                 "base_strategy": adjustment["base_strategy"],
                 "scenario_overlay": adjustment["scenario_overlay"],
                 "group": adjustment["group"],

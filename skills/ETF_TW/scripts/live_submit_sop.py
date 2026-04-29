@@ -14,6 +14,7 @@ Pipeline:
 Never calls api.logout(). Never bypasses pre_flight_gate.
 """
 import asyncio
+import os
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -27,6 +28,7 @@ if str(_SCRIPTS) not in sys.path:
 from etf_core import context as _ctx
 from etf_core.state_io import safe_load_json, atomic_save_json, safe_append_jsonl
 from daily_order_limits import increment_daily_submit_count
+from orders_open_state import build_orders_open_payload, merge_open_orders
 
 TW_TZ = ZoneInfo("Asia/Taipei")
 
@@ -72,6 +74,35 @@ def _build_gate_context(state_dir: Path) -> dict:
     }
 
 
+def _load_open_orders(state_dir: Path) -> list[dict]:
+    payload = safe_load_json(state_dir / "orders_open.json", default={"orders": []})
+    if isinstance(payload, list):
+        return payload
+    if isinstance(payload, dict) and isinstance(payload.get("orders"), list):
+        return payload["orders"]
+    return []
+
+
+async def _build_default_adapter(order: dict):
+    from adapters import get_adapter
+
+    broker_id = order.get("broker_id") or order.get("broker") or "sinopac"
+    account_id = order.get("account_id") or order.get("account") or "sinopac_01"
+    adapter = get_adapter(
+        broker_id,
+        {
+            "account_id": account_id,
+            "mode": "live",
+            "api_key": os.environ.get("SINOPAC_API_KEY"),
+            "secret_key": os.environ.get("SINOPAC_SECRET_KEY"),
+            "password": os.environ.get("SINOPAC_PASSWORD"),
+        },
+    )
+    if not await adapter.authenticate():
+        return None, f"{broker_id} authenticate failed"
+    return adapter, "ok"
+
+
 async def submit_live_order(order: dict, adapter=None, state_dir: Path = None) -> dict:
     """
     Submit a live order through the full safety pipeline.
@@ -114,6 +145,11 @@ async def submit_live_order(order: dict, adapter=None, state_dir: Path = None) -
         return {"success": False, "reason": "is_confirmed=False. Human confirmation required.", "step": "human_confirm"}
 
     # Step 4: submit via adapter
+    if adapter is None:
+        adapter, adapter_reason = await _build_default_adapter(order)
+        if adapter is None:
+            return {"success": False, "reason": adapter_reason, "step": "authenticate"}
+
     try:
         submitted = await adapter._submit_order_impl(order)
     except Exception as e:
@@ -132,9 +168,7 @@ async def submit_live_order(order: dict, adapter=None, state_dir: Path = None) -
 
     if verify_result["verified"]:
         # Write to orders_open.json (merge into list)
-        orders_open = safe_load_json(state_dir / "orders_open.json", default=[])
-        if not isinstance(orders_open, list):
-            orders_open = []
+        orders_open = _load_open_orders(state_dir)
         # Deduplication: skip if order_id already exists (idempotent re-submit guard)
         if any(o.get("order_id") == internal_order_id for o in orders_open):
             return {
@@ -145,18 +179,25 @@ async def submit_live_order(order: dict, adapter=None, state_dir: Path = None) -
                 "order_id": internal_order_id,
                 "reason": "duplicate: order_id already in orders_open"
             }
-        orders_open.append({
+        order_row = {
             "order_id": internal_order_id,
             "broker_order_id": broker_order_id,
             "symbol": order.get("symbol"),
-            "side": order.get("side"),
+            "action": order.get("side"),
             "quantity": order.get("quantity"),
             "price": order.get("price"),
+            "status": "submitted",
+            "source": "live_broker",
+            "source_type": "live_submit_sop",
             "verified": True,
+            "observed_at": now_iso,
             "submitted_at": now_iso,
-            "mode": "live"
-        })
-        atomic_save_json(state_dir / "orders_open.json", orders_open)
+            "mode": "live",
+            "account": order.get("account_id") or order.get("account"),
+            "broker_id": order.get("broker_id") or order.get("broker"),
+        }
+        payload = build_orders_open_payload(merge_open_orders(orders_open, order_row), source="live_broker")
+        atomic_save_json(state_dir / "orders_open.json", payload)
         return {
             "success": True,
             "broker_order_id": broker_order_id,

@@ -149,7 +149,7 @@ def test_happy_path_order_written_to_orders_open(tmp_path):
 
     orders_open_path = tmp_path / "orders_open.json"
     assert orders_open_path.exists(), "orders_open.json must be created on success"
-    orders_open = json.loads(orders_open_path.read_text())
+    orders_open = json.loads(orders_open_path.read_text())["orders"]
     assert any(
         o.get("broker_order_id") == "ORD001" for o in orders_open
     ), "ORD001 must appear in orders_open.json"
@@ -185,7 +185,7 @@ def test_ghost_order_logged_not_in_orders_open(tmp_path):
     # orders_open.json must NOT contain this broker_order_id
     orders_open_path = tmp_path / "orders_open.json"
     if orders_open_path.exists():
-        orders_open = json.loads(orders_open_path.read_text())
+        orders_open = json.loads(orders_open_path.read_text()).get("orders", [])
         assert not any(
             o.get("broker_order_id") == "ORD002" for o in orders_open
         ), "Ghost order must NOT appear in orders_open.json"
@@ -257,7 +257,7 @@ def test_double_submit_no_duplicate_in_orders_open(tmp_path):
 
     orders_open_path = tmp_path / "orders_open.json"
     assert orders_open_path.exists()
-    orders_open = json.loads(orders_open_path.read_text())
+    orders_open = json.loads(orders_open_path.read_text())["orders"]
     entries = [o for o in orders_open if o.get("order_id") == "dup-001"]
     assert len(entries) <= 1, (
         f"Duplicate order detected: {len(entries)} entries for order_id=dup-001. "
