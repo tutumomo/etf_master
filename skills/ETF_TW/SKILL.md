@@ -1,6 +1,6 @@
 ---
 name: ETF_TW
-version: v1.9.0
+version: v1.10.0
 description: 台灣 ETF 投資助理技能（包含 state-driven dashboard、orders_open lifecycle、callback/polling reconciliation、交易流程驗證、回測去重與報酬回補、worldmonitor 全球風險雷達整合）
 ---
 
@@ -875,6 +875,16 @@ cd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/refre
 - 若 tag 已推送後才補文件，需把 tag 移到最新 commit 並 force push tag；同時明確回報這是 tag 重定位，不是改寫 main history。
 
 ## 版本歷史
+
+- **v1.10.0**（2026-05-01）：智能 multiplier 鏈完整化（E2 + F1 + F-news）
+  - 新增 **持倉相關性懲罰**：`correlation_engine` + `compute_correlation_matrix.py`，買進時 ρ>0.7 線性折扣倉位（floor 0.2）
+  - 新增 **動能反轉賣訊**：個股 20d vs 大盤中位數跑輸 ≥10% 且 RSI<40 → 在 trailing 之外觸發出場
+  - 新增 **新聞風險 Gate**：消費 `news_intelligence_report.json`，high/medium 對買單做 haircut（×0.4 / ×0.7）
+  - buy_scanner final_multiplier 鏈：strategy × overlay × risk × defensive × **macro × correlation × news**
+  - sell_scanner 雙路徑：動能反轉 vs trailing stop（互斥）
+  - Dashboard 策略骨架卡新增「📰 新聞風險 Gate」「🔗 持倉相關性懲罰」段
+  - 計畫書 `2026-04-28-A-to-G-plan.md` 加執行進度段，明確 D / E1 / G 暫緩到實單 3 個月後
+  - 全測 754 passed（v1.9.0 712 + 42）
 
 - **v1.9.0**（2026-04-30）：長線風控與外部能力安全前置層
   - 新增 paper ledger 初始化、資料品質報告、組合風控報告、broker readiness 與新聞情報去雜訊報告

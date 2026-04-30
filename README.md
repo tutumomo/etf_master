@@ -1,4 +1,4 @@
-# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.9.0)
+# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.10.0)
 
 `ETF_Master` 是一款專為台灣 ETF 投資者設計的 AI 輔助決策與資產管理系統。本專案秉持「**交易安全優先於功能完備**」的核心價值，透過「三層真相層級」治理與「雙鏈決策仲裁」機制，為投資者提供一個穩定、透明且具備深度洞察的投資工作台。
 
@@ -108,6 +108,13 @@ AGENT_ID=etf_master .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.
 ---
 
 ## 📦 版本紀錄
+
+### v1.10.0 (2026-05-01)
+- feat(buy): 新增 **持倉相關性懲罰（E2）** — `correlation_engine` 計算 watchlist pairwise 相關，買進時擬買標的 vs 既有持倉平均相關 >0.7 即線性折扣倉位，floor 0.2，避免重複押注（實測 watchlist 多檔 ρ≥0.9）。
+- feat(sell): 新增 **動能反轉賣訊（F1）** — 個股 20 日報酬 vs 大盤中位數跑輸 ≥10% 且 RSI<40 → 即使尚未跌破 stop_price 仍出場，trigger_source 與 trailing 區分。
+- feat(buy): 新增 **新聞風險 Gate（F-news）** — 消費既有 `news_intelligence_report.json`，依 signal_strength 對買單做 haircut（high → ×0.4 / medium → ×0.7），不擋買、只降權重。
+- chore(plan): `docs/intelligence-roadmap/2026-04-28-A-to-G-plan.md` 加「執行進度」段，記錄 D / E1 / G 暫緩到實單 3 個月後再做的決定，以及 F3 由 F-news 替代的方案。
+- test: 全測 `754 passed`（從 v1.9.0 712 + 42 新筆）。
 
 ### v1.9.0 (2026-04-30)
 - feat(state): 新增 paper ledger 初始化、資料品質檢查與 `etf_tw.py status`，讓 paper 模式、對帳狀態、資料品質、組合風控與新聞情報可用 CLI 一次檢視。

@@ -1,5 +1,26 @@
 # CHANGELOG
 
+## v1.10.0 — 2026-05-01
+
+### Added
+- **持倉相關性懲罰（E2）**：新增 `scripts/auto_trade/correlation_engine.py` 與 `scripts/compute_correlation_matrix.py`。買進時計算「擬買標的 vs 既有持倉」平均相關係數，>0.7 即線性折扣倉位（multiplier = max(0.2, 1 - avg_corr)），floor 0.2。實際資料顯示 watchlist 中 0050 vs 006208 ρ=0.997、高股息群組 ρ≥0.9，E2 直接降低重複押注的系統性風險。
+- **動能反轉賣訊（F1）**：新增 `scripts/auto_trade/momentum_signals.py`。在 trailing stop 之外加第二類賣訊：個股 20 日報酬 vs 大盤中位數跑輸 ≥10% 且 RSI<40 → 即使尚未跌破 stop_price 仍出場。trigger_source 標記為 `sell_scanner_momentum_1315`，與 trailing 賣訊區分。
+- **新聞風險 Gate（F-news）**：新增 `_news_risk_gate()`，消費既有 `news_intelligence_report.json`。signal_strength=high → multiplier 0.4、medium → 0.7。不擋買、只 haircut 倉位，與 macro_buy_gate 概念互補（macro 看大盤量化，news 看事件性）。
+- **計畫書執行進度**：`docs/intelligence-roadmap/2026-04-28-A-to-G-plan.md` 結尾加「2026-05-01 執行進度」段，記錄 D / E1 / G 暫緩到實單 3 個月後再做的決定。
+- **Production replay v2 baseline**：保留 2026-05-01 replay 結果 JSON 作為未來變更後的對照基準。
+
+### Changed
+- **buy_scanner 倉位 multiplier 鏈完整**：`final_amount = base × strategy × overlay × risk × defensive × macro × correlation × news`，每個維度獨立計算、獨立稽核（trigger_payload 全帶）、缺資料時自動 fallback 1.0。
+- **sell_scanner 雙路徑出場**：動能反轉 + trailing stop 互斥（任一觸發即出，不重複送單）。
+- **Dashboard 強化**：策略骨架 v2 卡新增「📰 新聞風險 Gate」與「🔗 持倉相關性懲罰」段；Phase 2 pending 訊號的 trigger_payload 顯示 macro / correlation / news 三個 multiplier 標籤；賣訊區分「⚡ 動能反轉」與 trailing。
+
+### Tests
+- **全測驗證**：`754 passed`（從 v1.9.0 的 712 + 42 新筆）。
+  - `tests/test_correlation_engine.py` 18 筆
+  - `tests/test_momentum_signals.py` 11 筆
+  - `tests/test_news_risk_gate.py` 6 筆
+  - `tests/test_buy_scanner.py` / `tests/test_sell_scanner.py` 整合測試 7 筆
+
 ## v1.9.0 — 2026-04-30
 
 ### Added
