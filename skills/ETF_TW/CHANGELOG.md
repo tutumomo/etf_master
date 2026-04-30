@@ -15,7 +15,7 @@
 - **Dashboard 強化**：策略骨架 v2 卡新增「📰 新聞風險 Gate」與「🔗 持倉相關性懲罰」段；Phase 2 pending 訊號的 trigger_payload 顯示 macro / correlation / news 三個 multiplier 標籤；賣訊區分「⚡ 動能反轉」與 trailing。
 
 ### Tests
-- **全測驗證**：`754 passed`（從 v1.9.0 的 712 + 42 新筆）。
+- **全測驗證**：`763 passed`（2026-05-01 Codex 對齊檢視實跑）。
   - `tests/test_correlation_engine.py` 18 筆
   - `tests/test_momentum_signals.py` 11 筆
   - `tests/test_news_risk_gate.py` 6 筆

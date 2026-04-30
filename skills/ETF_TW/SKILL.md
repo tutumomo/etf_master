@@ -884,7 +884,7 @@ cd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/refre
   - sell_scanner 雙路徑：動能反轉 vs trailing stop（互斥）
   - Dashboard 策略骨架卡新增「📰 新聞風險 Gate」「🔗 持倉相關性懲罰」段
   - 計畫書 `2026-04-28-A-to-G-plan.md` 加執行進度段，明確 D / E1 / G 暫緩到實單 3 個月後
-  - 全測 754 passed（v1.9.0 712 + 42）
+  - 全測 763 passed（2026-05-01 Codex 對齊檢視實跑）
 
 - **v1.9.0**（2026-04-30）：長線風控與外部能力安全前置層
   - 新增 paper ledger 初始化、資料品質報告、組合風控報告、broker readiness 與新聞情報去雜訊報告

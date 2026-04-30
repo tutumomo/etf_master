@@ -114,7 +114,7 @@ AGENT_ID=etf_master .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.
 - feat(sell): 新增 **動能反轉賣訊（F1）** — 個股 20 日報酬 vs 大盤中位數跑輸 ≥10% 且 RSI<40 → 即使尚未跌破 stop_price 仍出場，trigger_source 與 trailing 區分。
 - feat(buy): 新增 **新聞風險 Gate（F-news）** — 消費既有 `news_intelligence_report.json`，依 signal_strength 對買單做 haircut（high → ×0.4 / medium → ×0.7），不擋買、只降權重。
 - chore(plan): `docs/intelligence-roadmap/2026-04-28-A-to-G-plan.md` 加「執行進度」段，記錄 D / E1 / G 暫緩到實單 3 個月後再做的決定，以及 F3 由 F-news 替代的方案。
-- test: 全測 `754 passed`（從 v1.9.0 712 + 42 新筆）。
+- test: 全測 `763 passed`（2026-05-01 Codex 對齊檢視實跑）。
 
 ### v1.9.0 (2026-04-30)
 - feat(state): 新增 paper ledger 初始化、資料品質檢查與 `etf_tw.py status`，讓 paper 模式、對帳狀態、資料品質、組合風控與新聞情報可用 CLI 一次檢視。
