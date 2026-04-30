@@ -42,3 +42,25 @@ def test_polling_partial_fill_updates_fills_ledger(monkeypatch):
         payload = poll_module.load_fills_ledger()
         assert len(payload["fills"]) == 1
         assert payload["fills"][0]["order_id"] == "pf-001"
+
+
+def test_polling_filled_order_row_can_update_fills_ledger(monkeypatch):
+    with tempfile.TemporaryDirectory() as td:
+        fills_path = Path(td) / "fills_ledger.json"
+        monkeypatch.setattr(poll_module, "FILLS_LEDGER_PATH", fills_path)
+        order_row = poll_module.build_polling_order_row(
+            order_id="fd-001",
+            symbol="006208",
+            action="sell",
+            quantity=8,
+            price=211.5,
+            status="filled",
+        )
+        poll_module.save_fills_ledger(
+            poll_module.merge_fill_facts([], order_row)
+        )
+        payload = poll_module.load_fills_ledger()
+        assert len(payload["fills"]) == 1
+        assert payload["fills"][0]["order_id"] == "fd-001"
+        assert payload["fills"][0]["status"] == "filled"
+        assert payload["fills"][0]["filled_quantity"] == 8

@@ -112,7 +112,7 @@ async def poll_order(order_id: str, broker_id: str, account_id: str, interval: i
             )
             save_orders_open(merge_open_orders(current_orders, order_row))
 
-            if order_row.get("status") == "partial_filled":
+            if order_row.get("status") in {"partial_filled", "filled"}:
                 current_fills = load_fills_ledger().get("fills", [])
                 save_fills_ledger(merge_fill_facts(current_fills, order_row))
 

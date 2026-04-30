@@ -1,4 +1,4 @@
-# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.8.2)
+# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.9.0)
 
 `ETF_Master` 是一款專為台灣 ETF 投資者設計的 AI 輔助決策與資產管理系統。本專案秉持「**交易安全優先於功能完備**」的核心價值，透過「三層真相層級」治理與「雙鏈決策仲裁」機制，為投資者提供一個穩定、透明且具備深度洞察的投資工作台。
 
@@ -108,6 +108,15 @@ AGENT_ID=etf_master .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.
 ---
 
 ## 📦 版本紀錄
+
+### v1.9.0 (2026-04-30)
+- feat(state): 新增 paper ledger 初始化、資料品質檢查與 `etf_tw.py status`，讓 paper 模式、對帳狀態、資料品質、組合風控與新聞情報可用 CLI 一次檢視。
+- feat(risk): 新增組合層級最大回撤、年化波動、相關性 warning 與 trailing stop 對齊報告；pre-flight 在最大回撤硬紅線時阻擋買入。
+- feat(auto_trade): Phase 2 sell/buy fine-tune，加入 DCA 完成後 trailing grace period、cooldown 後 reentry 標記與 mixed lot 出場計畫分組顯示。
+- safety(broker): Cathay adapter 與 legacy Cathay broker 停止 scaffold 假認證、假部位與假成交；新增 broker readiness 檢查，未取得官方 API 規格與測試帳號前不標記 live-ready。
+- feat(news): 新增新聞情報去雜訊報告，僅採用 24 小時內 fresh source，stale 新聞不進 AI Bridge 候選。
+- chore(test): 納入 `pytest-asyncio` 並啟用 `asyncio_mode=auto`，讓既有 async smoke tests 納入全測。
+- test: 全測 `721 passed`；graphify rebuild 產出 4338 nodes / 7596 edges / 484 communities。
 
 ### v1.8.2 (2026-04-30)
 - fix(cron): 盤中智慧掃描改用 ETF_TW 內建 `run_intraday_quant_diagnosis.py`，不再呼叫缺失的 `skills/stock-analysis-tw/scripts/analyze_stock.py`。

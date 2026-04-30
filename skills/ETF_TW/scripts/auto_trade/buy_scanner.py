@@ -210,6 +210,24 @@ def _get_active_cooldown(state_dir: Path, symbol: str, now: datetime) -> dict | 
     return None
 
 
+def _get_expired_cooldown(state_dir: Path, symbol: str, now: datetime) -> dict | None:
+    """Return expired post-sell cooldown entry, used to label re-entry candidates."""
+    data = safe_load_json(state_dir / "position_cooldown.json", default={})
+    entry = data.get(symbol.upper()) if isinstance(data, dict) else None
+    if not isinstance(entry, dict):
+        return None
+    cooldown_until = entry.get("cooldown_until")
+    if not cooldown_until:
+        return None
+    try:
+        until_dt = datetime.fromisoformat(cooldown_until)
+        if until_dt.tzinfo is None and now.tzinfo is not None:
+            until_dt = until_dt.replace(tzinfo=now.tzinfo)
+    except ValueError:
+        return None
+    return entry if now >= until_dt else None
+
+
 def _load_strategy_link(state_dir: Path) -> dict:
     return safe_load_json(state_dir / "strategy_link.json", default={})
 
@@ -568,6 +586,7 @@ def run_buy_scan(
         "blocked": [],
         "below_threshold": [],
         "cooldown": [],
+        "reentry_watch": [],
         "strategy_skipped": [],
         "dca": {"checked": False},
         "macro_gate": {"action": "allow", "multiplier": 1.0, "source": "not_loaded"},
@@ -651,6 +670,14 @@ def run_buy_scan(
                 "sold_at": cooldown.get("sold_at"),
             })
             continue
+        expired_cooldown = _get_expired_cooldown(state_dir, symbol, now)
+        if expired_cooldown:
+            result["reentry_watch"].append({
+                "symbol": symbol,
+                "reason": "post_sell_cooldown_expired",
+                "cooldown_until": expired_cooldown.get("cooldown_until"),
+                "sold_at": expired_cooldown.get("sold_at"),
+            })
 
         bars_entry = intraday_data.get(symbol)
         if not bars_entry or not bars_entry.get("bars"):
@@ -850,6 +877,8 @@ def run_buy_scan(
                 "threshold_note": adjustment["threshold_note"],
                 "vwap_sample_count": vwap_res.sample_count,
                 "trigger_window": f"{vwap_res.start_time}~{vwap_res.end_time}",
+                "reentry_after_cooldown": bool(expired_cooldown),
+                "cooldown_until": expired_cooldown.get("cooldown_until") if expired_cooldown else None,
             },
             now=now,
         )

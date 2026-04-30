@@ -38,6 +38,7 @@ from scripts.auto_trade.vwap_calculator import SELL_TRIGGER_TIME, TW_TZ
 
 # 賣出後該檔多少天內不可重新買入（避免 churning）
 SELL_COOLDOWN_DAYS = 7
+DCA_COMPLETION_TRAILING_GRACE_DAYS = 3
 
 
 def _safe_load(path: Path, default=None):
@@ -81,6 +82,19 @@ def _calc_return_pct(holding: dict, current_price: float) -> float | None:
     if avg <= 0:
         return None
     return (current_price - avg) / avg
+
+
+def _is_dca_completion_grace_active(dca_state: dict, today) -> bool:
+    if not dca_state.get("enabled") or not dca_state.get("completed"):
+        return False
+    last_buy_date = dca_state.get("last_buy_date")
+    if not last_buy_date:
+        return False
+    try:
+        completed_on = datetime.fromisoformat(str(last_buy_date)).date()
+    except ValueError:
+        return False
+    return 0 <= (today - completed_on).days < DCA_COMPLETION_TRAILING_GRACE_DAYS
 
 
 # ---------------------------------------------------------------------------
@@ -162,6 +176,7 @@ def run_sell_scan(
     }
     dca_state = load_dca_state(state_dir)
     dca_active = is_dca_phase_active(dca_state, today=today)
+    dca_grace_active = _is_dca_completion_grace_active(dca_state, today)
 
     inventory_lookup = {
         str(p.get("symbol", "")).upper(): float(p.get("quantity") or 0)
@@ -199,6 +214,14 @@ def run_sell_scan(
                 "reason": "initial_dca_active",
                 "days_done": dca_state.get("days_done"),
                 "target_days": dca_state.get("target_days"),
+            })
+            continue
+        if dca_grace_active:
+            result["dca_trailing_frozen"].append({
+                "symbol": sym,
+                "reason": "initial_dca_completion_grace",
+                "last_buy_date": dca_state.get("last_buy_date"),
+                "grace_days": DCA_COMPLETION_TRAILING_GRACE_DAYS,
             })
             continue
 
@@ -241,6 +264,7 @@ def run_sell_scan(
             sell_orders.append((board_qty, "board"))
             if odd_qty > 0:
                 sell_orders.append((odd_qty, "odd"))
+        split_group_id = f"sell-{sym}-{now.strftime('%Y%m%d%H%M%S')}" if len(sell_orders) > 1 else None
 
         # 主訊號（第一筆，通常是整張部分）— 後續若有零股訊號跟著一起 enqueue
         sell_qty, lot_type = sell_orders[0]
@@ -310,6 +334,8 @@ def run_sell_scan(
                 "average_cost": float(p.get("average_cost") or 0),
                 "split_part": "primary" if len(sell_orders) > 1 else "single",
                 "split_total": len(sell_orders),
+                "split_group_id": split_group_id,
+                "split_total_quantity": total_qty,
             },
             now=now,
         )
@@ -355,6 +381,8 @@ def run_sell_scan(
                     "average_cost": float(p.get("average_cost") or 0),
                     "split_part": "secondary",
                     "split_total": len(sell_orders),
+                    "split_group_id": split_group_id,
+                    "split_total_quantity": total_qty,
                 },
                 now=now,
             )

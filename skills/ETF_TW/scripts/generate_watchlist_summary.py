@@ -11,6 +11,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.append(str(ROOT))
 from scripts.etf_core import context
+from report_templates import get_report_template, section_heading
 
 STATE = context.get_state_dir()
 
@@ -91,12 +92,14 @@ def build_summary(mode: str) -> str:
     if concentration and float(concentration) >= 60:
         anomalies.append(f"持倉集中度偏高（{float(concentration):.2f}%）")
 
-    title = "盤前監控摘要" if mode == "am" else "盤後監控摘要"
-    lines = [title]
+    template_kind = "morning" if mode == "am" else "post_market"
+    template = get_report_template(template_kind)
+    lines = [template["title"], "", section_heading(template_kind, template["sections"][0])]
     if agent_summary.get("portfolio_brief"):
         lines.append(agent_summary["portfolio_brief"])
     lines.append(freshness_line)
     lines.append("")
+    lines.append(section_heading(template_kind, "市場體制判讀" if mode == "am" else "持倉明細與盤後診斷"))
 
     for key in ("core", "income", "defensive"):
         lines.append(f"{GROUP_LABELS[key]}：")
@@ -107,6 +110,7 @@ def build_summary(mode: str) -> str:
             lines.append("- 暫無標的")
         lines.append("")
 
+    lines.append(section_heading(template_kind, "缺口與待辦" if mode == "pm" else "執行檢查"))
     if anomalies:
         lines.append("異常提醒：" + "；".join(dict.fromkeys(anomalies)))
     else:

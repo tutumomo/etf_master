@@ -1,6 +1,6 @@
 ---
 name: ETF_TW
-version: v1.8.2
+version: v1.9.0
 description: 台灣 ETF 投資助理技能（包含 state-driven dashboard、orders_open lifecycle、callback/polling reconciliation、交易流程驗證、回測去重與報酬回補、worldmonitor 全球風險雷達整合）
 ---
 
@@ -875,6 +875,13 @@ cd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/refre
 - 若 tag 已推送後才補文件，需把 tag 移到最新 commit 並 force push tag；同時明確回報這是 tag 重定位，不是改寫 main history。
 
 ## 版本歷史
+
+- **v1.9.0**（2026-04-30）：長線風控與外部能力安全前置層
+  - 新增 paper ledger 初始化、資料品質報告、組合風控報告、broker readiness 與新聞情報去雜訊報告
+  - CLI `status` 顯示模式、帳務、對帳、資料品質、組合風控與新聞情報
+  - Phase 2 加入 DCA trailing grace、cooldown reentry 標記與 mixed lot 出場計畫分組
+  - Cathay adapter 移除 scaffold 假認證 / 假成交，官方 API 規格與測試帳號完成前不標記 live-ready
+  - 新聞 stale source 超過 24 小時不進 AI Bridge 候選；全測 721 passed，graphify 4338 nodes / 7596 edges
 
 - **v1.8.2**（2026-04-30）：cron 缺失腳本修復 + ETF_TW 內建量化診斷
   - 新增 `scripts/run_intraday_quant_diagnosis.py`，輸出 `intraday_quant_diagnosis.json`

@@ -43,7 +43,7 @@ def handle_order_event(event_type: str, payload: dict) -> bool:
     current_rows = load_orders_open().get("orders", [])
     save_orders_open(merge_open_orders(current_rows, row))
 
-    if row.get("status") == "partial_filled" and row.get("filled_quantity") is not None:
+    if row.get("status") in {"partial_filled", "filled"}:
         current_fills = load_fills_ledger().get("fills", [])
         save_fills_ledger(merge_fill_facts(current_fills, row))
 

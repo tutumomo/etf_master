@@ -147,6 +147,31 @@ def test_check_order_pass_includes_investment_score():
     assert isinstance(result["score_breakdown"], list)
 
 
+def test_check_order_blocks_buy_when_portfolio_risk_report_blocks():
+    order = {
+        "symbol": "0050",
+        "side": "buy",
+        "quantity": 100,
+        "price": 100.0,
+        "order_type": "limit",
+        "lot_type": "odd",
+    }
+    ctx = {
+        "cash": 100_000.0,
+        "force_trading_hours": False,
+        "_skip_safety_redlines": True,
+        "portfolio_risk_report": {
+            "block_buy": True,
+            "blockers": ["max_drawdown_block"],
+            "portfolio": {"max_drawdown": 0.22},
+        },
+    }
+    result = check_order(order, ctx)
+    assert result["passed"] is False
+    assert result["reason"] == "portfolio_risk_block_buy"
+    assert result["details"]["blockers"] == ["max_drawdown_block"]
+
+
 def test_check_order_fail_has_no_investment_score():
     order = {
         "symbol": "",   # triggers missing_symbol

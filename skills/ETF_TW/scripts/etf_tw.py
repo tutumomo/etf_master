@@ -33,8 +33,13 @@ from account_manager import get_account_manager, AccountManager
 from adapters.base import Order
 from trading_mode import read_trading_mode_state, write_trading_mode_state, resolve_effective_mode
 from truth_level import format_with_level, LEVEL_1_LIVE, LEVEL_2_VERIFYING, LEVEL_3_SNAPSHOT
+from init_paper_ledger import build_initial_ledger, parse_position, write_initial_ledger
+from data_quality import STATE_DIR as CURRENT_STATE_DIR, refresh_data_quality_report
+from portfolio_risk_report import refresh_portfolio_risk_report, build_brief as build_portfolio_risk_brief
+from news_intelligence_report import refresh_news_intelligence_report, build_brief as build_news_intelligence_brief
 
 ROOT = Path(__file__).resolve().parents[1]
+STATE_DIR = CURRENT_STATE_DIR
 ETF_CURATED_PATH = ROOT / "data" / "etfs.json"              # curated subset (rich metadata)
 ETF_UNIVERSE_PATH = ROOT / "data" / "etf_universe_tw.json"  # full tradable universe (TWSE + TPEx)
 BROKER_PATH = ROOT / "data" / "brokers.json"
@@ -98,6 +103,13 @@ def load_orders(path: Path) -> list[dict]:
     if isinstance(payload, list):
         return payload
     raise ValueError("unsupported order file format")
+
+
+def load_state(name: str, default: dict | None = None) -> dict:
+    path = STATE_DIR / name
+    if not path.exists():
+        return default or {}
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def normalize_order_payload(order: dict):
@@ -1046,10 +1058,98 @@ def cmd_init_env(install_deps: bool = False) -> int:
     
     # Create ledger if missing
     if not LEDGER_PATH.exists():
-        LEDGER_PATH.write_text(json.dumps({"version": "1.0", "entries": []}, indent=2), encoding="utf-8")
+        LEDGER_PATH.write_text(json.dumps({"version": "1.0", "trades": []}, indent=2), encoding="utf-8")
         print(f"[OK] 已建立空帳本: {LEDGER_PATH}")
         
     print("\n初始化完成！")
+    return 0
+
+
+def cmd_paper_init(args: argparse.Namespace) -> int:
+    try:
+        positions = [parse_position(value) for value in args.position]
+        ledger = build_initial_ledger(positions)
+        write_initial_ledger(LEDGER_PATH, ledger, force=args.force)
+    except Exception as exc:
+        print(f"初始化 paper ledger 失敗：{exc}")
+        return 1
+
+    print(f"已初始化 paper ledger：{LEDGER_PATH}")
+    if args.no_sync:
+        return 0
+
+    script = ROOT / "scripts" / "sync_paper_state.py"
+    proc = subprocess.run([sys.executable, str(script)], cwd=str(ROOT))
+    return int(proc.returncode)
+
+
+def _money(value) -> str:
+    try:
+        return f"NT$ {float(value):,.0f}"
+    except (TypeError, ValueError):
+        return "N/A"
+
+
+def _format_data_quality_line(data_quality: dict) -> str:
+    issues = data_quality.get("issues") or []
+    warnings = data_quality.get("warnings") or []
+    missing = data_quality.get("missing_quote_symbols") or []
+    if data_quality.get("ok", False) and not warnings:
+        return "資料品質：正常。"
+    missing_text = f" | 缺報價: {', '.join(missing[:5])}" if missing else ""
+    return f"資料品質：issues {len(issues)} / warnings {len(warnings)}{missing_text}"
+
+
+def build_status_lines(
+    mode: dict,
+    account: dict,
+    positions: dict,
+    summary: dict,
+    data_quality: dict,
+    portfolio_risk: dict | None = None,
+    news_intelligence: dict | None = None,
+) -> list[str]:
+    effective_mode = str(mode.get("effective_mode") or "unknown").upper()
+    data_source = mode.get("data_source") or mode.get("data_score") or account.get("source") or "unknown"
+    cash = account.get("cash")
+    equity = account.get("total_equity") or account.get("total_value") or account.get("market_value")
+    position_rows = positions.get("positions") or summary.get("positions") or []
+    reconciliation = summary.get("filled_reconciliation") or {}
+    data_quality_brief = _format_data_quality_line(data_quality)
+    portfolio_risk = portfolio_risk or {}
+    portfolio_risk_brief = build_portfolio_risk_brief(portfolio_risk)
+    news_intelligence = news_intelligence or {}
+    news_brief = build_news_intelligence_brief(news_intelligence)
+
+    recon_text = "OK"
+    if not reconciliation.get("ok", True):
+        recon_text = f"{reconciliation.get('unreconciled_count', 0)} 檔未對齊"
+
+    return [
+        f"目前模式: {effective_mode}",
+        f"資料來源: {data_source}",
+        f"現金: {_money(cash)} | 總資產: {_money(equity)} | 持倉: {len(position_rows)} 檔",
+        f"成交對帳: {recon_text}",
+        data_quality_brief,
+        portfolio_risk_brief,
+        news_brief,
+        f"資料品質 ok: {bool(data_quality.get('ok', False))}",
+    ]
+
+
+def cmd_status(_: argparse.Namespace) -> int:
+    data_quality = refresh_data_quality_report(STATE_DIR)
+    portfolio_risk = refresh_portfolio_risk_report(STATE_DIR)
+    news_intelligence = refresh_news_intelligence_report(STATE_DIR)
+    mode = read_trading_mode_state()
+    account = load_state("account_snapshot.json", {})
+    positions = load_state("positions.json", {"positions": []})
+    summary = load_state("agent_summary.json", {})
+
+    print("ETF_TW 狀態摘要")
+    print("=" * 40)
+    for line in build_status_lines(mode, account, positions, summary, data_quality, portfolio_risk, news_intelligence):
+        print(line)
     return 0
 
 def format_mode_status(payload: dict) -> str:
@@ -1209,6 +1309,7 @@ def build_parser() -> argparse.ArgumentParser:
     # Onboarding
     sub.add_parser("welcome", help="顯示歡迎訊息與使用範例")
     sub.add_parser("list", help="列出精選 ETF 清單")
+    sub.add_parser("status", help="查看模式、帳務、對帳與資料品質摘要")
     
     # Dashboard
     p_dash = sub.add_parser("dashboard", help="啟動 ETF_TW 決策儀表板 (Web UI)")
@@ -1251,6 +1352,16 @@ def build_parser() -> argparse.ArgumentParser:
     p_paper.add_argument("--side", choices=["buy", "sell"], help="買進或賣出")
     p_paper.add_argument("--quantity", type=int, help="數量 (股)")
     p_paper.add_argument("--price", type=float, help="限價價格")
+
+    p_paper_init = sub.add_parser("paper-init", help="用目前持倉初始化 paper ledger")
+    p_paper_init.add_argument(
+        "--position",
+        action="append",
+        required=True,
+        help="格式：SYMBOL,QUANTITY,PRICE,DATE，例如 006208,8,211.5,2026-04-29",
+    )
+    p_paper_init.add_argument("--force", action="store_true", help="覆寫既有 paper ledger")
+    p_paper_init.add_argument("--no-sync", action="store_true", help="只寫 ledger，不同步 paper state")
     
     # Portfolio
     sub.add_parser("portfolio", help="查看當前模擬投資組合狀態與損益")
@@ -1330,6 +1441,8 @@ def main() -> int:
     # Original commands
     if args.command == "list":
         return cmd_list(args)
+    if args.command == "status":
+        return cmd_status(args)
     if args.command == "dashboard":
         return cmd_dashboard(args)
     if args.command == "search":
@@ -1350,6 +1463,8 @@ def main() -> int:
         return cmd_validate_order(args)
     if args.command == "paper-trade":
         return cmd_paper_trade(args)
+    if args.command == "paper-init":
+        return cmd_paper_init(args)
     if args.command == "portfolio":
         return cmd_portfolio(args)
     if args.command == "orders":

@@ -1,5 +1,64 @@
-.env\nauth.json\nauth.lock\n*.log\n*.pid\ngateway_state.json\nmodels_dev_cache.json\nprocesses.json\nstate.db*\nchannel_directory.json\n.hermes_history\n.skills_prompt_snapshot.json\n.update_check\nbin/\ncache/\ncron/\ngraphify-out/\nlogs/\nmemories/\nsessions/\nwebui_state/\nskills/
-\n.env\nauth.json\nauth.lock\ngateway.pid\ngateway_state.json\nstate.db*\nlogs/\nsessions/\ncache/
-\n# Exclude non-finance skills\nskills/*\n!skills/ETF_TW\n!skills/stock-analysis-tw\n!skills/stock-market-pro-tw\n!skills/taiwan-finance\n!skills/graphify\nskills/etf_tw
-\n# OS & IDE Noise\n.DS_Store\n.vscode/\n.idea/\n\n# Python & Runtime Noise\n__pycache__/\n*.pyc\n.venv/\n.pytest_cache/\n\n# Agent & CLI Internal State\n.env\n.hermes_history\n.skills_prompt_snapshot.json\n.update_check
+.env
+auth.json
+auth.lock
+auth/
+*.log
+*.pid
+gateway.pid
+gateway_state.json
+models_dev_cache.json
+processes.json
+state.db*
+channel_directory.json
+.hermes_history
+.skills_prompt_snapshot.json
+.update_check
+
+# Runtime and generated state
+bin/
+cache/
+checkpoints/
+cron/output/
+graphify-out/cache/
+instances/
+logs/
+memories/
+sessions/
+state-snapshots/
+webui_state/
+
+# Exclude non-finance skills
+skills/*
+!skills/ETF_TW/
+!skills/stock-analysis-tw/
+!skills/stock-market-pro-tw/
+!skills/taiwan-finance/
+!skills/graphify
+
+# OS and IDE noise
+.DS_Store
+.vscode/
+.idea/
+
+# Python and runtime noise
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+skills/ETF_TW/data/news.json
+skills/ETF_TW/data/tmp_*.json
+
+# Agent and CLI internal state
+.claude/autonomy/
+.playwright-mcp/
+.restart_last_processed.json
+_disabled/
+browser_recordings/
+context_length_cache.yaml
+ollama_cloud_models_cache.json
+pastes/
+platforms/pairing/
+response_store.db*
+tmp_*.py
+webui_state/
 .worktrees/

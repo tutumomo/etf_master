@@ -154,7 +154,7 @@
 - [x] source priority
 - [x] broker seq precedence
 - [x] partial fill monotonicity guard
-- [ ] submit_response metadata contract 正式化
+- [x] submit_response metadata contract 正式化
 
 ### 6C. Partial Fill / Fills Ledger / Portfolio Boundary
 **狀態**: IN_PROGRESS  
@@ -166,6 +166,7 @@
 - [x] polling partial fill → fills ledger sync
 - [x] partial fill 不直接進 `positions.json`
 - [x] partial fill 不直接變 snapshot holdings
+- [x] callback / polling terminal filled → fills ledger sync
 - [ ] 規劃 filled 後 fills ledger / positions / snapshot 的最終一致性閉環
 
 ### 6D. Dashboard / Summary / Docs Consolidation
@@ -176,7 +177,7 @@
 - [x] dashboard overview / template 顯示 filled reconciliation 區塊
 - [x] global banner / refresh 後摘要提示 unreconciled fills
 - [x] `docs/BROKER_RECONCILIATION_RULES.md`
-- [ ] 視需要把 filled reconciliation count 接入 agent summary
+- [x] filled reconciliation count 接入 agent summary
 
 ---
 

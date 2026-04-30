@@ -22,7 +22,11 @@ cd ~/.hermes/profiles/etf_master/skills/ETF_TW
 .venv/bin/python scripts/sync_portfolio_snapshot.py
 .venv/bin/python scripts/sync_orders_open_state.py
 .venv/bin/python scripts/generate_watchlist_summary.py --mode am
+AGENT_ID=etf_master .venv/bin/python scripts/generate_market_event_context.py
+AGENT_ID=etf_master .venv/bin/python scripts/generate_taiwan_market_context.py
 ```
+
+**⚠️ Pitfall #0**: 使用者或舊 cron 指令可能只列出 `sync_market_cache.py`、portfolio、orders、watchlist，沒有列出 `generate_market_event_context.py` / `generate_taiwan_market_context.py`。但早班報告要更新 `market-view.md` / `risk-signal.md` 時，必須先刷新這兩個 context；否則會拿昨日 `market_context_taiwan.json` / `market_event_context.json` 寫入今日 wiki，造成「資料同步成功但體制判讀 stale」。做法：watchlist 後補跑 event context → Taiwan context，再重新讀 state 後才 patch wiki。
 
 **⚠️ Pitfall #1**: `generate_watchlist_summary.py` 必須帶 `--mode am` 或 `--mode pm`，否則報錯 exit code 2。
 

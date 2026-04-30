@@ -8,12 +8,16 @@ from typing import Any
 
 
 def build_fill_fact_row(row: dict[str, Any]) -> dict[str, Any]:
+    status = row.get("status") or "partial_filled"
+    filled_quantity = row.get("filled_quantity")
+    if filled_quantity is None and status == "filled":
+        filled_quantity = row.get("quantity")
     return {
         "order_id": row.get("order_id"),
         "symbol": row.get("symbol"),
         "action": row.get("action"),
-        "status": row.get("status") or "partial_filled",
-        "filled_quantity": int(row.get("filled_quantity") or 0),
+        "status": status,
+        "filled_quantity": int(filled_quantity or 0),
         "remaining_quantity": row.get("remaining_quantity"),
         "price": row.get("price"),
         "source_type": row.get("source_type") or "broker_callback",

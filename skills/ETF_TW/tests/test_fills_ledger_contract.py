@@ -46,3 +46,17 @@ def test_partial_filled_event_should_be_recordable_in_fills_ledger_payload():
     assert payload["source"] == "fill_facts"
     assert len(payload["fills"]) == 1
     assert payload["fills"][0]["status"] == "partial_filled"
+
+
+def test_filled_event_without_filled_quantity_uses_order_quantity():
+    row = module.build_fill_fact_row({
+        "order_id": "fd-001",
+        "symbol": "006208",
+        "action": "sell",
+        "status": "filled",
+        "quantity": 8,
+        "price": 211.5,
+        "source_type": "broker_polling",
+    })
+    assert row["status"] == "filled"
+    assert row["filled_quantity"] == 8

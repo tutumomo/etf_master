@@ -18,6 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from etf_core.state_io import safe_load_json, safe_load_jsonl
 from etf_core import context
 from strategy_audit import run_strategy_audit, format_strategy_audit_section
+from report_templates import section_heading
 
 TW_TZ = ZoneInfo('Asia/Taipei')
 
@@ -175,14 +176,14 @@ def format_weekly_report(
         f'period: {period_start.isoformat()} ~ {period_end.isoformat()}',
         f'---',
         f'',
-        f'## 本週摘要',
+        section_heading('weekly', '本週摘要'),
         f'- 新增決策建議：{week_stats["new_decisions"]} 筆',
         f'- 完成 T1 回填：{week_stats["t1_filled_this_week"]} 筆 / '
         f'T3：{week_stats["t3_filled_this_week"]} 筆 / '
         f'T10：{week_stats["t10_filled_this_week"]} 筆',
         f'- 本週到期完整樣本：{week_stats["finalized_this_week"]} 筆',
         f'',
-        f'## 雙鏈勝率（累計）',
+        section_heading('weekly', '雙鏈勝率（累計）'),
         f'| 鏈路 | 樣本數 | 勝率 | 敗率 | 平盤率 |',
         f'|------|--------|------|------|--------|',
         f'| 規則引擎 | {rule_b.get("total", 0)} | {fmt_rate(rule_b)} |',
@@ -190,10 +191,10 @@ def format_weekly_report(
         f'| Tier 1 共識 | {tier1_b.get("total", 0)} | {fmt_rate(tier1_b)} |',
         f'| Tier 2 規則強推 | {t2_b.get("total", 0)} | {fmt_rate(t2_b)} |',
         f'',
-        f'## 本週最準確標的（Top 3）',
+        section_heading('weekly', '本週最準確標的（Top 3）'),
         wins_lines,
         f'',
-        f'## 本週最大失誤（Top 3）',
+        section_heading('weekly', '本週最大失誤（Top 3）'),
         losses_lines,
     ]
 

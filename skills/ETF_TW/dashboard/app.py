@@ -186,6 +186,37 @@ def submit_stdout_verified(stdout: str) -> bool:
     )
 
 
+def build_phase2_pending_groups(items: list[dict]) -> list[dict]:
+    groups: list[dict] = []
+    by_key: dict[str, dict] = {}
+    for item in items:
+        payload = item.get("trigger_payload") or {}
+        split_total = int(payload.get("split_total") or 0)
+        split_group_id = payload.get("split_group_id")
+        is_split = bool(split_group_id and split_total > 1)
+        key = split_group_id if is_split else str(item.get("id"))
+        if key not in by_key:
+            by_key[key] = {
+                "id": key,
+                "is_split": is_split,
+                "symbol": item.get("symbol"),
+                "side": item.get("side"),
+                "signals": [],
+                "total_quantity": int(payload.get("split_total_quantity") or 0),
+            }
+            groups.append(by_key[key])
+        by_key[key]["signals"].append(item)
+
+    for group in groups:
+        group["signals"].sort(
+            key=lambda s: (s.get("trigger_payload") or {}).get("split_part") == "secondary"
+        )
+        group["count"] = len(group["signals"])
+        if not group["total_quantity"]:
+            group["total_quantity"] = sum(int(s.get("quantity") or 0) for s in group["signals"])
+    return groups
+
+
 def live_submit_status_code(result: dict) -> int:
     if result.get("step") in {"live_mode_gate", "pre_flight_gate", "human_confirm"}:
         return 403
@@ -1275,6 +1306,7 @@ def build_overview_model() -> dict:
         phase2_pending = auto_queue.list_active(STATE / "pending_auto_orders.json")
     except Exception:
         phase2_pending = []
+    phase2_pending_groups = build_phase2_pending_groups(phase2_pending)
     try:
         phase2_config = auto_cb.load_auto_trade_config(STATE)
     except Exception:
@@ -1360,6 +1392,7 @@ def build_overview_model() -> dict:
         "strategy_audit": strategy_audit,
         "sensor_health": sensor_health,
         "phase2_pending": phase2_pending,
+        "phase2_pending_groups": phase2_pending_groups,
         "phase2_config": phase2_config,
         "phase2_skeleton": phase2_skeleton,
         "phase2_circuit_breaker": phase2_circuit_breaker,

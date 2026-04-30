@@ -1,5 +1,32 @@
 # CHANGELOG
 
+## v1.9.0 — 2026-04-30
+
+### Added
+- **Paper ledger 初始化**：新增 `scripts/init_paper_ledger.py` 與 CLI `paper-init`，可用 `SYMBOL,QUANTITY,PRICE,DATE` 建立 paper 初始持倉並同步 state。
+- **資料品質報告**：新增 `scripts/data_quality.py`，檢查 `market_cache` 新鮮度、缺報價、positions / snapshot / open orders 對齊狀態。
+- **組合風控報告**：新增 `scripts/portfolio_risk_report.py`，計算最大回撤、年化波動、標的相關性與 trailing stop 對齊狀態。
+- **Broker readiness**：新增 `scripts/broker_readiness.py`，明確列出 Cathay 等 broker 進入 live-ready 前缺少的官方規格、測試帳號與 mapping 驗證。
+- **新聞情報去雜訊報告**：新增 `scripts/news_intelligence_report.py`，整合既有 `news_articles` / `news_headlines` / RSS cache，僅採用 24 小時內 fresh source 產生強弱訊號。
+- **CLI 狀態摘要**：`etf_tw.py status` 現在一次顯示模式、帳務、持倉、成交對帳、資料品質、組合風控與新聞情報。
+
+### Changed
+- **Phase 2 策略 fine-tune**：`sell_scanner` 加入 DCA 完成後 trailing grace period 與 mixed lot 出場計畫 metadata；`buy_scanner` 標記 cooldown 後 reentry，不繞過既有風控。
+- **Dashboard pending 顯示**：Phase 2 mixed lot 出場訊號在 dashboard 以同一出場計畫分組呈現，避免整張 / 零股拆單被誤讀為重複下單。
+- **報表模板標準化**：早班、盤後與週報輸出改用 `report_templates.py` 標準章節，並新增 cron 舊腳本缺口檢查。
+- **Agent summary 擴充**：`sync_agent_summary.py` 納入 filled reconciliation、decision quality、data quality、portfolio risk 與 news intelligence 摘要。
+- **Async 測試環境**：`pytest-asyncio>=1.3.0` 納入 requirements，`pytest.ini` 啟用 `asyncio_mode=auto`，讓 async smoke tests 納入全測。
+
+### Fixed
+- **成交對帳閉環**：callback / polling 對 terminal `filled`、`partial_filled` 狀態同步 fills ledger，`filled_quantity` 缺失時回退使用原委託數量。
+- **Cathay 假功能移除**：`cathay_adapter.py` 與 legacy `cathay_broker.py` 不再假認證、假回傳部位或假成交；未整合官方 API 前所有 submit 皆拒絕。
+- **新聞 stale 防呆**：新聞情報報告忽略 24 小時以上 stale source，並修正無 timezone timestamp 導致 freshness 為負數的問題。
+- **`.gitignore` 誤傷修復**：移除大小寫不敏感檔案系統上會誤忽略 `skills/ETF_TW` 新檔的 `skills/etf_tw/` 規則，並忽略本機新聞 / preview cache。
+
+### Tests
+- **全測驗證**：`721 passed`。
+- **Graphify 同步**：重建 graphify code graph，產出 4338 nodes / 7596 edges / 484 communities。
+
 ## v1.8.2 — 2026-04-30
 
 ### Added

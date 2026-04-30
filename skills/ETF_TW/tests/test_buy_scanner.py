@@ -377,6 +377,51 @@ def test_run_buy_scan_skips_symbol_during_post_sell_cooldown(state_dir):
     assert res["cooldown"][0]["reason"] == "post_sell_cooldown"
 
 
+def test_run_buy_scan_marks_reentry_after_cooldown_expired(state_dir):
+    """cooldown 結束後恢復用既有 ladder 進場，並在訊號標記 re-entry 語意。"""
+    on_date = datetime(2026, 5, 2, 9, 30, tzinfo=TW_TZ)
+    bar_start = datetime(2026, 5, 2, 9, 0, tzinfo=TW_TZ)
+
+    _write_state(state_dir, "watchlist.json", {"items": [{"symbol": "00923"}]})
+    _write_state(state_dir, "positions.json", {"positions": []})
+    _write_state(state_dir, "intraday_quotes_1m.json", {
+        "intraday": {
+            "00923": {
+                "ticker_used": "00923.TW",
+                "bars": _make_intraday("00923", bar_start, [33.0] * 30, volume=1000),
+                "bar_count": 30,
+                "latest_close": 33.0,
+                "latest_time": bar_start.isoformat(),
+            }
+        }
+    })
+    _write_state(state_dir, "market_cache.json", {
+        "quotes": {"00923": {"current_price": 33.0, "prev_close": 35.0}}
+    })
+    _write_state(state_dir, "account_snapshot.json", {"cash": 100000, "settlement_safe_cash": 100000})
+    _write_state(state_dir, "safety_redlines.json", {
+        "enabled": False, "max_buy_amount_pct": 0.5, "max_buy_amount_twd": 1000000,
+    })
+    _write_state(state_dir, "position_cooldown.json", {
+        "00923": {
+            "sold_at": "2026-04-24T13:30:00+08:00",
+            "cooldown_until": "2026-05-01T13:30:00+08:00",
+        }
+    })
+
+    res = run_buy_scan(
+        trigger_time=time(9, 30),
+        state_dir=state_dir,
+        on_date=on_date,
+        skip_circuit_breaker=True,
+    )
+
+    assert len(res["reentry_watch"]) == 1
+    assert res["reentry_watch"][0]["symbol"] == "00923"
+    assert len(res["enqueued"]) == 1
+    assert res["enqueued"][0]["trigger_payload"]["reentry_after_cooldown"] is True
+
+
 def test_run_buy_scan_applies_strategy_and_overlay_amount_adjustment(state_dir):
     """Phase 2 買入會把原始階梯金額依策略與 overlay 調整後再入 queue。"""
     on_date = datetime(2026, 4, 25, 9, 30, tzinfo=TW_TZ)

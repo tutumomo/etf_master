@@ -65,6 +65,17 @@ def load_daily_order_limits(state_dir) -> Dict[str, Any]:
     }
 
 
+def load_portfolio_risk_report(state_dir) -> Dict[str, Any]:
+    if not state_dir:
+        return {}
+    path = state_dir / "portfolio_risk_report.json"
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
 def _fail(reason: str, details: dict = None) -> Dict[str, Any]:
     return {'passed': False, 'reason': reason, 'details': details or {}}
 
@@ -223,6 +234,13 @@ def check_order(order: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any
                     'requested': quantity,
                     'max_amount_twd': max_single,
                 })
+
+        risk_report = context.get("portfolio_risk_report") or load_portfolio_risk_report(context.get("state_dir"))
+        if risk_report.get("block_buy"):
+            return _fail("portfolio_risk_block_buy", {
+                "blockers": risk_report.get("blockers") or [],
+                "portfolio": risk_report.get("portfolio") or {},
+            })
 
     # ── 6. 確認旗標（三段式送單）── 必須在安全紅線前，讓 UI 流程優先被檢查 ──
     if is_submit and not is_confirmed:

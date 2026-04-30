@@ -123,6 +123,46 @@ def test_run_sell_scan_skips_trailing_during_active_initial_dca(state_dir):
     assert res["dca_trailing_frozen"][0]["symbol"] == "00923"
 
 
+def test_run_sell_scan_skips_trailing_during_dca_completion_grace(state_dir):
+    """DCA 完成後短暫 grace period 不立刻啟動 trailing，避免剛建完倉就被洗出場。"""
+    on_date = datetime(2026, 4, 30, 13, 15, tzinfo=TW_TZ)
+
+    _write(state_dir, "positions.json", {"positions": [
+        {"symbol": "00923", "quantity": 200, "average_cost": 30, "entry_date": "2026-04-15"},
+    ]})
+    _write(state_dir, "intraday_quotes_1m.json", _make_intraday("00923", 33.0))
+    _write(state_dir, "market_cache.json", {"quotes": {}})
+    _write(state_dir, "initial_dca_state.json", {
+        "enabled": True,
+        "total_target_twd": 10000,
+        "target_days": 10,
+        "started_on": "2026-04-20",
+        "days_done": 10,
+        "twd_spent": 10000,
+        "completed": True,
+        "last_buy_date": "2026-04-29",
+        "symbol_priority": ["00923"],
+    })
+
+    pt.save_tracker(state_dir, {
+        "00923": {
+            "entry_date": "2026-04-15",
+            "tracking_start_date": "2026-04-16",
+            "group": "income",
+            "peak_close": 35.0,
+            "peak_close_date": "2026-04-22",
+            "trailing_pct": 0.05,
+            "stop_price": 33.25,
+            "is_locked_in": False,
+        }
+    })
+
+    res = ss.run_sell_scan(state_dir=state_dir, on_date=on_date)
+
+    assert res["enqueued"] == []
+    assert res["dca_trailing_frozen"][0]["reason"] == "initial_dca_completion_grace"
+
+
 def test_run_sell_scan_above_stop_no_trigger(state_dir):
     on_date = datetime(2026, 4, 25, 13, 15, tzinfo=TW_TZ)
 
@@ -266,6 +306,9 @@ def test_run_sell_scan_splits_mixed_board_and_odd_lot_position(state_dir):
     ]
     assert res["enqueued"][0]["trigger_payload"]["split_part"] == "primary"
     assert res["enqueued"][1]["trigger_payload"]["split_part"] == "secondary"
+    assert res["enqueued"][0]["trigger_payload"]["split_group_id"]
+    assert res["enqueued"][0]["trigger_payload"]["split_group_id"] == res["enqueued"][1]["trigger_payload"]["split_group_id"]
+    assert res["enqueued"][0]["trigger_payload"]["split_total_quantity"] == 15763
 
 
 def test_run_sell_scan_locked_in_signal_in_reason(state_dir):
