@@ -321,10 +321,16 @@
                 {% endif %}
               {% endif %}
             {% else %}
-              peak={{ '%.4f'|format(p.trigger_payload.peak_close or 0) }}　|
-              stop={{ '%.4f'|format(p.trigger_payload.stop_price or 0) }}　|
-              trail={{ '%.0f%%'|format((p.trigger_payload.trailing_pct or 0) * 100) }}
-              {% if p.trigger_payload.is_locked_in %}<span style="color:#ffd166;">🔒 已鎖利</span>{% endif %}
+              {% if p.trigger_payload.momentum_triggered %}
+                <span class="tag" style="background:rgba(255,107,129,0.2);color:#ff6b81;font-weight:700;">⚡ 動能反轉</span>　|
+                個股 vs 大盤 {{ '%+.2f%%'|format((p.trigger_payload.momentum_relative or 0) * 100) }}　|
+                RSI={{ '%.1f'|format(p.trigger_payload.momentum_rsi or 0) }}
+              {% else %}
+                peak={{ '%.4f'|format(p.trigger_payload.peak_close or 0) }}　|
+                stop={{ '%.4f'|format(p.trigger_payload.stop_price or 0) }}　|
+                trail={{ '%.0f%%'|format((p.trigger_payload.trailing_pct or 0) * 100) }}
+                {% if p.trigger_payload.is_locked_in %}<span style="color:#ffd166;">🔒 已鎖利</span>{% endif %}
+              {% endif %}
             {% endif %}
           </div>
           {% endif %}

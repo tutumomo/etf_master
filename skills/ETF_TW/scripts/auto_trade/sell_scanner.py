@@ -34,6 +34,10 @@ from scripts.etf_core.state_io import safe_load_json
 import scripts.pre_flight_gate as pre_flight
 from scripts.auto_trade import pending_queue, peak_tracker
 from scripts.auto_trade.initial_dca import is_dca_phase_active, load_dca_state
+from scripts.auto_trade.momentum_signals import (
+    compute_relative_momentum,
+    is_momentum_reversal,
+)
 from scripts.auto_trade.vwap_calculator import SELL_TRIGGER_TIME, TW_TZ
 
 # 賣出後該檔多少天內不可重新買入（避免 churning）
@@ -48,6 +52,53 @@ def _safe_load(path: Path, default=None):
         return json.loads(path.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError):
         return default if default is not None else {}
+
+
+def _compute_market_momentum_baseline(intelligence: dict) -> float | None:
+    """
+    從 market_intelligence 計算大盤 20 日報酬基準（watchlist 全標的中位數）。
+    當作大盤 baseline 給 momentum reversal 用。
+
+    Returns:
+        中位數（小數，例如 0.05 表示 +5%）；無資料 → None
+    """
+    if not isinstance(intelligence, dict):
+        return None
+    intel_data = intelligence.get("intelligence") or intelligence
+    if not isinstance(intel_data, dict):
+        return None
+
+    momentums: list[float] = []
+    for sym, data in intel_data.items():
+        if not isinstance(data, dict):
+            continue
+        m = data.get("momentum_20d")
+        if isinstance(m, (int, float)):
+            momentums.append(float(m) / 100.0)  # 百分比 → 小數
+    if len(momentums) < 3:
+        return None
+    momentums.sort()
+    n = len(momentums)
+    if n % 2 == 1:
+        return momentums[n // 2]
+    return (momentums[n // 2 - 1] + momentums[n // 2]) / 2.0
+
+
+def _get_symbol_momentum_and_rsi(intelligence: dict, symbol: str) -> tuple[float | None, float | None]:
+    """從 market_intelligence 取個股 momentum_20d (小數) 與 rsi。"""
+    if not isinstance(intelligence, dict):
+        return None, None
+    intel_data = intelligence.get("intelligence") or intelligence
+    if not isinstance(intel_data, dict):
+        return None, None
+    data = intel_data.get(symbol) or intel_data.get(symbol.upper())
+    if not isinstance(data, dict):
+        return None, None
+    m = data.get("momentum_20d")
+    r = data.get("rsi")
+    momentum = float(m) / 100.0 if isinstance(m, (int, float)) else None
+    rsi = float(r) if isinstance(r, (int, float)) else None
+    return momentum, rsi
 
 
 def _now() -> datetime:
@@ -172,11 +223,16 @@ def run_sell_scan(
         "above_stop": [],
         "dca_trailing_frozen": [],
         "tracking_not_started": [],
+        "momentum_reversed": [],   # F1: 動能反轉觸發但 gate 擋下
         "no_data": [],
     }
     dca_state = load_dca_state(state_dir)
     dca_active = is_dca_phase_active(dca_state, today=today)
     dca_grace_active = _is_dca_completion_grace_active(dca_state, today)
+
+    # F1: 載入 market_intelligence + 計算大盤 baseline
+    intelligence = _safe_load(state_dir / "market_intelligence.json", default={})
+    market_baseline_20d = _compute_market_momentum_baseline(intelligence)
 
     inventory_lookup = {
         str(p.get("symbol", "")).upper(): float(p.get("quantity") or 0)
@@ -239,14 +295,29 @@ def run_sell_scan(
             result["no_data"].append({"symbol": sym, "reason": "no_peak_or_stop"})
             continue
 
-        if current_price >= stop_price:
-            result["above_stop"].append({
-                "symbol": sym,
-                "current": current_price,
-                "stop": stop_price,
-                "peak": peak_close,
-            })
-            continue
+        # F1: 動能反轉檢查（在 trailing 之前）
+        # 觸發條件：個股 20d 報酬 vs 大盤 baseline 跑輸 ≥10%、且 RSI < 40
+        # 觸發 → 仍走完整 sell 流程（拆 lot / gate / enqueue），但 trigger_source
+        #         標記為 sell_scanner_momentum_1315
+        momentum_signal = None
+        if market_baseline_20d is not None:
+            sym_mom, sym_rsi = _get_symbol_momentum_and_rsi(intelligence, sym)
+            rel_mom = compute_relative_momentum(
+                symbol_return_20d=sym_mom, market_return_20d=market_baseline_20d,
+            )
+            momentum_signal = is_momentum_reversal(relative_momentum=rel_mom, rsi=sym_rsi)
+
+        # 動能反轉觸發 → 即使 current >= stop 也要賣
+        # 動能未反轉 + current >= stop → above_stop（不賣）
+        if not (momentum_signal and momentum_signal.triggered):
+            if current_price >= stop_price:
+                result["above_stop"].append({
+                    "symbol": sym,
+                    "current": current_price,
+                    "stop": stop_price,
+                    "peak": peak_close,
+                })
+                continue
 
         # ── 觸發 ────────────────────────────────────────────────────────────
         # v2 修正：若部位有混合（整張 + 零股），需拆兩筆訊號
@@ -285,10 +356,19 @@ def run_sell_scan(
 
         return_pct = _calc_return_pct(p, current_price)
         is_locked = entry.get("is_locked_in", False)
-        reason_str = (
-            f"trailing stop 觸發：current={current_price:.4f} < stop={stop_price:.4f} "
-            f"(peak={peak_close:.4f}, trail={trailing_pct:.0%}{', locked-in' if is_locked else ''})"
-        )
+        # F1: 依觸發來源決定 reason 字串與 trigger_source
+        if momentum_signal and momentum_signal.triggered:
+            sell_trigger_source = "sell_scanner_momentum_1315"
+            reason_str = (
+                f"動能反轉觸發：個股 20d 跑輸大盤 {momentum_signal.relative_momentum:+.2%} "
+                f"且 RSI={momentum_signal.rsi:.1f} < 40 (current={current_price:.4f})"
+            )
+        else:
+            sell_trigger_source = "sell_scanner_1315"
+            reason_str = (
+                f"trailing stop 觸發：current={current_price:.4f} < stop={stop_price:.4f} "
+                f"(peak={peak_close:.4f}, trail={trailing_pct:.0%}{', locked-in' if is_locked else ''})"
+            )
 
         if not gate_res.get("passed"):
             blocked_record = {
@@ -298,7 +378,7 @@ def run_sell_scan(
                 "symbol": sym,
                 "quantity": sell_qty,
                 "price": current_price,
-                "trigger_source": "sell_scanner_1315",
+                "trigger_source": sell_trigger_source,
                 "trigger_reason": reason_str,
                 "gate_reason": gate_res.get("reason"),
                 "gate_details": gate_res.get("details", {}),
@@ -322,7 +402,7 @@ def run_sell_scan(
             price=current_price,
             order_type="market",
             lot_type=lot_type,
-            trigger_source="sell_scanner_1315",
+            trigger_source=sell_trigger_source,
             trigger_reason=reason_str,
             trigger_payload={
                 "current_price": current_price,
@@ -336,6 +416,10 @@ def run_sell_scan(
                 "split_total": len(sell_orders),
                 "split_group_id": split_group_id,
                 "split_total_quantity": total_qty,
+                # F1: 動能反轉訊號的稽核資訊
+                "momentum_relative": momentum_signal.relative_momentum if momentum_signal else None,
+                "momentum_rsi": momentum_signal.rsi if momentum_signal else None,
+                "momentum_triggered": bool(momentum_signal and momentum_signal.triggered),
             },
             now=now,
         )
@@ -369,7 +453,7 @@ def run_sell_scan(
                 price=current_price,
                 order_type="market",
                 lot_type=extra_lot,
-                trigger_source="sell_scanner_1315",
+                trigger_source=sell_trigger_source,
                 trigger_reason=reason_str + f" (split:{extra_lot})",
                 trigger_payload={
                     "current_price": current_price,

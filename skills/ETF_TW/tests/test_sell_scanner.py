@@ -361,3 +361,104 @@ def test_write_sell_cooldown_overwrites_existing(state_dir):
     ss.write_sell_cooldown(state_dir, "00923", sold_on=sold_on_2)
     data = json.loads((state_dir / "position_cooldown.json").read_text(encoding="utf-8"))
     assert data["00923"]["sold_at"] == sold_on_2.isoformat()
+
+
+# ---------------------------------------------------------------------------
+# F1: 動能反轉賣訊整合測試
+# ---------------------------------------------------------------------------
+
+def test_run_sell_scan_momentum_reversal_triggers_even_above_stop(state_dir):
+    """個股 -15% vs 大盤中位數 +5% (gap -20%) + RSI=35
+       → 動能反轉觸發，即使 current_price > stop_price 仍出場"""
+    on_date = datetime(2026, 4, 25, 13, 15, tzinfo=TW_TZ)
+
+    _write(state_dir, "positions.json", {"positions": [
+        {"symbol": "00929", "quantity": 1000, "average_cost": 30, "entry_date": "2026-04-15"},
+    ]})
+    # current 32 > stop 30 → 不會 trailing 觸發
+    _write(state_dir, "intraday_quotes_1m.json", _make_intraday("00929", 32.0))
+    _write(state_dir, "market_cache.json", {"quotes": {}})
+    pt.save_tracker(state_dir, {
+        "00929": {
+            "entry_date": "2026-04-15", "tracking_start_date": "2026-04-16",
+            "group": "income", "peak_close": 35.0, "peak_close_date": "2026-04-22",
+            "trailing_pct": 0.10, "stop_price": 31.5, "is_locked_in": False,
+        }
+    })
+    # market_intelligence: 個股 momentum_20d=-15、其他三檔 +5/+8/+3 → 大盤 baseline 5% (中位)
+    # 個股 -15% - 大盤 +5% = -20% relative → 達到 -10% 閾值
+    _write(state_dir, "market_intelligence.json", {
+        "intelligence": {
+            "00929": {"momentum_20d": -15.0, "rsi": 35.0},
+            "0050":  {"momentum_20d": 5.0,  "rsi": 60.0},
+            "00878": {"momentum_20d": 8.0,  "rsi": 65.0},
+            "00919": {"momentum_20d": 3.0,  "rsi": 55.0},
+        }
+    })
+
+    res = ss.run_sell_scan(state_dir=state_dir, on_date=on_date)
+
+    assert len(res["enqueued"]) == 1, f"expected 1 enqueued, got {res}"
+    sig = res["enqueued"][0]
+    assert sig["trigger_source"] == "sell_scanner_momentum_1315"
+    assert "動能反轉" in sig["trigger_reason"]
+    payload = sig["trigger_payload"]
+    assert payload["momentum_triggered"] is True
+    # 4 個 momentum [-15, 5, 8, 3] → 排序 [-15, 3, 5, 8] → 中位 = (3+5)/2 = 4%
+    # 個股 -15% - baseline 4% = -19%
+    assert payload["momentum_relative"] == pytest.approx(-0.19, abs=0.001)
+    assert payload["momentum_rsi"] == 35.0
+
+
+def test_run_sell_scan_momentum_skipped_when_rsi_strong(state_dir):
+    """個股跑輸大盤但 RSI=55（不弱）→ 不觸發動能反轉，且 current > stop → above_stop"""
+    on_date = datetime(2026, 4, 25, 13, 15, tzinfo=TW_TZ)
+    _write(state_dir, "positions.json", {"positions": [
+        {"symbol": "00929", "quantity": 1000, "average_cost": 30, "entry_date": "2026-04-15"},
+    ]})
+    _write(state_dir, "intraday_quotes_1m.json", _make_intraday("00929", 32.0))
+    _write(state_dir, "market_cache.json", {"quotes": {}})
+    pt.save_tracker(state_dir, {
+        "00929": {
+            "entry_date": "2026-04-15", "tracking_start_date": "2026-04-16",
+            "group": "income", "peak_close": 35.0,
+            "trailing_pct": 0.10, "stop_price": 31.5, "is_locked_in": False,
+        }
+    })
+    _write(state_dir, "market_intelligence.json", {
+        "intelligence": {
+            "00929": {"momentum_20d": -15.0, "rsi": 55.0},  # RSI 太強
+            "0050":  {"momentum_20d": 5.0,  "rsi": 60.0},
+            "00878": {"momentum_20d": 8.0,  "rsi": 65.0},
+            "00919": {"momentum_20d": 3.0,  "rsi": 55.0},
+        }
+    })
+
+    res = ss.run_sell_scan(state_dir=state_dir, on_date=on_date)
+    assert res["enqueued"] == []
+    assert len(res["above_stop"]) == 1
+
+
+def test_run_sell_scan_falls_back_when_no_market_intelligence(state_dir):
+    """無 market_intelligence.json → 動能反轉不啟動，照原本 trailing 邏輯"""
+    on_date = datetime(2026, 4, 25, 13, 15, tzinfo=TW_TZ)
+    _write(state_dir, "positions.json", {"positions": [
+        {"symbol": "00923", "quantity": 1000, "average_cost": 30, "entry_date": "2026-04-15"},
+    ]})
+    _write(state_dir, "intraday_quotes_1m.json", _make_intraday("00923", 33.0))
+    _write(state_dir, "market_cache.json", {"quotes": {}})
+    pt.save_tracker(state_dir, {
+        "00923": {
+            "entry_date": "2026-04-15", "tracking_start_date": "2026-04-16",
+            "group": "income", "peak_close": 35.0,
+            "trailing_pct": 0.05, "stop_price": 33.25, "is_locked_in": False,
+        }
+    })
+    # 故意不寫 market_intelligence.json
+
+    res = ss.run_sell_scan(state_dir=state_dir, on_date=on_date)
+    # 33.0 < 33.25 → trailing 觸發，trigger_source 是原本的 trailing
+    assert len(res["enqueued"]) == 1
+    sig = res["enqueued"][0]
+    assert sig["trigger_source"] == "sell_scanner_1315"
+    assert "trailing stop" in sig["trigger_reason"]
