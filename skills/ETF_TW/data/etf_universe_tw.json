@@ -1,11 +1,11 @@
 {
   "meta": {
     "version": "1.0",
-    "generated_at": "2026-04-16T07:54:37+0800",
+    "generated_at": "2026-05-01T07:45:48+0800",
     "counts": {
-      "twse": 216,
+      "twse": 224,
       "tpex": 114,
-      "merged": 330
+      "merged": 338
     },
     "sources": [
       "https://www.twse.com.tw/rwd/zh/ETF/list?response=json",
@@ -20,7 +20,15 @@
       "index_name": "富時臺灣證券交易所臺灣50指數",
       "listing_date": "2003.06.30",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "0050",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "0050.TW"
     },
     "0051": {
       "symbol": "0051",
@@ -29,7 +37,15 @@
       "index_name": "臺灣中型100指數",
       "listing_date": "2006.08.31",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "0051",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "0051.TW"
     },
     "0052": {
       "symbol": "0052",
@@ -38,7 +54,19 @@
       "index_name": "臺灣證券交易所臺灣資訊科技指數",
       "listing_date": "2006.09.12",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "0052",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "0052.TW"
     },
     "0053": {
       "symbol": "0053",
@@ -47,7 +75,15 @@
       "index_name": "電子類加權股價指數",
       "listing_date": "2007.07.16",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "0053",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "0053.TW"
     },
     "0055": {
       "symbol": "0055",
@@ -56,7 +92,19 @@
       "index_name": "MSCI台灣金融指數",
       "listing_date": "2007.07.16",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "0055",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "0055.TW"
     },
     "0056": {
       "symbol": "0056",
@@ -65,7 +113,17 @@
       "index_name": "臺灣高股息指數",
       "listing_date": "2007.12.26",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "0056",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "0056.TW"
     },
     "0057": {
       "symbol": "0057",
@@ -74,7 +132,15 @@
       "index_name": "MSCI台灣指數",
       "listing_date": "2008.02.27",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "0057",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "0057.TW"
     },
     "0061": {
       "symbol": "0061",
@@ -83,7 +149,17 @@
       "index_name": "滬深300指數",
       "listing_date": "2009.08.17",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "0061",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "equity",
+      "region": "China/HK",
+      "strategy_tags": [],
+      "risk_flags": [
+        "china_hk_policy_risk"
+      ],
+      "yfinance_ticker": "0061.TW"
     },
     "006203": {
       "symbol": "006203",
@@ -92,16 +168,56 @@
       "index_name": "MSCI®臺灣指數",
       "listing_date": "2011.05.12",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "006203",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "006203.TW"
     },
-    "006205(新臺幣)<br>00625K(人民幣)": {
-      "symbol": "006205(新臺幣)<br>00625K(人民幣)",
-      "name": "富邦上証(新臺幣)<br>富邦上証+R(人民幣)",
+    "006205": {
+      "symbol": "006205",
+      "name": "富邦上証(新臺幣)",
       "issuer": "富邦證券投資信託股份有限公司",
       "index_name": "上証180指數",
-      "listing_date": "2011.09.26(新臺幣)<br>2016.08.08(人民幣)",
+      "listing_date": "2011.09.26(新臺幣)",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "006205(新臺幣)",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "China/HK",
+      "strategy_tags": [],
+      "risk_flags": [
+        "china_hk_policy_risk"
+      ],
+      "yfinance_ticker": "006205.TW"
+    },
+    "00625K": {
+      "symbol": "00625K",
+      "name": "富邦上証+R(人民幣)",
+      "issuer": "富邦證券投資信託股份有限公司",
+      "index_name": "上証180指數",
+      "listing_date": "2016.08.08(人民幣)",
+      "exchange": "TWSE",
+      "currency": "CNY",
+      "raw_symbol": "00625K(人民幣)",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "currency",
+      "region": "China/HK",
+      "strategy_tags": [
+        "currency_share_class"
+      ],
+      "risk_flags": [
+        "china_hk_policy_risk",
+        "fx_share_class"
+      ],
+      "yfinance_ticker": "00625K.TW"
     },
     "006204": {
       "symbol": "006204",
@@ -110,7 +226,15 @@
       "index_name": "臺灣證券交易所發行量加權股價指數",
       "listing_date": "2011.09.28",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "006204",
+      "source": "twse_etf_list",
+      "issuer_short": "永豐",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "006204.TW"
     },
     "006206": {
       "symbol": "006206",
@@ -119,7 +243,17 @@
       "index_name": "上證50指數",
       "listing_date": "2012.05.11",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "006206",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "equity",
+      "region": "China/HK",
+      "strategy_tags": [],
+      "risk_flags": [
+        "china_hk_policy_risk"
+      ],
+      "yfinance_ticker": "006206.TW"
     },
     "006207": {
       "symbol": "006207",
@@ -128,7 +262,17 @@
       "index_name": "滬深300指數",
       "listing_date": "2012.06.22",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "006207",
+      "source": "twse_etf_list",
+      "issuer_short": "復華",
+      "asset_class": "equity",
+      "region": "China/HK",
+      "strategy_tags": [],
+      "risk_flags": [
+        "china_hk_policy_risk"
+      ],
+      "yfinance_ticker": "006207.TW"
     },
     "006208": {
       "symbol": "006208",
@@ -137,7 +281,15 @@
       "index_name": "富時臺灣證券交易所臺灣50指數",
       "listing_date": "2012.07.17",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "006208",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "006208.TW"
     },
     "00631L": {
       "symbol": "00631L",
@@ -146,7 +298,15 @@
       "index_name": "臺灣50指數",
       "listing_date": "2014.10.31",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00631L",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00631L.TW"
     },
     "00632R": {
       "symbol": "00632R",
@@ -155,7 +315,15 @@
       "index_name": "臺灣50指數",
       "listing_date": "2014.10.31",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00632R",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00632R.TW"
     },
     "00633L": {
       "symbol": "00633L",
@@ -164,7 +332,20 @@
       "index_name": "上証180兩倍槓桿指數",
       "listing_date": "2014.11.25",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00633L",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "China/HK",
+      "strategy_tags": [
+        "leveraged"
+      ],
+      "risk_flags": [
+        "china_hk_policy_risk",
+        "leveraged_etf"
+      ],
+      "yfinance_ticker": "00633L.TW"
     },
     "00634R": {
       "symbol": "00634R",
@@ -173,16 +354,61 @@
       "index_name": "上証180反向指數",
       "listing_date": "2014.11.25",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00634R",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "China/HK",
+      "strategy_tags": [
+        "inverse"
+      ],
+      "risk_flags": [
+        "china_hk_policy_risk",
+        "inverse_etf"
+      ],
+      "yfinance_ticker": "00634R.TW"
     },
-    "00636(新臺幣)<br>00636K(美元)": {
-      "symbol": "00636(新臺幣)<br>00636K(美元)",
-      "name": "國泰中國A50(新臺幣)<br>國泰中國A50+U(美元)",
+    "00636": {
+      "symbol": "00636",
+      "name": "國泰中國A50(新臺幣)",
       "issuer": "國泰證券投資信託股份有限公司",
       "index_name": "富時中國A50指數",
-      "listing_date": "2015.04.01(新臺幣)<br>2017.10.24(美元)",
+      "listing_date": "2015.04.01(新臺幣)",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00636(新臺幣)",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "equity",
+      "region": "China/HK",
+      "strategy_tags": [],
+      "risk_flags": [
+        "china_hk_policy_risk"
+      ],
+      "yfinance_ticker": "00636.TW"
+    },
+    "00636K": {
+      "symbol": "00636K",
+      "name": "國泰中國A50+U(美元)",
+      "issuer": "國泰證券投資信託股份有限公司",
+      "index_name": "富時中國A50指數",
+      "listing_date": "2017.10.24(美元)",
+      "exchange": "TWSE",
+      "currency": "USD",
+      "raw_symbol": "00636K(美元)",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "currency",
+      "region": "China/HK",
+      "strategy_tags": [
+        "currency_share_class"
+      ],
+      "risk_flags": [
+        "china_hk_policy_risk",
+        "fx_share_class"
+      ],
+      "yfinance_ticker": "00636K.TW"
     },
     "00635U": {
       "symbol": "00635U",
@@ -191,7 +417,19 @@
       "index_name": "標普高盛黃金ER指數(S&P GSCI Gold Excess Return Index)",
       "listing_date": "2015.04.15",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00635U",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "commodity",
+      "region": "US",
+      "strategy_tags": [
+        "commodity"
+      ],
+      "risk_flags": [
+        "commodity_futures_risk"
+      ],
+      "yfinance_ticker": "00635U.TW"
     },
     "00637L": {
       "symbol": "00637L",
@@ -200,7 +438,20 @@
       "index_name": "滬深300日報酬正向兩倍指數(CSI300 Daily Return Leveraged 2X Index)",
       "listing_date": "2015.05.18",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00637L",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "equity",
+      "region": "China/HK",
+      "strategy_tags": [
+        "leveraged"
+      ],
+      "risk_flags": [
+        "china_hk_policy_risk",
+        "leveraged_etf"
+      ],
+      "yfinance_ticker": "00637L.TW"
     },
     "00638R": {
       "symbol": "00638R",
@@ -209,7 +460,20 @@
       "index_name": "滬深300日報酬反向一倍指數(CSI300 Daily Return Inversed Index)",
       "listing_date": "2015.05.18",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00638R",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "equity",
+      "region": "China/HK",
+      "strategy_tags": [
+        "inverse"
+      ],
+      "risk_flags": [
+        "china_hk_policy_risk",
+        "inverse_etf"
+      ],
+      "yfinance_ticker": "00638R.TW"
     },
     "00639": {
       "symbol": "00639",
@@ -218,7 +482,15 @@
       "index_name": "深証100指數",
       "listing_date": "2015.06.09",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00639",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00639.TW"
     },
     "00642U": {
       "symbol": "00642U",
@@ -227,7 +499,19 @@
       "index_name": "標普高盛原油ER指數(S&P GSCI Crude Oil Enhanced Excess Return)",
       "listing_date": "2015.09.07",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00642U",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "commodity",
+      "region": "US",
+      "strategy_tags": [
+        "commodity"
+      ],
+      "risk_flags": [
+        "commodity_futures_risk"
+      ],
+      "yfinance_ticker": "00642U.TW"
     },
     "00640L": {
       "symbol": "00640L",
@@ -236,7 +520,19 @@
       "index_name": "東証正向2倍指數",
       "listing_date": "2015.09.10",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00640L",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "Japan",
+      "strategy_tags": [
+        "leveraged"
+      ],
+      "risk_flags": [
+        "leveraged_etf"
+      ],
+      "yfinance_ticker": "00640L.TW"
     },
     "00641R": {
       "symbol": "00641R",
@@ -245,7 +541,19 @@
       "index_name": "東証反向1倍指數",
       "listing_date": "2015.09.10",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00641R",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "Japan",
+      "strategy_tags": [
+        "inverse"
+      ],
+      "risk_flags": [
+        "inverse_etf"
+      ],
+      "yfinance_ticker": "00641R.TW"
     },
     "00645": {
       "symbol": "00645",
@@ -254,16 +562,53 @@
       "index_name": "東証股價指數",
       "listing_date": "2015.11.06",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00645",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "Japan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00645.TW"
     },
-    "00643(新臺幣)<br>00643K(人民幣)": {
-      "symbol": "00643(新臺幣)<br>00643K(人民幣)",
-      "name": "群益深証中小(新臺幣)<br>群益深証中小+R(人民幣)",
+    "00643": {
+      "symbol": "00643",
+      "name": "群益深証中小(新臺幣)",
       "issuer": "群益證券投資信託股份有限公司",
       "index_name": "中小企業100指數(SZSE SME 100 Index)",
-      "listing_date": "2015.12.02(新臺幣)<br>2016.08.26(人民幣)",
+      "listing_date": "2015.12.02(新臺幣)",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00643(新臺幣)",
+      "source": "twse_etf_list",
+      "issuer_short": "群益",
+      "asset_class": "equity",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00643.TW"
+    },
+    "00643K": {
+      "symbol": "00643K",
+      "name": "群益深証中小+R(人民幣)",
+      "issuer": "群益證券投資信託股份有限公司",
+      "index_name": "中小企業100指數(SZSE SME 100 Index)",
+      "listing_date": "2016.08.26(人民幣)",
+      "exchange": "TWSE",
+      "currency": "CNY",
+      "raw_symbol": "00643K(人民幣)",
+      "source": "twse_etf_list",
+      "issuer_short": "群益",
+      "asset_class": "currency",
+      "region": "Other",
+      "strategy_tags": [
+        "currency_share_class"
+      ],
+      "risk_flags": [
+        "fx_share_class"
+      ],
+      "yfinance_ticker": "00643K.TW"
     },
     "00646": {
       "symbol": "00646",
@@ -272,7 +617,15 @@
       "index_name": "標普指數(S&P 500®)",
       "listing_date": "2015.12.14",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00646",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00646.TW"
     },
     "00647L": {
       "symbol": "00647L",
@@ -281,7 +634,19 @@
       "index_name": "標普500 2倍槓桿指數(S&P 500R PR 2X Leverage Carry-Free Daily Index)",
       "listing_date": "2015.12.14",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00647L",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [
+        "leveraged"
+      ],
+      "risk_flags": [
+        "leveraged_etf"
+      ],
+      "yfinance_ticker": "00647L.TW"
     },
     "00648R": {
       "symbol": "00648R",
@@ -290,7 +655,19 @@
       "index_name": "標普500反向指數(S&P 500 PR Inverse Carry Free Daily)",
       "listing_date": "2015.12.14",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00648R",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [
+        "inverse"
+      ],
+      "risk_flags": [
+        "inverse_etf"
+      ],
+      "yfinance_ticker": "00648R.TW"
     },
     "00650L": {
       "symbol": "00650L",
@@ -299,7 +676,20 @@
       "index_name": "恒指槓桿指數",
       "listing_date": "2016.01.27",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00650L",
+      "source": "twse_etf_list",
+      "issuer_short": "復華",
+      "asset_class": "equity",
+      "region": "China/HK",
+      "strategy_tags": [
+        "leveraged"
+      ],
+      "risk_flags": [
+        "china_hk_policy_risk",
+        "leveraged_etf"
+      ],
+      "yfinance_ticker": "00650L.TW"
     },
     "00651R": {
       "symbol": "00651R",
@@ -308,7 +698,20 @@
       "index_name": "恒指短倉指數",
       "listing_date": "2016.01.27",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00651R",
+      "source": "twse_etf_list",
+      "issuer_short": "復華",
+      "asset_class": "equity",
+      "region": "China/HK",
+      "strategy_tags": [
+        "inverse"
+      ],
+      "risk_flags": [
+        "china_hk_policy_risk",
+        "inverse_etf"
+      ],
+      "yfinance_ticker": "00651R.TW"
     },
     "00655L": {
       "symbol": "00655L",
@@ -317,7 +720,17 @@
       "index_name": "富時中國A50指數",
       "listing_date": "2016.03.18",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00655L",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "equity",
+      "region": "China/HK",
+      "strategy_tags": [],
+      "risk_flags": [
+        "china_hk_policy_risk"
+      ],
+      "yfinance_ticker": "00655L.TW"
     },
     "00656R": {
       "symbol": "00656R",
@@ -326,7 +739,17 @@
       "index_name": "富時中國A50指數",
       "listing_date": "2016.03.18",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00656R",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "equity",
+      "region": "China/HK",
+      "strategy_tags": [],
+      "risk_flags": [
+        "china_hk_policy_risk"
+      ],
+      "yfinance_ticker": "00656R.TW"
     },
     "00652": {
       "symbol": "00652",
@@ -335,7 +758,15 @@
       "index_name": "NIFTY指數",
       "listing_date": "2016.03.29",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00652",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "India",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00652.TW"
     },
     "00653L": {
       "symbol": "00653L",
@@ -344,7 +775,19 @@
       "index_name": "NIFTY正向2倍指數",
       "listing_date": "2016.03.29",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00653L",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "India",
+      "strategy_tags": [
+        "leveraged"
+      ],
+      "risk_flags": [
+        "leveraged_etf"
+      ],
+      "yfinance_ticker": "00653L.TW"
     },
     "00654R": {
       "symbol": "00654R",
@@ -353,16 +796,57 @@
       "index_name": "NIFTY反向1倍指數",
       "listing_date": "2016.03.29",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00654R",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "India",
+      "strategy_tags": [
+        "inverse"
+      ],
+      "risk_flags": [
+        "inverse_etf"
+      ],
+      "yfinance_ticker": "00654R.TW"
     },
-    "00657(新臺幣)<br>00657K(美元)": {
-      "symbol": "00657(新臺幣)<br>00657K(美元)",
-      "name": "國泰日經225(新臺幣)<br>國泰日經225+U(美元)",
+    "00657": {
+      "symbol": "00657",
+      "name": "國泰日經225(新臺幣)",
       "issuer": "國泰證券投資信託股份有限公司",
       "index_name": "日經225指數",
-      "listing_date": "2016.05.09(新臺幣)<br>2017.10.24(美元)",
+      "listing_date": "2016.05.09(新臺幣)",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00657(新臺幣)",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "equity",
+      "region": "Japan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00657.TW"
+    },
+    "00657K": {
+      "symbol": "00657K",
+      "name": "國泰日經225+U(美元)",
+      "issuer": "國泰證券投資信託股份有限公司",
+      "index_name": "日經225指數",
+      "listing_date": "2017.10.24(美元)",
+      "exchange": "TWSE",
+      "currency": "USD",
+      "raw_symbol": "00657K(美元)",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "currency",
+      "region": "Japan",
+      "strategy_tags": [
+        "currency_share_class"
+      ],
+      "risk_flags": [
+        "fx_share_class"
+      ],
+      "yfinance_ticker": "00657K.TW"
     },
     "00660": {
       "symbol": "00660",
@@ -371,7 +855,15 @@
       "index_name": "歐洲STOXX50指數(EURO STOXX 50® PR in EUR)",
       "listing_date": "2016.06.15",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00660",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "equity",
+      "region": "Europe",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00660.TW"
     },
     "00661": {
       "symbol": "00661",
@@ -380,7 +872,15 @@
       "index_name": "日經225指數(Nikkei Stock Average)",
       "listing_date": "2016.06.15",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00661",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "equity",
+      "region": "Japan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00661.TW"
     },
     "00662": {
       "symbol": "00662",
@@ -389,7 +889,15 @@
       "index_name": "NASDAQ-100指數",
       "listing_date": "2016.06.17",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00662",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00662.TW"
     },
     "00663L": {
       "symbol": "00663L",
@@ -398,7 +906,19 @@
       "index_name": "臺灣日報酬兩倍指數",
       "listing_date": "2016.07.14",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00663L",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "leveraged"
+      ],
+      "risk_flags": [
+        "leveraged_etf"
+      ],
+      "yfinance_ticker": "00663L.TW"
     },
     "00664R": {
       "symbol": "00664R",
@@ -407,7 +927,19 @@
       "index_name": "臺指反向1倍指數",
       "listing_date": "2016.07.14",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00664R",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "inverse"
+      ],
+      "risk_flags": [
+        "inverse_etf"
+      ],
+      "yfinance_ticker": "00664R.TW"
     },
     "00665L": {
       "symbol": "00665L",
@@ -416,7 +948,20 @@
       "index_name": "恒生國企槓桿指數",
       "listing_date": "2016.08.05",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00665L",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "China/HK",
+      "strategy_tags": [
+        "leveraged"
+      ],
+      "risk_flags": [
+        "china_hk_policy_risk",
+        "leveraged_etf"
+      ],
+      "yfinance_ticker": "00665L.TW"
     },
     "00666R": {
       "symbol": "00666R",
@@ -425,7 +970,20 @@
       "index_name": "恒生國企短倉指數",
       "listing_date": "2016.08.05",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00666R",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "China/HK",
+      "strategy_tags": [
+        "inverse"
+      ],
+      "risk_flags": [
+        "china_hk_policy_risk",
+        "inverse_etf"
+      ],
+      "yfinance_ticker": "00666R.TW"
     },
     "00675L": {
       "symbol": "00675L",
@@ -434,7 +992,19 @@
       "index_name": "臺灣證券交易所發行量加權股價日報酬正向兩倍指數",
       "listing_date": "2016.10.05",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00675L",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "leveraged"
+      ],
+      "risk_flags": [
+        "leveraged_etf"
+      ],
+      "yfinance_ticker": "00675L.TW"
     },
     "00676R": {
       "symbol": "00676R",
@@ -443,7 +1013,19 @@
       "index_name": "臺灣證券交易所發行量加權股價日報酬反向一倍指數",
       "listing_date": "2016.10.05",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00676R",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "inverse"
+      ],
+      "risk_flags": [
+        "inverse_etf"
+      ],
+      "yfinance_ticker": "00676R.TW"
     },
     "00673R": {
       "symbol": "00673R",
@@ -452,7 +1034,21 @@
       "index_name": "標普高盛原油日報酬反向一倍ER指數(S&P GSCI Crude Oil 1x Inverse Index ER)",
       "listing_date": "2016.10.07",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00673R",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "commodity",
+      "region": "US",
+      "strategy_tags": [
+        "commodity",
+        "inverse"
+      ],
+      "risk_flags": [
+        "commodity_futures_risk",
+        "inverse_etf"
+      ],
+      "yfinance_ticker": "00673R.TW"
     },
     "00674R": {
       "symbol": "00674R",
@@ -461,7 +1057,21 @@
       "index_name": "標普高盛黃金日報酬反向一倍ER指數(S&P GSCI Gold 1x Inverse Index ER)",
       "listing_date": "2016.10.07",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00674R",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "commodity",
+      "region": "US",
+      "strategy_tags": [
+        "commodity",
+        "inverse"
+      ],
+      "risk_flags": [
+        "commodity_futures_risk",
+        "inverse_etf"
+      ],
+      "yfinance_ticker": "00674R.TW"
     },
     "00669R": {
       "symbol": "00669R",
@@ -470,16 +1080,57 @@
       "index_name": "道瓊斯單日反向指數",
       "listing_date": "2016.10.17",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00669R",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [
+        "inverse"
+      ],
+      "risk_flags": [
+        "inverse_etf"
+      ],
+      "yfinance_ticker": "00669R.TW"
     },
-    "00668(新臺幣)<br>00668K(美元)": {
-      "symbol": "00668(新臺幣)<br>00668K(美元)",
-      "name": "國泰美國道瓊(新臺幣)<br>國泰美國道瓊+U(美元)",
+    "00668": {
+      "symbol": "00668",
+      "name": "國泰美國道瓊(新臺幣)",
       "issuer": "國泰證券投資信託股份有限公司",
       "index_name": "道瓊斯工業平均指數",
-      "listing_date": "2016.10.17(新臺幣)<br>2017.10.24(美元)",
+      "listing_date": "2016.10.17(新臺幣)",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00668(新臺幣)",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00668.TW"
+    },
+    "00668K": {
+      "symbol": "00668K",
+      "name": "國泰美國道瓊+U(美元)",
+      "issuer": "國泰證券投資信託股份有限公司",
+      "index_name": "道瓊斯工業平均指數",
+      "listing_date": "2017.10.24(美元)",
+      "exchange": "TWSE",
+      "currency": "USD",
+      "raw_symbol": "00668K(美元)",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "currency",
+      "region": "US",
+      "strategy_tags": [
+        "currency_share_class"
+      ],
+      "risk_flags": [
+        "fx_share_class"
+      ],
+      "yfinance_ticker": "00668K.TW"
     },
     "00678": {
       "symbol": "00678",
@@ -488,7 +1139,19 @@
       "index_name": "那斯達克生技指數（Nasdaq Biotechnology Index）",
       "listing_date": "2017.01.16",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00678",
+      "source": "twse_etf_list",
+      "issuer_short": "群益",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00678.TW"
     },
     "00680L": {
       "symbol": "00680L",
@@ -497,7 +1160,21 @@
       "index_name": "ICE美國政府20+年期債券2倍槓桿指數(ICE U.S. Treasury 20+ Year Bond 2X Leveraged Index)",
       "listing_date": "2017.01.17",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00680L",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [
+        "leveraged",
+        "long_duration_bond"
+      ],
+      "risk_flags": [
+        "duration_risk",
+        "leveraged_etf"
+      ],
+      "yfinance_ticker": "00680L.TW"
     },
     "00681R": {
       "symbol": "00681R",
@@ -506,7 +1183,21 @@
       "index_name": "ICE美國政府20+年期債券1倍反向指數(ICE U.S. Treasury 20+ Year Bond 1X Inverse Index)",
       "listing_date": "2017.01.17",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00681R",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [
+        "inverse",
+        "long_duration_bond"
+      ],
+      "risk_flags": [
+        "duration_risk",
+        "inverse_etf"
+      ],
+      "yfinance_ticker": "00681R.TW"
     },
     "00670L": {
       "symbol": "00670L",
@@ -515,7 +1206,19 @@
       "index_name": "NASDAQ-100正向2倍指數",
       "listing_date": "2017.02.21",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00670L",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [
+        "leveraged"
+      ],
+      "risk_flags": [
+        "leveraged_etf"
+      ],
+      "yfinance_ticker": "00670L.TW"
     },
     "00671R": {
       "symbol": "00671R",
@@ -524,7 +1227,19 @@
       "index_name": "NASDAQ-100反向1倍指數",
       "listing_date": "2017.02.21",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00671R",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [
+        "inverse"
+      ],
+      "risk_flags": [
+        "inverse_etf"
+      ],
+      "yfinance_ticker": "00671R.TW"
     },
     "00682U": {
       "symbol": "00682U",
@@ -533,7 +1248,15 @@
       "index_name": "標普美元ER指數(S&P US Dollar Futures Index ER)",
       "listing_date": "2017.03.14",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00682U",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "currency",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00682U.TW"
     },
     "00683L": {
       "symbol": "00683L",
@@ -542,7 +1265,19 @@
       "index_name": "標普美元日報酬正向兩倍ER指數(S&P US Dollar Futures 2x Leverage Daily Index ER)",
       "listing_date": "2017.03.14",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00683L",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "currency",
+      "region": "US",
+      "strategy_tags": [
+        "leveraged"
+      ],
+      "risk_flags": [
+        "leveraged_etf"
+      ],
+      "yfinance_ticker": "00683L.TW"
     },
     "00684R": {
       "symbol": "00684R",
@@ -551,7 +1286,19 @@
       "index_name": "標普美元日報酬反向一倍ER指數(S&P US Dollar Futures 1x Inverse Daily Index ER)",
       "listing_date": "2017.03.14",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00684R",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "currency",
+      "region": "US",
+      "strategy_tags": [
+        "inverse"
+      ],
+      "risk_flags": [
+        "inverse_etf"
+      ],
+      "yfinance_ticker": "00684R.TW"
     },
     "00685L": {
       "symbol": "00685L",
@@ -560,7 +1307,19 @@
       "index_name": "臺指日報酬兩倍指數",
       "listing_date": "2017.03.30",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00685L",
+      "source": "twse_etf_list",
+      "issuer_short": "群益",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "leveraged"
+      ],
+      "risk_flags": [
+        "leveraged_etf"
+      ],
+      "yfinance_ticker": "00685L.TW"
     },
     "00686R": {
       "symbol": "00686R",
@@ -569,7 +1328,19 @@
       "index_name": "臺指反向一倍指數",
       "listing_date": "2017.03.30",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00686R",
+      "source": "twse_etf_list",
+      "issuer_short": "群益",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "inverse"
+      ],
+      "risk_flags": [
+        "inverse_etf"
+      ],
+      "yfinance_ticker": "00686R.TW"
     },
     "00690": {
       "symbol": "00690",
@@ -578,7 +1349,15 @@
       "index_name": "藍籌30指數",
       "listing_date": "2017.03.31",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00690",
+      "source": "twse_etf_list",
+      "issuer_short": "兆豐",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00690.TW"
     },
     "00688L": {
       "symbol": "00688L",
@@ -587,7 +1366,21 @@
       "index_name": "彭博20年期(以上)美國公債單日正向2倍指數",
       "listing_date": "2017.04.13",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00688L",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [
+        "leveraged",
+        "long_duration_bond"
+      ],
+      "risk_flags": [
+        "duration_risk",
+        "leveraged_etf"
+      ],
+      "yfinance_ticker": "00688L.TW"
     },
     "00689R": {
       "symbol": "00689R",
@@ -596,7 +1389,21 @@
       "index_name": "彭博20年期(以上)美國公債單日反向1倍指數",
       "listing_date": "2017.04.13",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00689R",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [
+        "inverse",
+        "long_duration_bond"
+      ],
+      "risk_flags": [
+        "duration_risk",
+        "inverse_etf"
+      ],
+      "yfinance_ticker": "00689R.TW"
     },
     "00693U": {
       "symbol": "00693U",
@@ -605,7 +1412,19 @@
       "index_name": "標普高盛黃豆ER指數(S&P GSCI Soybeans Excess Return Index)",
       "listing_date": "2017.04.25",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00693U",
+      "source": "twse_etf_list",
+      "issuer_short": "街口",
+      "asset_class": "commodity",
+      "region": "US",
+      "strategy_tags": [
+        "commodity"
+      ],
+      "risk_flags": [
+        "commodity_futures_risk"
+      ],
+      "yfinance_ticker": "00693U.TW"
     },
     "00692": {
       "symbol": "00692",
@@ -614,7 +1433,17 @@
       "index_name": "臺灣證券交易所公司治理100 指數",
       "listing_date": "2017.05.17",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00692",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "esg"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00692.TW"
     },
     "00700": {
       "symbol": "00700",
@@ -623,7 +1452,17 @@
       "index_name": "恒生中國企業指數",
       "listing_date": "2017.07.28",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00700",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "China/HK",
+      "strategy_tags": [],
+      "risk_flags": [
+        "china_hk_policy_risk"
+      ],
+      "yfinance_ticker": "00700.TW"
     },
     "00703": {
       "symbol": "00703",
@@ -632,7 +1471,17 @@
       "index_name": "MSCI 中國指數(MSCI China Index)",
       "listing_date": "2017.08.10",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00703",
+      "source": "twse_etf_list",
+      "issuer_short": "台新",
+      "asset_class": "equity",
+      "region": "China/HK",
+      "strategy_tags": [],
+      "risk_flags": [
+        "china_hk_policy_risk"
+      ],
+      "yfinance_ticker": "00703.TW"
     },
     "00709": {
       "symbol": "00709",
@@ -641,7 +1490,15 @@
       "index_name": "富時發展歐洲指數",
       "listing_date": "2017.08.15",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00709",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "Europe",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00709.TW"
     },
     "00701": {
       "symbol": "00701",
@@ -650,7 +1507,18 @@
       "index_name": "臺灣指數公司低波動股利精選30指數",
       "listing_date": "2017.08.17",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00701",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "income",
+        "low_volatility"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00701.TW"
     },
     "00702": {
       "symbol": "00702",
@@ -659,7 +1527,18 @@
       "index_name": "標普500低波高息指數",
       "listing_date": "2017.08.17",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00702",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [
+        "income",
+        "low_volatility"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00702.TW"
     },
     "00710B": {
       "symbol": "00710B",
@@ -668,7 +1547,19 @@
       "index_name": "彭博1至5年期美元高收益債券(不含中國)發行量五億美元產業10%上限指數(Bloomberg US High Yield 1-5 year ex China 500mln 10% Sector Capped Index)",
       "listing_date": "2017.08.21",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00710B",
+      "source": "twse_etf_list",
+      "issuer_short": "復華",
+      "asset_class": "bond",
+      "region": "China/HK",
+      "strategy_tags": [
+        "income"
+      ],
+      "risk_flags": [
+        "china_hk_policy_risk"
+      ],
+      "yfinance_ticker": "00710B.TW"
     },
     "00711B": {
       "symbol": "00711B",
@@ -677,7 +1568,17 @@
       "index_name": "彭博新興市場10年期以上美元投資等級債券(不含中國)國家10%上限指數(Bloomberg EM USD ex China Investment Grade 10 year 10% Country Capped Index)",
       "listing_date": "2017.08.21",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00711B",
+      "source": "twse_etf_list",
+      "issuer_short": "復華",
+      "asset_class": "bond",
+      "region": "China/HK",
+      "strategy_tags": [],
+      "risk_flags": [
+        "china_hk_policy_risk"
+      ],
+      "yfinance_ticker": "00711B.TW"
     },
     "00712": {
       "symbol": "00712",
@@ -686,7 +1587,19 @@
       "index_name": "富時NAREIT抵押權型不動產投資信託指數(FTSE NAREIT Mortgage REITs Index)",
       "listing_date": "2017.08.21",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00712",
+      "source": "twse_etf_list",
+      "issuer_short": "復華",
+      "asset_class": "real_estate",
+      "region": "Other",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00712.TW"
     },
     "00706L": {
       "symbol": "00706L",
@@ -695,7 +1608,19 @@
       "index_name": "標普日圓期貨日報酬正向2倍ER指數(S&P Japanese Yen Futures 2x Leverage Daily ER Index)",
       "listing_date": "2017.09.01",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00706L",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "currency",
+      "region": "US",
+      "strategy_tags": [
+        "leveraged"
+      ],
+      "risk_flags": [
+        "leveraged_etf"
+      ],
+      "yfinance_ticker": "00706L.TW"
     },
     "00707R": {
       "symbol": "00707R",
@@ -704,7 +1629,19 @@
       "index_name": "標普日圓期貨日報酬反向1倍ER指數(S&P Japanese Yen Futures 1x Inverse Daily ER Index)",
       "listing_date": "2017.09.01",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00707R",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "currency",
+      "region": "US",
+      "strategy_tags": [
+        "inverse"
+      ],
+      "risk_flags": [
+        "inverse_etf"
+      ],
+      "yfinance_ticker": "00707R.TW"
     },
     "00708L": {
       "symbol": "00708L",
@@ -713,7 +1650,21 @@
       "index_name": "標普高盛黃金日報酬正向兩倍ER指數(S&P GSCI Gold 2x Leveraged Index ER)",
       "listing_date": "2017.09.01",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00708L",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "commodity",
+      "region": "US",
+      "strategy_tags": [
+        "commodity",
+        "leveraged"
+      ],
+      "risk_flags": [
+        "commodity_futures_risk",
+        "leveraged_etf"
+      ],
+      "yfinance_ticker": "00708L.TW"
     },
     "00713": {
       "symbol": "00713",
@@ -722,7 +1673,18 @@
       "index_name": "臺灣指數公司特選高股息低波動指數",
       "listing_date": "2017.09.27",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00713",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "income",
+        "low_volatility"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00713.TW"
     },
     "00714": {
       "symbol": "00714",
@@ -731,7 +1693,15 @@
       "index_name": "道瓊美國地產指數(Dow Jones U.S. Real Estate Index)",
       "listing_date": "2017.10.27",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00714",
+      "source": "twse_etf_list",
+      "issuer_short": "群益",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00714.TW"
     },
     "00715L": {
       "symbol": "00715L",
@@ -740,7 +1710,21 @@
       "index_name": "標普高盛布蘭特原油日報酬正向兩倍ER指數(S&P GSCI Brent Crude 2X leveraged ER Index)",
       "listing_date": "2017.11.16",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00715L",
+      "source": "twse_etf_list",
+      "issuer_short": "街口",
+      "asset_class": "commodity",
+      "region": "US",
+      "strategy_tags": [
+        "commodity",
+        "leveraged"
+      ],
+      "risk_flags": [
+        "commodity_futures_risk",
+        "leveraged_etf"
+      ],
+      "yfinance_ticker": "00715L.TW"
     },
     "00717": {
       "symbol": "00717",
@@ -749,7 +1733,15 @@
       "index_name": "標普美國特別股指數",
       "listing_date": "2017.11.29",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00717",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00717.TW"
     },
     "00730": {
       "symbol": "00730",
@@ -758,7 +1750,17 @@
       "index_name": "道瓊斯台灣優質高股息30指數",
       "listing_date": "2018.02.08",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00730",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00730.TW"
     },
     "00728": {
       "symbol": "00728",
@@ -767,7 +1769,15 @@
       "index_name": "臺灣指數公司工業菁英30指數",
       "listing_date": "2018.04.18",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00728",
+      "source": "twse_etf_list",
+      "issuer_short": "第一金",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00728.TW"
     },
     "00731": {
       "symbol": "00731",
@@ -776,7 +1786,18 @@
       "index_name": "富時台灣高股息低波動指數(FTSE Taiwan High Dividend Low Volatility Index)",
       "listing_date": "2018.04.20",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00731",
+      "source": "twse_etf_list",
+      "issuer_short": "復華",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "income",
+        "low_volatility"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00731.TW"
     },
     "00733": {
       "symbol": "00733",
@@ -785,7 +1806,15 @@
       "index_name": "臺灣指數公司中小型A級動能50指數",
       "listing_date": "2018.05.17",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00733",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00733.TW"
     },
     "00738U": {
       "symbol": "00738U",
@@ -794,7 +1823,15 @@
       "index_name": "道瓊白銀ER指數(Dow Jones Commodity Index Silver Excess Return)",
       "listing_date": "2018.06.01",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00738U",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00738U.TW"
     },
     "00735": {
       "symbol": "00735",
@@ -803,7 +1840,19 @@
       "index_name": "臺韓資訊科技指數",
       "listing_date": "2018.06.11",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00735",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "equity",
+      "region": "Other",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00735.TW"
     },
     "00736": {
       "symbol": "00736",
@@ -812,7 +1861,15 @@
       "index_name": "富時新興市場(納入A股)指數",
       "listing_date": "2018.06.11",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00736",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "equity",
+      "region": "Global/Emerging",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00736.TW"
     },
     "00737": {
       "symbol": "00737",
@@ -821,7 +1878,19 @@
       "index_name": "納斯達克CTA全球人工智慧及機器人指數",
       "listing_date": "2018.06.11",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00737",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "equity",
+      "region": "Global/Emerging",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00737.TW"
     },
     "00739": {
       "symbol": "00739",
@@ -830,7 +1899,17 @@
       "index_name": "MSCI中國A股國際通指數(MSCI China A Inclusion Index)",
       "listing_date": "2018.06.27",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00739",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "equity",
+      "region": "China/HK",
+      "strategy_tags": [],
+      "risk_flags": [
+        "china_hk_policy_risk"
+      ],
+      "yfinance_ticker": "00739.TW"
     },
     "00752": {
       "symbol": "00752",
@@ -839,7 +1918,17 @@
       "index_name": "MSCI 中國外資自由投資50不含A及B股指數",
       "listing_date": "2018.10.31",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00752",
+      "source": "twse_etf_list",
+      "issuer_short": "中國信託",
+      "asset_class": "equity",
+      "region": "China/HK",
+      "strategy_tags": [],
+      "risk_flags": [
+        "china_hk_policy_risk"
+      ],
+      "yfinance_ticker": "00752.TW"
     },
     "00753L": {
       "symbol": "00753L",
@@ -848,7 +1937,20 @@
       "index_name": "MSCI中國外資自由投資50不含A及B股單日正向2倍指數",
       "listing_date": "2018.10.31",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00753L",
+      "source": "twse_etf_list",
+      "issuer_short": "中國信託",
+      "asset_class": "equity",
+      "region": "China/HK",
+      "strategy_tags": [
+        "leveraged"
+      ],
+      "risk_flags": [
+        "china_hk_policy_risk",
+        "leveraged_etf"
+      ],
+      "yfinance_ticker": "00753L.TW"
     },
     "00757": {
       "symbol": "00757",
@@ -857,7 +1959,15 @@
       "index_name": "NYSE FANG+ Index",
       "listing_date": "2018.12.06",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00757",
+      "source": "twse_etf_list",
+      "issuer_short": "統一",
+      "asset_class": "equity",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00757.TW"
     },
     "00763U": {
       "symbol": "00763U",
@@ -866,7 +1976,15 @@
       "index_name": "道瓊銅ER指數(Dow Jones Commodity Index North American Copper Excess Return Index)",
       "listing_date": "2018.12.19",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00763U",
+      "source": "twse_etf_list",
+      "issuer_short": "街口",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00763U.TW"
     },
     "00762": {
       "symbol": "00762",
@@ -875,7 +1993,19 @@
       "index_name": "STOXX全球人工智慧指數(STOXX® Global Artificial Intelligence Index)",
       "listing_date": "2019.01.23",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00762",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "equity",
+      "region": "Europe",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00762.TW"
     },
     "00770": {
       "symbol": "00770",
@@ -884,7 +2014,19 @@
       "index_name": "標普北美科技行業指數",
       "listing_date": "2019.01.29",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00770",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00770.TW"
     },
     "00775B": {
       "symbol": "00775B",
@@ -893,7 +2035,15 @@
       "index_name": "富時15年期以上投資等級債券指數",
       "listing_date": "2019.02.15",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00775B",
+      "source": "twse_etf_list",
+      "issuer_short": "台新",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00775B.TW"
     },
     "00783": {
       "symbol": "00783",
@@ -902,7 +2052,15 @@
       "index_name": "中証小盤500指數",
       "listing_date": "2019.03.27",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00783",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00783.TW"
     },
     "00830": {
       "symbol": "00830",
@@ -911,7 +2069,19 @@
       "index_name": "美國費城半導體指數",
       "listing_date": "2019.05.03",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00830",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00830.TW"
     },
     "00771": {
       "symbol": "00771",
@@ -920,7 +2090,17 @@
       "index_name": "標普美國高收益特別股指數(S&P U.S. High Yield Preferred Stock Index)",
       "listing_date": "2019.05.16",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00771",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00771.TW"
     },
     "00851": {
       "symbol": "00851",
@@ -929,7 +2109,19 @@
       "index_name": "SG全球AI機器人精選指數",
       "listing_date": "2019.08.12",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00851",
+      "source": "twse_etf_list",
+      "issuer_short": "台新",
+      "asset_class": "equity",
+      "region": "Global/Emerging",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00851.TW"
     },
     "00852L": {
       "symbol": "00852L",
@@ -938,7 +2130,19 @@
       "index_name": "道瓊斯工業平均單日正向2倍指數",
       "listing_date": "2019.08.22",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00852L",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [
+        "leveraged"
+      ],
+      "risk_flags": [
+        "leveraged_etf"
+      ],
+      "yfinance_ticker": "00852L.TW"
     },
     "00850": {
       "symbol": "00850",
@@ -947,7 +2151,17 @@
       "index_name": "臺灣永續指數(FTSE4Good TIP Taiwan ESG Index)",
       "listing_date": "2019.08.23",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00850",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "esg"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00850.TW"
     },
     "00861": {
       "symbol": "00861",
@@ -956,7 +2170,15 @@
       "index_name": "ICE FactSet全球未來通訊指數(ICE FactSet Global NextGen Communications Index)",
       "listing_date": "2019.11.19",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00861",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "equity",
+      "region": "Global/Emerging",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00861.TW"
     },
     "00865B": {
       "symbol": "00865B",
@@ -965,7 +2187,17 @@
       "index_name": "彭博美國短期公債收益指數",
       "listing_date": "2019.11.25",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00865B",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00865B.TW"
     },
     "00875": {
       "symbol": "00875",
@@ -974,7 +2206,15 @@
       "index_name": "納斯達克ISE全球網路資安指數",
       "listing_date": "2020.03.30",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00875",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "equity",
+      "region": "Global/Emerging",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00875.TW"
     },
     "00876": {
       "symbol": "00876",
@@ -983,7 +2223,19 @@
       "index_name": "iSTOXX全球5G關鍵科技指數",
       "listing_date": "2020.07.07",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00876",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "equity",
+      "region": "Europe",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00876.TW"
     },
     "00878": {
       "symbol": "00878",
@@ -992,7 +2244,18 @@
       "index_name": "MSCI臺灣ESG永續高股息精選30指數",
       "listing_date": "2020.07.20",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00878",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "esg",
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00878.TW"
     },
     "00881": {
       "symbol": "00881",
@@ -1001,7 +2264,19 @@
       "index_name": "臺灣指數公司特選臺灣上市上櫃FactSet科技龍頭通訊指數",
       "listing_date": "2020.12.10",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00881",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00881.TW"
     },
     "00882": {
       "symbol": "00882",
@@ -1010,7 +2285,17 @@
       "index_name": "恒生中國高股息率指數",
       "listing_date": "2021.02.04",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00882",
+      "source": "twse_etf_list",
+      "issuer_short": "中國信託",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00882.TW"
     },
     "00885": {
       "symbol": "00885",
@@ -1019,7 +2304,15 @@
       "index_name": "富時越南30指數",
       "listing_date": "2021.04.19",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00885",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00885.TW"
     },
     "00891": {
       "symbol": "00891",
@@ -1028,7 +2321,20 @@
       "index_name": "NYSE FactSet臺灣ESG永續關鍵半導體指數",
       "listing_date": "2021.05.28",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00891",
+      "source": "twse_etf_list",
+      "issuer_short": "中國信託",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "esg",
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00891.TW"
     },
     "00892": {
       "symbol": "00892",
@@ -1037,7 +2343,19 @@
       "index_name": "NYSE FactSet台灣核心半導體指數",
       "listing_date": "2021.06.10",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00892",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00892.TW"
     },
     "00893": {
       "symbol": "00893",
@@ -1046,7 +2364,19 @@
       "index_name": "ICE FactSet 全球智能電動車指數",
       "listing_date": "2021.07.01",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00893",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "equity",
+      "region": "Global/Emerging",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00893.TW"
     },
     "00895": {
       "symbol": "00895",
@@ -1055,7 +2385,15 @@
       "index_name": "MSCI ACWI IMI精選未來車30指數",
       "listing_date": "2021.08.12",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00895",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00895.TW"
     },
     "00894": {
       "symbol": "00894",
@@ -1064,7 +2402,15 @@
       "index_name": "臺灣指數公司特選小資高價30指數",
       "listing_date": "2021.08.13",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00894",
+      "source": "twse_etf_list",
+      "issuer_short": "中國信託",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00894.TW"
     },
     "00896": {
       "symbol": "00896",
@@ -1073,7 +2419,19 @@
       "index_name": "臺灣指數公司特選臺灣上市上櫃綠能及電動車指數",
       "listing_date": "2021.09.16",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00896",
+      "source": "twse_etf_list",
+      "issuer_short": "中國信託",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00896.TW"
     },
     "00897": {
       "symbol": "00897",
@@ -1082,7 +2440,19 @@
       "index_name": "NYSE FactSet全球基因免疫生技指數",
       "listing_date": "2021.10.04",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00897",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "Global/Emerging",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00897.TW"
     },
     "00898": {
       "symbol": "00898",
@@ -1091,7 +2461,15 @@
       "index_name": "Solactive全球基因免疫與醫療革命指數",
       "listing_date": "2021.11.22",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00898",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "equity",
+      "region": "Global/Emerging",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00898.TW"
     },
     "00901": {
       "symbol": "00901",
@@ -1100,7 +2478,15 @@
       "index_name": "特選臺灣智能車供應鏈聯盟指數",
       "listing_date": "2021.12.15",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00901",
+      "source": "twse_etf_list",
+      "issuer_short": "永豐",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00901.TW"
     },
     "00900": {
       "symbol": "00900",
@@ -1109,7 +2495,17 @@
       "index_name": "臺灣指數公司特選臺灣上市上櫃高股息 30 指數",
       "listing_date": "2021.12.22",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00900",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00900.TW"
     },
     "00899": {
       "symbol": "00899",
@@ -1118,7 +2514,15 @@
       "index_name": "標普全球潔淨能源精選指數",
       "listing_date": "2022.01.21",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00899",
+      "source": "twse_etf_list",
+      "issuer_short": "富蘭克林",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00899.TW"
     },
     "00903": {
       "symbol": "00903",
@@ -1127,7 +2531,15 @@
       "index_name": "Solactive元宇宙指數",
       "listing_date": "2022.01.24",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00903",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00903.TW"
     },
     "00902": {
       "symbol": "00902",
@@ -1136,7 +2548,19 @@
       "index_name": "NYSE FactSet電池與儲能科技指數",
       "listing_date": "2022.01.25",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00902",
+      "source": "twse_etf_list",
+      "issuer_short": "中國信託",
+      "asset_class": "equity",
+      "region": "Other",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00902.TW"
     },
     "00904": {
       "symbol": "00904",
@@ -1145,7 +2569,19 @@
       "index_name": "臺灣指數公司臺灣全市場半導體精選30指數",
       "listing_date": "2022.03.07",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00904",
+      "source": "twse_etf_list",
+      "issuer_short": "台新",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00904.TW"
     },
     "00905": {
       "symbol": "00905",
@@ -1154,7 +2590,15 @@
       "index_name": "臺灣指數公司特選Smart多因子指數 (簡稱「特選Smart多因子指數」)",
       "listing_date": "2022.04.21",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00905",
+      "source": "twse_etf_list",
+      "issuer_short": "富蘭克林",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00905.TW"
     },
     "00908": {
       "symbol": "00908",
@@ -1163,7 +2607,19 @@
       "index_name": "全球入息不動產與基礎建設指數",
       "listing_date": "2022.05.20",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00908",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "real_estate",
+      "region": "Global/Emerging",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00908.TW"
     },
     "00907": {
       "symbol": "00907",
@@ -1172,7 +2628,15 @@
       "index_name": "特選臺灣優選入息存股指數",
       "listing_date": "2022.05.24",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00907",
+      "source": "twse_etf_list",
+      "issuer_short": "永豐",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00907.TW"
     },
     "00911": {
       "symbol": "00911",
@@ -1181,7 +2645,19 @@
       "index_name": "洲際半導體指數 (ICE Semiconductor Index)",
       "listing_date": "2022.06.27",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00911",
+      "source": "twse_etf_list",
+      "issuer_short": "兆豐",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00911.TW"
     },
     "00912": {
       "symbol": "00912",
@@ -1190,7 +2666,15 @@
       "index_name": "臺灣指數公司特選臺灣上市上櫃智慧50指數",
       "listing_date": "2022.06.29",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00912",
+      "source": "twse_etf_list",
+      "issuer_short": "中國信託",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00912.TW"
     },
     "00909": {
       "symbol": "00909",
@@ -1199,7 +2683,15 @@
       "index_name": "Solactive全球數位支付服務指數",
       "listing_date": "2022.07.13",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00909",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "equity",
+      "region": "Global/Emerging",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00909.TW"
     },
     "00910": {
       "symbol": "00910",
@@ -1208,7 +2700,15 @@
       "index_name": "太空衛星指數",
       "listing_date": "2022.07.20",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00910",
+      "source": "twse_etf_list",
+      "issuer_short": "第一金",
+      "asset_class": "equity",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00910.TW"
     },
     "00913": {
       "symbol": "00913",
@@ -1217,7 +2717,15 @@
       "index_name": "臺灣指數公司特選臺灣晶圓製造指數",
       "listing_date": "2022.08.08",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00913",
+      "source": "twse_etf_list",
+      "issuer_short": "兆豐",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00913.TW"
     },
     "00915": {
       "symbol": "00915",
@@ -1226,7 +2734,17 @@
       "index_name": "臺灣指數公司特選臺灣上市上櫃多因子優選高股息30指數",
       "listing_date": "2022.08.09",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00915",
+      "source": "twse_etf_list",
+      "issuer_short": "凱基",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00915.TW"
     },
     "00917": {
       "symbol": "00917",
@@ -1235,7 +2753,19 @@
       "index_name": "NYSE FactSet特選金融及數據指數",
       "listing_date": "2022.08.26",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00917",
+      "source": "twse_etf_list",
+      "issuer_short": "中國信託",
+      "asset_class": "equity",
+      "region": "Other",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00917.TW"
     },
     "00916": {
       "symbol": "00916",
@@ -1244,7 +2774,15 @@
       "index_name": "ICE FactSet全球品牌50指數",
       "listing_date": "2022.09.26",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00916",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "equity",
+      "region": "Global/Emerging",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00916.TW"
     },
     "00919": {
       "symbol": "00919",
@@ -1253,7 +2791,17 @@
       "index_name": "臺灣指數公司特選臺灣上市上櫃精選高息指數",
       "listing_date": "2022.10.20",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00919",
+      "source": "twse_etf_list",
+      "issuer_short": "群益",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00919.TW"
     },
     "00920": {
       "symbol": "00920",
@@ -1262,7 +2810,17 @@
       "index_name": "NYSE FactSet全球綠能ESG指數",
       "listing_date": "2022.10.20",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00920",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "Global/Emerging",
+      "strategy_tags": [
+        "esg"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00920.TW"
     },
     "00918": {
       "symbol": "00918",
@@ -1271,7 +2829,17 @@
       "index_name": "臺灣指數公司特選臺灣上市上櫃優選股利高填息30指數",
       "listing_date": "2022.11.24",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00918",
+      "source": "twse_etf_list",
+      "issuer_short": "大華銀",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00918.TW"
     },
     "00921": {
       "symbol": "00921",
@@ -1280,7 +2848,15 @@
       "index_name": "臺灣指數公司特選臺灣產業龍頭存股等權重指數",
       "listing_date": "2023.01.13",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00921",
+      "source": "twse_etf_list",
+      "issuer_short": "兆豐",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00921.TW"
     },
     "00923": {
       "symbol": "00923",
@@ -1289,7 +2865,17 @@
       "index_name": "臺灣指數公司特選臺灣ESG低碳50指數",
       "listing_date": "2023.03.08",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00923",
+      "source": "twse_etf_list",
+      "issuer_short": "群益",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "esg"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00923.TW"
     },
     "00922": {
       "symbol": "00922",
@@ -1298,7 +2884,15 @@
       "index_name": "MSCI台灣領袖50精選指數",
       "listing_date": "2023.03.27",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00922",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00922.TW"
     },
     "00924": {
       "symbol": "00924",
@@ -1307,7 +2901,15 @@
       "index_name": "標普500成長指數",
       "listing_date": "2023.04.26",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00924",
+      "source": "twse_etf_list",
+      "issuer_short": "復華",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00924.TW"
     },
     "00926": {
       "symbol": "00926",
@@ -1316,7 +2918,15 @@
       "index_name": "彭博全球菁英55指數",
       "listing_date": "2023.06.02",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00926",
+      "source": "twse_etf_list",
+      "issuer_short": "凱基",
+      "asset_class": "equity",
+      "region": "Global/Emerging",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00926.TW"
     },
     "00927": {
       "symbol": "00927",
@@ -1325,7 +2935,20 @@
       "index_name": "臺灣指數公司特選臺灣上市上櫃半導體收益指數",
       "listing_date": "2023.06.06",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00927",
+      "source": "twse_etf_list",
+      "issuer_short": "群益",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "income",
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00927.TW"
     },
     "00929": {
       "symbol": "00929",
@@ -1334,7 +2957,19 @@
       "index_name": "臺灣指數公司特選臺灣上市上櫃科技優息指數",
       "listing_date": "2023.06.09",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00929",
+      "source": "twse_etf_list",
+      "issuer_short": "復華",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00929.TW"
     },
     "00930": {
       "symbol": "00930",
@@ -1343,7 +2978,18 @@
       "index_name": "特選臺灣上市上櫃ESG低碳高息40指數",
       "listing_date": "2023.07.13",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00930",
+      "source": "twse_etf_list",
+      "issuer_short": "永豐",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "esg",
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00930.TW"
     },
     "00932": {
       "symbol": "00932",
@@ -1352,7 +2998,18 @@
       "index_name": "臺灣指數公司特選臺灣上市上櫃ESG永續高股息等權重指數",
       "listing_date": "2023.09.01",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00932",
+      "source": "twse_etf_list",
+      "issuer_short": "兆豐",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "esg",
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00932.TW"
     },
     "00934": {
       "symbol": "00934",
@@ -1361,7 +3018,17 @@
       "index_name": "臺灣指數公司特選臺灣上市上櫃優選成長高股息指數",
       "listing_date": "2023.11.01",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00934",
+      "source": "twse_etf_list",
+      "issuer_short": "中國信託",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00934.TW"
     },
     "00935": {
       "symbol": "00935",
@@ -1370,7 +3037,19 @@
       "index_name": "臺灣指數公司特選臺灣上市上櫃FactSet創新科技50指數",
       "listing_date": "2023.11.01",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00935",
+      "source": "twse_etf_list",
+      "issuer_short": "野村",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00935.TW"
     },
     "00936": {
       "symbol": "00936",
@@ -1379,7 +3058,18 @@
       "index_name": "臺灣指數公司特選臺灣上市上櫃永續高息中小型股指數",
       "listing_date": "2023.11.08",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00936",
+      "source": "twse_etf_list",
+      "issuer_short": "台新",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "esg",
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00936.TW"
     },
     "00941": {
       "symbol": "00941",
@@ -1388,7 +3078,19 @@
       "index_name": "NYSE Factset上游半導體指數",
       "listing_date": "2024.03.15",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00941",
+      "source": "twse_etf_list",
+      "issuer_short": "中國信託",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00941.TW"
     },
     "00939": {
       "symbol": "00939",
@@ -1397,7 +3099,17 @@
       "index_name": "臺灣指數公司特選臺灣上市上櫃高息動能指數",
       "listing_date": "2024.03.20",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00939",
+      "source": "twse_etf_list",
+      "issuer_short": "統一",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00939.TW"
     },
     "00940": {
       "symbol": "00940",
@@ -1406,7 +3118,17 @@
       "index_name": "臺灣指數公司特選臺灣價值高息指數",
       "listing_date": "2024.04.01",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00940",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00940.TW"
     },
     "00945B": {
       "symbol": "00945B",
@@ -1415,7 +3137,15 @@
       "index_name": "彭博美國企業非投資等級1-5年Ba至B債券指數",
       "listing_date": "2024.05.02",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00945B",
+      "source": "twse_etf_list",
+      "issuer_short": "凱基",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00945B.TW"
     },
     "00944": {
       "symbol": "00944",
@@ -1424,7 +3154,17 @@
       "index_name": "臺灣指數公司特選臺灣上市上櫃FactSet臺灣趨勢動能高股息指數",
       "listing_date": "2024.05.09",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00944",
+      "source": "twse_etf_list",
+      "issuer_short": "野村",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00944.TW"
     },
     "00946": {
       "symbol": "00946",
@@ -1433,7 +3173,20 @@
       "index_name": "臺灣指數公司特選臺灣上市上櫃科技高息成長指數",
       "listing_date": "2024.05.09",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00946",
+      "source": "twse_etf_list",
+      "issuer_short": "群益",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "income",
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00946.TW"
     },
     "00943": {
       "symbol": "00943",
@@ -1442,7 +3195,17 @@
       "index_name": "臺灣指數公司特選臺灣上市上櫃電子成長高息等權重指數",
       "listing_date": "2024.05.20",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00943",
+      "source": "twse_etf_list",
+      "issuer_short": "兆豐",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00943.TW"
     },
     "00947": {
       "symbol": "00947",
@@ -1451,7 +3214,15 @@
       "index_name": "臺灣指數公司特選臺灣上市上櫃IC設計動能指數",
       "listing_date": "2024.06.12",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00947",
+      "source": "twse_etf_list",
+      "issuer_short": "台新",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00947.TW"
     },
     "00949": {
       "symbol": "00949",
@@ -1460,7 +3231,15 @@
       "index_name": "NYSE FactSet 日本護城河優勢龍頭企業指數",
       "listing_date": "2024.07.01",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00949",
+      "source": "twse_etf_list",
+      "issuer_short": "復華",
+      "asset_class": "equity",
+      "region": "Japan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00949.TW"
     },
     "00951": {
       "symbol": "00951",
@@ -1469,7 +3248,19 @@
       "index_name": "NYSE FactSet 日本半導體指數",
       "listing_date": "2024.07.25",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00951",
+      "source": "twse_etf_list",
+      "issuer_short": "台新",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00951.TW"
     },
     "00954": {
       "symbol": "00954",
@@ -1478,7 +3269,19 @@
       "index_name": "NYSE FactSet 日本半導體指數",
       "listing_date": "2024.08.20",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00954",
+      "source": "twse_etf_list",
+      "issuer_short": "中國信託",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00954.TW"
     },
     "00956": {
       "symbol": "00956",
@@ -1487,7 +3290,17 @@
       "index_name": "日經高股息 50指數",
       "listing_date": "2024.08.20",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00956",
+      "source": "twse_etf_list",
+      "issuer_short": "中國信託",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00956.TW"
     },
     "00953B": {
       "symbol": "00953B",
@@ -1496,7 +3309,15 @@
       "index_name": "ICE 1-5年BB-B級成熟市場信用優息美元非投資等級債券指數",
       "listing_date": "2024.08.21",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00953B",
+      "source": "twse_etf_list",
+      "issuer_short": "群益",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00953B.TW"
     },
     "00952": {
       "symbol": "00952",
@@ -1505,7 +3326,19 @@
       "index_name": "臺灣指數公司特選臺灣上市上櫃FactSet優選AI 50指數",
       "listing_date": "2024.09.05",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00952",
+      "source": "twse_etf_list",
+      "issuer_short": "凱基",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00952.TW"
     },
     "00960": {
       "symbol": "00960",
@@ -1514,7 +3347,15 @@
       "index_name": "NYSE FactSet全球航運龍頭息收指數",
       "listing_date": "2024.09.20",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00960",
+      "source": "twse_etf_list",
+      "issuer_short": "野村",
+      "asset_class": "equity",
+      "region": "Global/Emerging",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00960.TW"
     },
     "00961": {
       "symbol": "00961",
@@ -1523,7 +3364,18 @@
       "index_name": "ICE臺灣ESG高息指數",
       "listing_date": "2024.10.15",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00961",
+      "source": "twse_etf_list",
+      "issuer_short": "富蘭克林",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "esg",
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00961.TW"
     },
     "00938": {
       "symbol": "00938",
@@ -1532,7 +3384,15 @@
       "index_name": "臺灣指數公司特選臺灣上市上櫃優選多因子30指數",
       "listing_date": "2024.10.23",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00938",
+      "source": "twse_etf_list",
+      "issuer_short": "凱基",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00938.TW"
     },
     "00963": {
       "symbol": "00963",
@@ -1541,7 +3401,17 @@
       "index_name": "NYSE全球特選高股息自由現金流指數",
       "listing_date": "2024.11.14",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00963",
+      "source": "twse_etf_list",
+      "issuer_short": "中國信託",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00963.TW"
     },
     "00964": {
       "symbol": "00964",
@@ -1550,7 +3420,17 @@
       "index_name": "NYSE亞太高股息指數",
       "listing_date": "2024.11.14",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00964",
+      "source": "twse_etf_list",
+      "issuer_short": "中國信託",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00964.TW"
     },
     "00965": {
       "symbol": "00965",
@@ -1559,7 +3439,19 @@
       "index_name": "NYSE FactSet全球航太與防衛科技指數",
       "listing_date": "2024.11.26",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00965",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "equity",
+      "region": "Global/Emerging",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00965.TW"
     },
     "00962": {
       "symbol": "00962",
@@ -1568,7 +3460,19 @@
       "index_name": "臺灣指數公司特選臺灣上市上櫃AI優息動能指數",
       "listing_date": "2024.12.06",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00962",
+      "source": "twse_etf_list",
+      "issuer_short": "台新",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00962.TW"
     },
     "00971": {
       "symbol": "00971",
@@ -1577,7 +3481,15 @@
       "index_name": "彭博研發龍頭指數",
       "listing_date": "2025.01.09",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00971",
+      "source": "twse_etf_list",
+      "issuer_short": "野村",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00971.TW"
     },
     "00972": {
       "symbol": "00972",
@@ -1586,7 +3498,17 @@
       "index_name": "彭博日本價值動能高息指數",
       "listing_date": "2025.01.09",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00972",
+      "source": "twse_etf_list",
+      "issuer_short": "野村",
+      "asset_class": "equity",
+      "region": "Japan",
+      "strategy_tags": [
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00972.TW"
     },
     "009800": {
       "symbol": "009800",
@@ -1595,7 +3517,15 @@
       "index_name": "美國納斯達克100指數",
       "listing_date": "2025.02.11",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "009800",
+      "source": "twse_etf_list",
+      "issuer_short": "中國信託",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "009800.TW"
     },
     "009801": {
       "symbol": "009801",
@@ -1604,7 +3534,19 @@
       "index_name": "Solactive 美國創新科技指數",
       "listing_date": "2025.02.11",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "009801",
+      "source": "twse_etf_list",
+      "issuer_short": "中國信託",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "009801.TW"
     },
     "009803": {
       "symbol": "009803",
@@ -1613,7 +3555,15 @@
       "index_name": "臺灣指數公司特選FactSet臺灣市值動能50指數",
       "listing_date": "2025.03.13",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "009803",
+      "source": "twse_etf_list",
+      "issuer_short": "玉山證券",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "009803.TW"
     },
     "009802": {
       "symbol": "009802",
@@ -1622,7 +3572,15 @@
       "index_name": "臺灣指數公司台灣上市上櫃旗艦動能50指數",
       "listing_date": "2025.03.19",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "009802",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "009802.TW"
     },
     "009804": {
       "symbol": "009804",
@@ -1631,7 +3589,15 @@
       "index_name": "富時臺灣證券交易所臺灣50權重上限30%指數",
       "listing_date": "2025.04.16",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "009804",
+      "source": "twse_etf_list",
+      "issuer_short": "聯邦證券",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "009804.TW"
     },
     "00980A": {
       "symbol": "00980A",
@@ -1640,7 +3606,17 @@
       "index_name": "臺灣證券交易所發行量加權股價報酬指數",
       "listing_date": "2025.05.05",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00980A",
+      "source": "twse_etf_list",
+      "issuer_short": "野村",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "active_managed"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00980A.TW"
     },
     "009805": {
       "symbol": "009805",
@@ -1649,7 +3625,15 @@
       "index_name": "NYSE FactSet美國電力基建息收指數",
       "listing_date": "2025.05.13",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "009805",
+      "source": "twse_etf_list",
+      "issuer_short": "台新",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "009805.TW"
     },
     "009808": {
       "symbol": "009808",
@@ -1658,16 +3642,34 @@
       "index_name": "臺灣指數公司特選臺灣護城河概念優選50指數",
       "listing_date": "2025.05.16",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "009808",
+      "source": "twse_etf_list",
+      "issuer_short": "華南永昌",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "009808.TW"
     },
     "00982A": {
       "symbol": "00982A",
       "name": "主動群益台灣強棒",
       "issuer": "群益證券投資信託股份有限公司",
-      "index_name": "None",
+      "index_name": "主動式 ETF（無追蹤指數）",
       "listing_date": "2025.05.22",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00982A",
+      "source": "twse_etf_list",
+      "issuer_short": "群益",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "active_managed"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00982A.TW"
     },
     "00981A": {
       "symbol": "00981A",
@@ -1676,25 +3678,56 @@
       "index_name": "臺灣證券交易所發行量加權股價報酬指數",
       "listing_date": "2025.05.27",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00981A",
+      "source": "twse_etf_list",
+      "issuer_short": "統一",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "active_managed"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00981A.TW"
     },
     "00983A": {
       "symbol": "00983A",
       "name": "主動中信ARK創新",
       "issuer": "中國信託證券投資信託股份有限公司",
-      "index_name": "None",
+      "index_name": "主動式 ETF（無追蹤指數）",
       "listing_date": "2025.06.18",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00983A",
+      "source": "twse_etf_list",
+      "issuer_short": "中國信託",
+      "asset_class": "equity",
+      "region": "Other",
+      "strategy_tags": [
+        "active_managed"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00983A.TW"
     },
     "00984A": {
       "symbol": "00984A",
       "name": "主動安聯台灣高息",
       "issuer": "安聯證券投資信託股份有限公司",
-      "index_name": "None",
+      "index_name": "主動式 ETF（無追蹤指數）",
       "listing_date": "2025.07.14",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00984A",
+      "source": "twse_etf_list",
+      "issuer_short": "安聯證券",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "active_managed",
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00984A.TW"
     },
     "009810": {
       "symbol": "009810",
@@ -1703,7 +3736,15 @@
       "index_name": "標普全球100指數",
       "listing_date": "2025.07.16",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "009810",
+      "source": "twse_etf_list",
+      "issuer_short": "玉山證券",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "009810.TW"
     },
     "00985A": {
       "symbol": "00985A",
@@ -1712,7 +3753,17 @@
       "index_name": "富時臺灣證券交易所臺灣50報酬指數",
       "listing_date": "2025.07.21",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00985A",
+      "source": "twse_etf_list",
+      "issuer_short": "野村",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "active_managed"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00985A.TW"
     },
     "009811": {
       "symbol": "009811",
@@ -1721,16 +3772,34 @@
       "index_name": "NYSE美國50指數",
       "listing_date": "2025.07.29",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "009811",
+      "source": "twse_etf_list",
+      "issuer_short": "統一",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "009811.TW"
     },
     "00986A": {
       "symbol": "00986A",
       "name": "主動台新龍頭成長",
       "issuer": "台新證券投資信託股份有限公司",
-      "index_name": "None",
+      "index_name": "主動式 ETF（無追蹤指數）",
       "listing_date": "2025.08.27",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00986A",
+      "source": "twse_etf_list",
+      "issuer_short": "台新",
+      "asset_class": "equity",
+      "region": "Other",
+      "strategy_tags": [
+        "active_managed"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00986A.TW"
     },
     "00985B": {
       "symbol": "00985B",
@@ -1739,7 +3808,17 @@
       "index_name": "ICE ESG 0-5年期BBB級成熟市場大型美元公司債指數",
       "listing_date": "2025.09.11",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00985B",
+      "source": "twse_etf_list",
+      "issuer_short": "群益",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [
+        "esg"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00985B.TW"
     },
     "009812": {
       "symbol": "009812",
@@ -1748,7 +3827,15 @@
       "index_name": "東證股價總報酬指數",
       "listing_date": "2025.09.18",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "009812",
+      "source": "twse_etf_list",
+      "issuer_short": "野村",
+      "asset_class": "equity",
+      "region": "Japan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "009812.TW"
     },
     "00981T": {
       "symbol": "00981T",
@@ -1757,7 +3844,15 @@
       "index_name": "臺灣指數公司 ICE雙核債股平衡指數",
       "listing_date": "2025.09.24",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00981T",
+      "source": "twse_etf_list",
+      "issuer_short": "凱基",
+      "asset_class": "bond",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00981T.TW"
     },
     "009809": {
       "symbol": "009809",
@@ -1766,25 +3861,56 @@
       "index_name": "S&P TIP臺灣淨零轉型ESG 50指數",
       "listing_date": "2025.10.14",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "009809",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "esg"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "009809.TW"
     },
     "00982D": {
       "symbol": "00982D",
       "name": "主動富邦動態入息",
       "issuer": "富邦證券投資信託股份有限公司",
-      "index_name": "None",
+      "index_name": "主動式 ETF（無追蹤指數）",
       "listing_date": "2025.10.14",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00982D",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "Other",
+      "strategy_tags": [
+        "active_managed"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00982D.TW"
     },
     "00983D": {
       "symbol": "00983D",
       "name": "主動富邦複合收益",
       "issuer": "富邦證券投資信託股份有限公司",
-      "index_name": "None",
+      "index_name": "主動式 ETF（無追蹤指數）",
       "listing_date": "2025.10.14",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00983D",
+      "source": "twse_etf_list",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "Other",
+      "strategy_tags": [
+        "active_managed",
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00983D.TW"
     },
     "009813": {
       "symbol": "009813",
@@ -1793,25 +3919,56 @@
       "index_name": "標普500卓越50指數",
       "listing_date": "2025.10.20",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "009813",
+      "source": "twse_etf_list",
+      "issuer_short": "貝萊德證",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "009813.TW"
     },
     "00989A": {
       "symbol": "00989A",
       "name": "主動摩根美國科技",
       "issuer": "摩根證券投資信託股份有限公司",
-      "index_name": "None",
+      "index_name": "主動式 ETF（無追蹤指數）",
       "listing_date": "2025.10.22",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00989A",
+      "source": "twse_etf_list",
+      "issuer_short": "摩根證券",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [
+        "active_managed",
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00989A.TW"
     },
     "00988A": {
       "symbol": "00988A",
       "name": "主動統一全球創新",
       "issuer": "統一證券投資信託股份有限公司",
-      "index_name": "None",
+      "index_name": "主動式 ETF（無追蹤指數）",
       "listing_date": "2025.11.05",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00988A",
+      "source": "twse_etf_list",
+      "issuer_short": "統一",
+      "asset_class": "equity",
+      "region": "Global/Emerging",
+      "strategy_tags": [
+        "active_managed"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00988A.TW"
     },
     "00991A": {
       "symbol": "00991A",
@@ -1820,16 +3977,39 @@
       "index_name": "臺灣證券交易所發行量加權股價報酬指數",
       "listing_date": "2025.12.18",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00991A",
+      "source": "twse_etf_list",
+      "issuer_short": "復華",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "active_managed"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00991A.TW"
     },
     "00990A": {
       "symbol": "00990A",
       "name": "主動元大AI新經濟",
       "issuer": "元大證券投資信託股份有限公司",
-      "index_name": "None",
+      "index_name": "主動式 ETF（無追蹤指數）",
       "listing_date": "2025.12.22",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00990A",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "equity",
+      "region": "Other",
+      "strategy_tags": [
+        "active_managed",
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00990A.TW"
     },
     "00982T": {
       "symbol": "00982T",
@@ -1838,25 +4018,56 @@
       "index_name": "臺灣指數公司彭博台美動能多資產平衡指數",
       "listing_date": "2025.12.26",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00982T",
+      "source": "twse_etf_list",
+      "issuer_short": "兆豐",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00982T.TW"
     },
     "00987A": {
       "symbol": "00987A",
       "name": "主動台新優勢成長",
       "issuer": "台新證券投資信託股份有限公司",
-      "index_name": "None",
+      "index_name": "主動式 ETF（無追蹤指數）",
       "listing_date": "2025.12.30",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00987A",
+      "source": "twse_etf_list",
+      "issuer_short": "台新",
+      "asset_class": "equity",
+      "region": "Other",
+      "strategy_tags": [
+        "active_managed"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00987A.TW"
     },
     "00992A": {
       "symbol": "00992A",
       "name": "主動群益科技創新",
       "issuer": "群益證券投資信託股份有限公司",
-      "index_name": "None",
+      "index_name": "主動式 ETF（無追蹤指數）",
       "listing_date": "2025.12.30",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00992A",
+      "source": "twse_etf_list",
+      "issuer_short": "群益",
+      "asset_class": "equity",
+      "region": "Other",
+      "strategy_tags": [
+        "active_managed",
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00992A.TW"
     },
     "00994A": {
       "symbol": "00994A",
@@ -1865,16 +4076,36 @@
       "index_name": "富時臺灣證券交易所臺灣50指數",
       "listing_date": "2026.01.07",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00994A",
+      "source": "twse_etf_list",
+      "issuer_short": "第一金",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "active_managed"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00994A.TW"
     },
     "00995A": {
       "symbol": "00995A",
       "name": "主動中信台灣卓越",
       "issuer": "中國信託證券投資信託股份有限公司",
-      "index_name": "None",
+      "index_name": "主動式 ETF（無追蹤指數）",
       "listing_date": "2026.01.22",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00995A",
+      "source": "twse_etf_list",
+      "issuer_short": "中國信託",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "active_managed"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00995A.TW"
     },
     "009816": {
       "symbol": "009816",
@@ -1883,7 +4114,15 @@
       "index_name": "臺灣指數公司特選臺灣TOP 50指數",
       "listing_date": "2026.02.03",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "009816",
+      "source": "twse_etf_list",
+      "issuer_short": "凱基",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "009816.TW"
     },
     "00993A": {
       "symbol": "00993A",
@@ -1892,16 +4131,36 @@
       "index_name": "臺灣證券交易所發行量加權股價指數",
       "listing_date": "2026.02.03",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00993A",
+      "source": "twse_etf_list",
+      "issuer_short": "安聯證券",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "active_managed"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00993A.TW"
     },
     "00984D": {
       "symbol": "00984D",
       "name": "主動聯博全球非投",
       "issuer": "聯博證券投資信託股份有限公司",
-      "index_name": "None",
+      "index_name": "主動式 ETF（無追蹤指數）",
       "listing_date": "2026.02.04",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00984D",
+      "source": "twse_etf_list",
+      "issuer_short": "聯博證券",
+      "asset_class": "equity",
+      "region": "Global/Emerging",
+      "strategy_tags": [
+        "active_managed"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00984D.TW"
     },
     "009817": {
       "symbol": "009817",
@@ -1910,7 +4169,19 @@
       "index_name": "東証REIT總報酬指數",
       "listing_date": "2026.02.06",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "009817",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "real_estate",
+      "region": "Japan",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "009817.TW"
     },
     "009818": {
       "symbol": "009818",
@@ -1919,43 +4190,150 @@
       "index_name": "NASDAQ 100 科技市值加權指數",
       "listing_date": "2026.03.23",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "009818",
+      "source": "twse_etf_list",
+      "issuer_short": "華南永昌",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "009818.TW"
     },
     "00996A": {
       "symbol": "00996A",
       "name": "主動兆豐台灣豐收",
       "issuer": "兆豐國際證券投資信託股份有限公司",
-      "index_name": "None",
+      "index_name": "主動式 ETF（無追蹤指數）",
       "listing_date": "2026.03.25",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00996A",
+      "source": "twse_etf_list",
+      "issuer_short": "兆豐",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "active_managed"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00996A.TW"
     },
     "00400A": {
       "symbol": "00400A",
       "name": "主動國泰動能高息",
       "issuer": "國泰證券投資信託股份有限公司",
-      "index_name": "None",
+      "index_name": "主動式 ETF（無追蹤指數）",
       "listing_date": "2026.04.09",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00400A",
+      "source": "twse_etf_list",
+      "issuer_short": "國泰",
+      "asset_class": "equity",
+      "region": "Other",
+      "strategy_tags": [
+        "active_managed",
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00400A.TW"
     },
     "00401A": {
       "symbol": "00401A",
       "name": "主動摩根台灣鑫收",
       "issuer": "摩根證券投資信託股份有限公司",
-      "index_name": "None",
+      "index_name": "主動式 ETF（無追蹤指數）",
       "listing_date": "2026.04.10",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00401A",
+      "source": "twse_etf_list",
+      "issuer_short": "摩根證券",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "active_managed"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00401A.TW"
     },
     "00997A": {
       "symbol": "00997A",
       "name": "主動群益美國增長",
       "issuer": "群益證券投資信託股份有限公司",
-      "index_name": "None",
+      "index_name": "主動式 ETF（無追蹤指數）",
       "listing_date": "2026.04.14",
       "exchange": "TWSE",
-      "source": "twse_etf_list"
+      "currency": "TWD",
+      "raw_symbol": "00997A",
+      "source": "twse_etf_list",
+      "issuer_short": "群益",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [
+        "active_managed"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00997A.TW"
+    },
+    "009819": {
+      "symbol": "009819",
+      "name": "中信數據及電力",
+      "issuer": "中國信託證券投資信託股份有限公司",
+      "index_name": "NYSE TIP 數據中心及電力指數",
+      "listing_date": "2026.04.23",
+      "exchange": "TWSE",
+      "currency": "TWD",
+      "raw_symbol": "009819",
+      "source": "twse_etf_list",
+      "issuer_short": "中國信託",
+      "asset_class": "equity",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "009819.TW"
+    },
+    "009820": {
+      "symbol": "009820",
+      "name": "元大納斯達克精選",
+      "issuer": "元大證券投資信託股份有限公司",
+      "index_name": "納斯達克100增強成長指數",
+      "listing_date": "2026.04.23",
+      "exchange": "TWSE",
+      "currency": "TWD",
+      "raw_symbol": "009820",
+      "source": "twse_etf_list",
+      "issuer_short": "元大",
+      "asset_class": "equity",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "009820.TW"
+    },
+    "00999A": {
+      "symbol": "00999A",
+      "name": "主動野村臺灣高息",
+      "issuer": "野村證券投資信託股份有限公司",
+      "index_name": "主動式 ETF（無追蹤指數）",
+      "listing_date": "2026.05.05",
+      "exchange": "TWSE",
+      "currency": "TWD",
+      "raw_symbol": "00999A",
+      "source": "twse_etf_list",
+      "issuer_short": "野村",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "active_managed",
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00999A.TW"
     },
     "006201": {
       "symbol": "006201",
@@ -1964,7 +4342,14 @@
       "index_name": "櫃買富櫃五十指數",
       "listing_date": "20110127",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "元大",
+      "asset_class": "equity",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "006201.TWO"
     },
     "00679B": {
       "symbol": "00679B",
@@ -1973,7 +4358,18 @@
       "index_name": "ICE美國政府20+年期債券指數",
       "listing_date": "20170117",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "元大",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [
+        "long_duration_bond"
+      ],
+      "risk_flags": [
+        "duration_risk"
+      ],
+      "yfinance_ticker": "00679B.TWO"
     },
     "00687B": {
       "symbol": "00687B",
@@ -1982,7 +4378,18 @@
       "index_name": "彭博20年期(以上)美國公債指數",
       "listing_date": "20170413",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "國泰",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [
+        "long_duration_bond"
+      ],
+      "risk_flags": [
+        "duration_risk"
+      ],
+      "yfinance_ticker": "00687B.TWO"
     },
     "00687C": {
       "symbol": "00687C",
@@ -1991,7 +4398,18 @@
       "index_name": "彭博20年期(以上)美國公債指數",
       "listing_date": "20250110",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "國泰",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [
+        "long_duration_bond"
+      ],
+      "risk_flags": [
+        "duration_risk"
+      ],
+      "yfinance_ticker": "00687C.TWO"
     },
     "00694B": {
       "symbol": "00694B",
@@ -2000,7 +4418,14 @@
       "index_name": "富時美國政府債券1-3年期指數",
       "listing_date": "20170608",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "富邦",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00694B.TWO"
     },
     "00695B": {
       "symbol": "00695B",
@@ -2009,7 +4434,14 @@
       "index_name": "富時美國政府債券7-10年期指數",
       "listing_date": "20170608",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "富邦",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00695B.TWO"
     },
     "00696B": {
       "symbol": "00696B",
@@ -2018,7 +4450,18 @@
       "index_name": "富時美國政府債券20年期以上指數",
       "listing_date": "20170608",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "富邦",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [
+        "long_duration_bond"
+      ],
+      "risk_flags": [
+        "duration_risk"
+      ],
+      "yfinance_ticker": "00696B.TWO"
     },
     "00697B": {
       "symbol": "00697B",
@@ -2027,7 +4470,14 @@
       "index_name": "ICE美國政府7-10年期債券指數",
       "listing_date": "20170623",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "元大",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00697B.TWO"
     },
     "00719B": {
       "symbol": "00719B",
@@ -2036,7 +4486,14 @@
       "index_name": "ICE美國政府1-3年期債券指數",
       "listing_date": "20180201",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "元大",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00719B.TWO"
     },
     "00720B": {
       "symbol": "00720B",
@@ -2045,7 +4502,18 @@
       "index_name": "彭博美國20+年期BBB公司債流動性指數",
       "listing_date": "20180201",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "元大",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [
+        "long_duration_bond"
+      ],
+      "risk_flags": [
+        "duration_risk"
+      ],
+      "yfinance_ticker": "00720B.TWO"
     },
     "00722B": {
       "symbol": "00722B",
@@ -2054,7 +4522,14 @@
       "index_name": "ICE BofA 15年期以上美元電信業公司債指數",
       "listing_date": "20171215",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "群益",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00722B.TWO"
     },
     "00723B": {
       "symbol": "00723B",
@@ -2063,7 +4538,18 @@
       "index_name": "ICE BofA 15年期以上美元科技業公司債指數",
       "listing_date": "20171215",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "群益",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00723B.TWO"
     },
     "00724B": {
       "symbol": "00724B",
@@ -2072,7 +4558,18 @@
       "index_name": "ICE BofA 10年期以上美元金融債指數",
       "listing_date": "20171215",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "群益",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00724B.TWO"
     },
     "00725B": {
       "symbol": "00725B",
@@ -2081,7 +4578,16 @@
       "index_name": "彭博10年期以上BBB 美元息收公司債(中國除外)指數",
       "listing_date": "20180207",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "國泰",
+      "asset_class": "bond",
+      "region": "China/HK",
+      "strategy_tags": [],
+      "risk_flags": [
+        "china_hk_policy_risk"
+      ],
+      "yfinance_ticker": "00725B.TWO"
     },
     "00726B": {
       "symbol": "00726B",
@@ -2090,7 +4596,16 @@
       "index_name": "彭博新興市場5 年期以上美元息收投資等級債(中國除外)指數",
       "listing_date": "20180207",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "國泰",
+      "asset_class": "bond",
+      "region": "China/HK",
+      "strategy_tags": [],
+      "risk_flags": [
+        "china_hk_policy_risk"
+      ],
+      "yfinance_ticker": "00726B.TWO"
     },
     "00727B": {
       "symbol": "00727B",
@@ -2099,7 +4614,16 @@
       "index_name": "彭博優選短期美元高收債(中國除外)指數",
       "listing_date": "20180207",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "國泰",
+      "asset_class": "bond",
+      "region": "China/HK",
+      "strategy_tags": [],
+      "risk_flags": [
+        "china_hk_policy_risk"
+      ],
+      "yfinance_ticker": "00727B.TWO"
     },
     "00734B": {
       "symbol": "00734B",
@@ -2108,7 +4632,14 @@
       "index_name": "摩根大通新興市場投資等級債核心指數",
       "listing_date": "20180524",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "台新",
+      "asset_class": "bond",
+      "region": "Global/Emerging",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00734B.TWO"
     },
     "00740B": {
       "symbol": "00740B",
@@ -2117,7 +4648,16 @@
       "index_name": "彭博10年期以上BBB美元息收公司債(中國除外)指數",
       "listing_date": "20180608",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "富邦",
+      "asset_class": "bond",
+      "region": "China/HK",
+      "strategy_tags": [],
+      "risk_flags": [
+        "china_hk_policy_risk"
+      ],
+      "yfinance_ticker": "00740B.TWO"
     },
     "00741B": {
       "symbol": "00741B",
@@ -2126,7 +4666,16 @@
       "index_name": "彭博優選1-5年非投資等級(中國除外)債券指數",
       "listing_date": "20180608",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "富邦",
+      "asset_class": "bond",
+      "region": "China/HK",
+      "strategy_tags": [],
+      "risk_flags": [
+        "china_hk_policy_risk"
+      ],
+      "yfinance_ticker": "00741B.TWO"
     },
     "00746B": {
       "symbol": "00746B",
@@ -2135,7 +4684,14 @@
       "index_name": "彭博美元公司債A等級9-35年發行人3%限制指數",
       "listing_date": "20180815",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "富邦",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00746B.TWO"
     },
     "00749B": {
       "symbol": "00749B",
@@ -2144,7 +4700,14 @@
       "index_name": "彭博新興市場10年期以上BBB美元主權債及類主權債國家15%上限指數",
       "listing_date": "20180920",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "凱基",
+      "asset_class": "bond",
+      "region": "Global/Emerging",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00749B.TWO"
     },
     "00750B": {
       "symbol": "00750B",
@@ -2153,7 +4716,18 @@
       "index_name": "彭博10年期以上美元科技業公司債券指數",
       "listing_date": "20180920",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "凱基",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00750B.TWO"
     },
     "00751B": {
       "symbol": "00751B",
@@ -2162,7 +4736,18 @@
       "index_name": "彭博美國20+年期AAA-A公司債流動性指數",
       "listing_date": "20181003",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "元大",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [
+        "long_duration_bond"
+      ],
+      "risk_flags": [
+        "duration_risk"
+      ],
+      "yfinance_ticker": "00751B.TWO"
     },
     "00754B": {
       "symbol": "00754B",
@@ -2171,7 +4756,14 @@
       "index_name": "ICE 15年期以上高評等公司債指數",
       "listing_date": "20181022",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "群益",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00754B.TWO"
     },
     "00755B": {
       "symbol": "00755B",
@@ -2180,7 +4772,14 @@
       "index_name": "ICE 15年期以上公用事業公司債指數",
       "listing_date": "20181022",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "群益",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00755B.TWO"
     },
     "00756B": {
       "symbol": "00756B",
@@ -2189,7 +4788,14 @@
       "index_name": "ICE 15年期以上新興市場主權債指數",
       "listing_date": "20181022",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "群益",
+      "asset_class": "bond",
+      "region": "Global/Emerging",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00756B.TWO"
     },
     "00758B": {
       "symbol": "00758B",
@@ -2198,7 +4804,14 @@
       "index_name": "彭博15年期以上美元能源業公司債券指數",
       "listing_date": "20181114",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "復華",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00758B.TWO"
     },
     "00759B": {
       "symbol": "00759B",
@@ -2207,7 +4820,14 @@
       "index_name": "彭博15年期以上美元製藥業公司債券指數",
       "listing_date": "20181114",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "復華",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00759B.TWO"
     },
     "00760B": {
       "symbol": "00760B",
@@ -2216,7 +4836,14 @@
       "index_name": "彭博新興市場美元精選信用債券指數",
       "listing_date": "20181114",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "復華",
+      "asset_class": "bond",
+      "region": "Global/Emerging",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00760B.TWO"
     },
     "00761B": {
       "symbol": "00761B",
@@ -2225,7 +4852,14 @@
       "index_name": "彭博10年期以上高評等流動性美元公司債指數",
       "listing_date": "20181130",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "國泰",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00761B.TWO"
     },
     "00764B": {
       "symbol": "00764B",
@@ -2234,7 +4868,14 @@
       "index_name": "ICE 25年期以上美國政府債券指數",
       "listing_date": "20181224",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "群益",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00764B.TWO"
     },
     "00768B": {
       "symbol": "00768B",
@@ -2243,7 +4884,18 @@
       "index_name": "彭博20年期(以上)美國公債指數",
       "listing_date": "20190128",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "復華",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [
+        "long_duration_bond"
+      ],
+      "risk_flags": [
+        "duration_risk"
+      ],
+      "yfinance_ticker": "00768B.TWO"
     },
     "00772B": {
       "symbol": "00772B",
@@ -2252,7 +4904,14 @@
       "index_name": "彭博10年期以上高評級美元公司債指數",
       "listing_date": "20190129",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "中信",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00772B.TWO"
     },
     "00773B": {
       "symbol": "00773B",
@@ -2261,7 +4920,18 @@
       "index_name": "彭博10年期以上優先順位金融債指數",
       "listing_date": "20190129",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "中信",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00773B.TWO"
     },
     "00777B": {
       "symbol": "00777B",
@@ -2270,7 +4940,14 @@
       "index_name": "彭博15年期以上AAA至A級美元公司債精選指數",
       "listing_date": "20190214",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "凱基",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00777B.TWO"
     },
     "00778B": {
       "symbol": "00778B",
@@ -2279,7 +4956,20 @@
       "index_name": "彭博20年期以上美元金融債券指數",
       "listing_date": "20190214",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "凱基",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [
+        "long_duration_bond",
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "duration_risk",
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00778B.TWO"
     },
     "00779B": {
       "symbol": "00779B",
@@ -2288,7 +4978,14 @@
       "index_name": "彭博25年期以上美國公債指數",
       "listing_date": "20190214",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "凱基",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00779B.TWO"
     },
     "00780B": {
       "symbol": "00780B",
@@ -2297,7 +4994,18 @@
       "index_name": "彭博7-10年美元金融債精選指數",
       "listing_date": "20190307",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "國泰",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00780B.TWO"
     },
     "00781B": {
       "symbol": "00781B",
@@ -2306,7 +5014,18 @@
       "index_name": "彭博15年期以上科技業美元公司債精選指數",
       "listing_date": "20190307",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "國泰",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00781B.TWO"
     },
     "00782B": {
       "symbol": "00782B",
@@ -2315,7 +5034,14 @@
       "index_name": "彭博15年期以上公用事業美元公司債精選指數",
       "listing_date": "20190307",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "國泰",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00782B.TWO"
     },
     "00785B": {
       "symbol": "00785B",
@@ -2324,7 +5050,18 @@
       "index_name": "富時全球銀行產業10年以上美元投等債指數",
       "listing_date": "20190327",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "富邦",
+      "asset_class": "bond",
+      "region": "Global/Emerging",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00785B.TWO"
     },
     "00786B": {
       "symbol": "00786B",
@@ -2333,7 +5070,14 @@
       "index_name": "富時世界美元計價10年期以上投資級銀行債券指數",
       "listing_date": "20190402",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "元大",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00786B.TWO"
     },
     "00787B": {
       "symbol": "00787B",
@@ -2342,7 +5086,14 @@
       "index_name": "富時世界美元計價10年期以上投資級醫療保健債券指數",
       "listing_date": "20190402",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "元大",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00787B.TWO"
     },
     "00788B": {
       "symbol": "00788B",
@@ -2351,7 +5102,14 @@
       "index_name": "富時世界美元計價10年期以上投資級公共事業電能債券指數",
       "listing_date": "20190402",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "元大",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00788B.TWO"
     },
     "00789B": {
       "symbol": "00789B",
@@ -2360,7 +5118,18 @@
       "index_name": "彭博20年期以上美元A3級以上公司債流動性指數",
       "listing_date": "20190320",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "復華",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [
+        "long_duration_bond"
+      ],
+      "risk_flags": [
+        "duration_risk"
+      ],
+      "yfinance_ticker": "00789B.TWO"
     },
     "00791B": {
       "symbol": "00791B",
@@ -2369,7 +5138,14 @@
       "index_name": "彭博1至5年期美元特選信用債券指數",
       "listing_date": "20190320",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "復華",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00791B.TWO"
     },
     "00792B": {
       "symbol": "00792B",
@@ -2378,7 +5154,14 @@
       "index_name": "ICE 15年期以上A級成熟市場大型美元公司債指數",
       "listing_date": "20190403",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "群益",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00792B.TWO"
     },
     "00793B": {
       "symbol": "00793B",
@@ -2387,7 +5170,14 @@
       "index_name": "ICE 15年期以上AAA-A成熟市場大型醫療保健美元公司債指數",
       "listing_date": "20190403",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "群益",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00793B.TWO"
     },
     "00795B": {
       "symbol": "00795B",
@@ -2396,7 +5186,18 @@
       "index_name": "彭博20年期(以上)美國公債指數",
       "listing_date": "20190411",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "中信",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [
+        "long_duration_bond"
+      ],
+      "risk_flags": [
+        "duration_risk"
+      ],
+      "yfinance_ticker": "00795B.TWO"
     },
     "00799B": {
       "symbol": "00799B",
@@ -2405,7 +5206,14 @@
       "index_name": "彭博15年期以上醫療保健業美元公司債精選指數",
       "listing_date": "20190503",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "國泰",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00799B.TWO"
     },
     "00834B": {
       "symbol": "00834B",
@@ -2414,7 +5222,18 @@
       "index_name": "彭博美國10年期以上金融債券指數",
       "listing_date": "20190509",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "第一金",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00834B.TWO"
     },
     "00836B": {
       "symbol": "00836B",
@@ -2423,7 +5242,14 @@
       "index_name": "ICE 10年期以上美元A級公司債券指數",
       "listing_date": "20190522",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "永豐",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00836B.TWO"
     },
     "00840B": {
       "symbol": "00840B",
@@ -2432,7 +5258,14 @@
       "index_name": "彭博15年期以上美元投資等級精選公司債券指數",
       "listing_date": "20190610",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "凱基",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00840B.TWO"
     },
     "00841B": {
       "symbol": "00841B",
@@ -2441,7 +5274,18 @@
       "index_name": "ICE 20年期以上AAA至AA級大型美元公司債券指數",
       "listing_date": "20190610",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "凱基",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [
+        "long_duration_bond"
+      ],
+      "risk_flags": [
+        "duration_risk"
+      ],
+      "yfinance_ticker": "00841B.TWO"
     },
     "00842B": {
       "symbol": "00842B",
@@ -2450,7 +5294,14 @@
       "index_name": "彭博美元銀行債15年期以上指數",
       "listing_date": "20190614",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "台新",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00842B.TWO"
     },
     "00844B": {
       "symbol": "00844B",
@@ -2459,7 +5310,18 @@
       "index_name": "ICE美林15年期以上美元金融債指數",
       "listing_date": "20190718",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "台新",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00844B.TWO"
     },
     "00845B": {
       "symbol": "00845B",
@@ -2468,7 +5330,16 @@
       "index_name": "富時中國以外新興市場美元5年以上投資等級債券指數",
       "listing_date": "20190716",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "富邦",
+      "asset_class": "bond",
+      "region": "China/HK",
+      "strategy_tags": [],
+      "risk_flags": [
+        "china_hk_policy_risk"
+      ],
+      "yfinance_ticker": "00845B.TWO"
     },
     "00846B": {
       "symbol": "00846B",
@@ -2477,7 +5348,14 @@
       "index_name": "彭博歐洲區美元7-15年期銀行債指數",
       "listing_date": "20190716",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "富邦",
+      "asset_class": "bond",
+      "region": "Europe",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00846B.TWO"
     },
     "00847B": {
       "symbol": "00847B",
@@ -2486,7 +5364,14 @@
       "index_name": "彭博美國長天期政府及高評級市政債券指數",
       "listing_date": "20190730",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "中信",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00847B.TWO"
     },
     "00848B": {
       "symbol": "00848B",
@@ -2495,7 +5380,16 @@
       "index_name": "彭博新興亞洲(不含中國)美元精選綜合債券指數",
       "listing_date": "20190730",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "中信",
+      "asset_class": "bond",
+      "region": "China/HK",
+      "strategy_tags": [],
+      "risk_flags": [
+        "china_hk_policy_risk"
+      ],
+      "yfinance_ticker": "00848B.TWO"
     },
     "00849B": {
       "symbol": "00849B",
@@ -2504,7 +5398,14 @@
       "index_name": "ICE新興市場0-5年期美元政府債券指數",
       "listing_date": "20190730",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "中信",
+      "asset_class": "bond",
+      "region": "Global/Emerging",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00849B.TWO"
     },
     "00853B": {
       "symbol": "00853B",
@@ -2513,7 +5414,14 @@
       "index_name": "彭博10年期以上Aa至A級美元優質公司債券指數",
       "listing_date": "20190904",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "統一",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00853B.TWO"
     },
     "00856B": {
       "symbol": "00856B",
@@ -2522,7 +5430,14 @@
       "index_name": "ICE 1-3年期美國公債指數",
       "listing_date": "20190930",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "永豐",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00856B.TWO"
     },
     "00857B": {
       "symbol": "00857B",
@@ -2531,7 +5446,18 @@
       "index_name": "ICE 20年期以上美國公債指數",
       "listing_date": "20190930",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "永豐",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [
+        "long_duration_bond"
+      ],
+      "risk_flags": [
+        "duration_risk"
+      ],
+      "yfinance_ticker": "00857B.TWO"
     },
     "00858": {
       "symbol": "00858",
@@ -2540,7 +5466,14 @@
       "index_name": "STOXX美國500股票指數",
       "listing_date": "20190930",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "永豐",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00858.TWO"
     },
     "00859B": {
       "symbol": "00859B",
@@ -2549,7 +5482,14 @@
       "index_name": "ICE BofAML 0-1年期美國政府公債指數",
       "listing_date": "20191018",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "群益",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00859B.TWO"
     },
     "00860B": {
       "symbol": "00860B",
@@ -2558,7 +5498,14 @@
       "index_name": "ICE 1-5年期成熟市場超大型美元公司債指數",
       "listing_date": "20191018",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "群益",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00860B.TWO"
     },
     "00862B": {
       "symbol": "00862B",
@@ -2567,7 +5514,18 @@
       "index_name": "彭博20年期以上BBB級美元公司債券指數",
       "listing_date": "20191018",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "中信",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [
+        "long_duration_bond"
+      ],
+      "risk_flags": [
+        "duration_risk"
+      ],
+      "yfinance_ticker": "00862B.TWO"
     },
     "00863B": {
       "symbol": "00863B",
@@ -2576,7 +5534,14 @@
       "index_name": "彭博 10 年期以上電信業美元公司債券指數",
       "listing_date": "20191018",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "中信",
+      "asset_class": "bond",
+      "region": "Global/Emerging",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00863B.TWO"
     },
     "00864B": {
       "symbol": "00864B",
@@ -2585,7 +5550,14 @@
       "index_name": "ICE美國政府0至1年期債券指數",
       "listing_date": "20191018",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "中信",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00864B.TWO"
     },
     "00867B": {
       "symbol": "00867B",
@@ -2594,7 +5566,14 @@
       "index_name": "ICE美林15年期(以上)A-BBB美元電信債指數",
       "listing_date": "20191115",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "台新",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00867B.TWO"
     },
     "00870B": {
       "symbol": "00870B",
@@ -2603,7 +5582,14 @@
       "index_name": "ICE 新興市場15年期以上美元主權債券指數",
       "listing_date": "20200109",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "元大",
+      "asset_class": "bond",
+      "region": "Global/Emerging",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00870B.TWO"
     },
     "00877": {
       "symbol": "00877",
@@ -2612,7 +5598,16 @@
       "index_name": "中証5G通信主題指數",
       "listing_date": "20200722",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "復華",
+      "asset_class": "equity",
+      "region": "China/HK",
+      "strategy_tags": [],
+      "risk_flags": [
+        "china_hk_policy_risk"
+      ],
+      "yfinance_ticker": "00877.TWO"
     },
     "00883B": {
       "symbol": "00883B",
@@ -2621,7 +5616,16 @@
       "index_name": "ICE 15年期以上已開發市場ESG美元投資級公司債券指數",
       "listing_date": "20210204",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "中信",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [
+        "esg"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00883B.TWO"
     },
     "00884B": {
       "symbol": "00884B",
@@ -2630,7 +5634,14 @@
       "index_name": "ICE 15年期以上新興市場美元主權低碳債券指數",
       "listing_date": "20210204",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "中信",
+      "asset_class": "bond",
+      "region": "Global/Emerging",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00884B.TWO"
     },
     "00886": {
       "symbol": "00886",
@@ -2639,7 +5650,18 @@
       "index_name": "美國科技股票指數",
       "listing_date": "20210331",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "永豐",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00886.TWO"
     },
     "00887": {
       "symbol": "00887",
@@ -2648,7 +5670,19 @@
       "index_name": "中証科技50 指數",
       "listing_date": "20210331",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "永豐",
+      "asset_class": "equity",
+      "region": "China/HK",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "china_hk_policy_risk",
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00887.TWO"
     },
     "00888": {
       "symbol": "00888",
@@ -2657,7 +5691,16 @@
       "index_name": "富時台灣ESG 優質指數",
       "listing_date": "20210331",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "永豐",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "esg"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00888.TWO"
     },
     "00890B": {
       "symbol": "00890B",
@@ -2666,7 +5709,16 @@
       "index_name": "彭博MSCI 15年以上美元BBB級ESG永續公司債券指數",
       "listing_date": "20210510",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "凱基",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [
+        "esg"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00890B.TWO"
     },
     "00928": {
       "symbol": "00928",
@@ -2675,7 +5727,16 @@
       "index_name": "臺灣指數公司特選上櫃 ESG 30 指數",
       "listing_date": "20230524",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "中信",
+      "asset_class": "equity",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "esg"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00928.TWO"
     },
     "00931B": {
       "symbol": "00931B",
@@ -2684,7 +5745,18 @@
       "index_name": "彭博20年期以上美國公債指數",
       "listing_date": "20230807",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "統一",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [
+        "long_duration_bond"
+      ],
+      "risk_flags": [
+        "duration_risk"
+      ],
+      "yfinance_ticker": "00931B.TWO"
     },
     "00933B": {
       "symbol": "00933B",
@@ -2693,7 +5765,18 @@
       "index_name": "彭博10年以上美元金融債券指數",
       "listing_date": "20231019",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "國泰",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00933B.TWO"
     },
     "00937B": {
       "symbol": "00937B",
@@ -2702,7 +5785,19 @@
       "index_name": "ICE ESG 20年期以上BBB級成熟市場大型美元公司債指數",
       "listing_date": "20231205",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "群益",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [
+        "esg",
+        "long_duration_bond"
+      ],
+      "risk_flags": [
+        "duration_risk"
+      ],
+      "yfinance_ticker": "00937B.TWO"
     },
     "00942B": {
       "symbol": "00942B",
@@ -2711,7 +5806,18 @@
       "index_name": "彭博美國20年期以上A級公司債券指數",
       "listing_date": "20240418",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "台新",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [
+        "long_duration_bond"
+      ],
+      "risk_flags": [
+        "duration_risk"
+      ],
+      "yfinance_ticker": "00942B.TWO"
     },
     "00948B": {
       "symbol": "00948B",
@@ -2720,7 +5826,17 @@
       "index_name": "ICE 15年期以上已開發市場投資級優化收益ESG美元公司債券指數",
       "listing_date": "20240612",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "中信",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [
+        "esg",
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00948B.TWO"
     },
     "00950B": {
       "symbol": "00950B",
@@ -2729,7 +5845,14 @@
       "index_name": "彭博全球美元A級公司債券指數",
       "listing_date": "20240709",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "凱基",
+      "asset_class": "bond",
+      "region": "Global/Emerging",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00950B.TWO"
     },
     "00955": {
       "symbol": "00955",
@@ -2738,7 +5861,14 @@
       "index_name": "NYSE FactSet 日本商社及批發指數",
       "listing_date": "20240820",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "中信",
+      "asset_class": "equity",
+      "region": "Japan",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00955.TWO"
     },
     "00957B": {
       "symbol": "00957B",
@@ -2747,7 +5877,18 @@
       "index_name": "ICE 20年期以上美國企業優選投資級公司債指數",
       "listing_date": "20240910",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "兆豐",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [
+        "long_duration_bond"
+      ],
+      "risk_flags": [
+        "duration_risk"
+      ],
+      "yfinance_ticker": "00957B.TWO"
     },
     "00958B": {
       "symbol": "00958B",
@@ -2756,7 +5897,16 @@
       "index_name": "ICE 15年期以上投資等級美元銀行債ESG指數",
       "listing_date": "20240918",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "永豐",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [
+        "esg"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00958B.TWO"
     },
     "00959B": {
       "symbol": "00959B",
@@ -2765,7 +5915,14 @@
       "index_name": "ICE15年期以上BBB級大型美元公司債券指數",
       "listing_date": "20240828",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "大華銀",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00959B.TWO"
     },
     "00966B": {
       "symbol": "00966B",
@@ -2774,7 +5931,16 @@
       "index_name": "彭博MSCI全球成熟市場15年以上美元BBB級永續ESG動能加權公司債指數",
       "listing_date": "20241216",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "統一",
+      "asset_class": "bond",
+      "region": "Taiwan",
+      "strategy_tags": [
+        "esg"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00966B.TWO"
     },
     "00967B": {
       "symbol": "00967B",
@@ -2783,7 +5949,14 @@
       "index_name": "彭博優息 10 年期以上美國政府債券指數",
       "listing_date": "20241209",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "元大",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00967B.TWO"
     },
     "00968B": {
       "symbol": "00968B",
@@ -2792,7 +5965,14 @@
       "index_name": "ICE優息10年期以上已開發市場投資級美元公司債券指數",
       "listing_date": "20241209",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "元大",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00968B.TWO"
     },
     "00969B": {
       "symbol": "00969B",
@@ -2801,7 +5981,14 @@
       "index_name": "彭博零息25年期以上美國政府債券指數",
       "listing_date": "20241209",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "元大",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00969B.TWO"
     },
     "00970B": {
       "symbol": "00970B",
@@ -2810,7 +5997,19 @@
       "index_name": "ICE 20年期以上BBB美元公司債優選收益率指數",
       "listing_date": "20241217",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "台新",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [
+        "income",
+        "long_duration_bond"
+      ],
+      "risk_flags": [
+        "duration_risk"
+      ],
+      "yfinance_ticker": "00970B.TWO"
     },
     "009806": {
       "symbol": "009806",
@@ -2819,7 +6018,14 @@
       "index_name": "標普500指數",
       "listing_date": "20250528",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "台新",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "009806.TWO"
     },
     "009807": {
       "symbol": "009807",
@@ -2828,7 +6034,18 @@
       "index_name": "科技精選行業指數",
       "listing_date": "20250528",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "台新",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "009807.TWO"
     },
     "00980B": {
       "symbol": "00980B",
@@ -2837,7 +6054,14 @@
       "index_name": "富時10年期以上特選全球美元投資等級公司債券指數",
       "listing_date": "20250122",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "台新",
+      "asset_class": "bond",
+      "region": "Global/Emerging",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00980B.TWO"
     },
     "00980D": {
       "symbol": "00980D",
@@ -2846,7 +6070,16 @@
       "index_name": "無",
       "listing_date": "20250804",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "聯博投信",
+      "asset_class": "equity",
+      "region": "Other",
+      "strategy_tags": [
+        "active_managed"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00980D.TWO"
     },
     "00980T": {
       "symbol": "00980T",
@@ -2855,7 +6088,14 @@
       "index_name": "NYSE TPEx美國Top股債平衡指數",
       "listing_date": "20250815",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "凱基",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00980T.TWO"
     },
     "009814": {
       "symbol": "009814",
@@ -2864,7 +6104,14 @@
       "index_name": "標普500指數",
       "listing_date": "20251219",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "富邦",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "009814.TWO"
     },
     "009815": {
       "symbol": "009815",
@@ -2873,7 +6120,18 @@
       "index_name": "彭博TPEx Magnificent 7 Plus 美國大型科技指數",
       "listing_date": "20260126",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "大華銀",
+      "asset_class": "equity",
+      "region": "US",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "009815.TWO"
     },
     "00981B": {
       "symbol": "00981B",
@@ -2882,7 +6140,14 @@
       "index_name": "彭博優選美元非投資等級1-5年BB至B債券指數",
       "listing_date": "20250310",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "第一金",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00981B.TWO"
     },
     "00981D": {
       "symbol": "00981D",
@@ -2891,7 +6156,16 @@
       "index_name": "無",
       "listing_date": "20250916",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "中信",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [
+        "active_managed"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00981D.TWO"
     },
     "00982B": {
       "symbol": "00982B",
@@ -2900,7 +6174,18 @@
       "index_name": "ICE 20年期以上BBB級成熟市場美元公司債指數",
       "listing_date": "20250428",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "富蘭克林",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [
+        "long_duration_bond"
+      ],
+      "risk_flags": [
+        "duration_risk"
+      ],
+      "yfinance_ticker": "00982B.TWO"
     },
     "00983B": {
       "symbol": "00983B",
@@ -2909,7 +6194,18 @@
       "index_name": "ICE 優化票息20年期以上美國公債指數",
       "listing_date": "20250513",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "大華銀",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [
+        "long_duration_bond"
+      ],
+      "risk_flags": [
+        "duration_risk"
+      ],
+      "yfinance_ticker": "00983B.TWO"
     },
     "00984B": {
       "symbol": "00984B",
@@ -2918,7 +6214,16 @@
       "index_name": "ICE優化收益15年期以上A級美國已開發市場公司債券指數",
       "listing_date": "20250513",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "大華銀",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00984B.TWO"
     },
     "00985D": {
       "symbol": "00985D",
@@ -2927,7 +6232,16 @@
       "index_name": "無",
       "listing_date": "20260330",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "貝萊德投",
+      "asset_class": "equity",
+      "region": "Other",
+      "strategy_tags": [
+        "active_managed"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00985D.TWO"
     },
     "00986B": {
       "symbol": "00986B",
@@ -2936,7 +6250,18 @@
       "index_name": "ICE TPEx 10年期以上成熟市場投資級美元金融債指數",
       "listing_date": "20251112",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "富蘭克林",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00986B.TWO"
     },
     "00986D": {
       "symbol": "00986D",
@@ -2945,7 +6270,19 @@
       "index_name": "無",
       "listing_date": "20260415",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "復華",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [
+        "active_managed",
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00986D.TWO"
     },
     "00987B": {
       "symbol": "00987B",
@@ -2954,7 +6291,14 @@
       "index_name": "ICE TPEx 澳洲10年期以上主權及類主權債券指數",
       "listing_date": "20260122",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "野村",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00987B.TWO"
     },
     "00988B": {
       "symbol": "00988B",
@@ -2963,7 +6307,16 @@
       "index_name": "ICE TPEx 1-5年BB-CCC 級大型高息美元非投資等級債券指數",
       "listing_date": "20260325",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "玉山投信",
+      "asset_class": "bond",
+      "region": "Other",
+      "strategy_tags": [
+        "income"
+      ],
+      "risk_flags": [],
+      "yfinance_ticker": "00988B.TWO"
     },
     "00989B": {
       "symbol": "00989B",
@@ -2972,7 +6325,14 @@
       "index_name": "ICE TPEx 1-5年BB-B級美國優息非投資等級債券指數",
       "listing_date": "20260331",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "台新",
+      "asset_class": "bond",
+      "region": "US",
+      "strategy_tags": [],
+      "risk_flags": [],
+      "yfinance_ticker": "00989B.TWO"
     },
     "00998A": {
       "symbol": "00998A",
@@ -2981,7 +6341,19 @@
       "index_name": "無",
       "listing_date": "20260415",
       "exchange": "TPEx",
-      "source": "tpex_etf_filter"
+      "currency": "TWD",
+      "source": "tpex_etf_filter",
+      "issuer_short": "復華",
+      "asset_class": "equity",
+      "region": "Other",
+      "strategy_tags": [
+        "active_managed",
+        "sector_theme"
+      ],
+      "risk_flags": [
+        "sector_concentration"
+      ],
+      "yfinance_ticker": "00998A.TWO"
     }
   }
 }

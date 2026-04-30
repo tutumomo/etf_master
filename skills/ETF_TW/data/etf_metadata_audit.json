@@ -1,0 +1,302 @@
+{
+  "generated_at": "2026-05-01T07:46:07.002114+08:00",
+  "universe_meta": {
+    "version": "1.0",
+    "generated_at": "2026-05-01T07:45:48+0800",
+    "counts": {
+      "twse": 224,
+      "tpex": 114,
+      "merged": 338
+    },
+    "sources": [
+      "https://www.twse.com.tw/rwd/zh/ETF/list?response=json",
+      "https://info.tpex.org.tw/api/etfFilter"
+    ]
+  },
+  "summary": {
+    "universe_count": 338,
+    "curated_count": 7,
+    "wiki_entity_count": 16,
+    "core_complete_count": 338,
+    "core_complete_pct": 100.0,
+    "core_plus_derived_complete_count": 338,
+    "core_plus_derived_complete_pct": 100.0,
+    "curated_complete_count": 7,
+    "curated_complete_pct": 100.0
+  },
+  "coverage": {
+    "core": {
+      "symbol": {
+        "count": 338,
+        "total": 338,
+        "pct": 100.0
+      },
+      "name": {
+        "count": 338,
+        "total": 338,
+        "pct": 100.0
+      },
+      "issuer": {
+        "count": 338,
+        "total": 338,
+        "pct": 100.0
+      },
+      "issuer_short": {
+        "count": 338,
+        "total": 338,
+        "pct": 100.0
+      },
+      "index_name": {
+        "count": 338,
+        "total": 338,
+        "pct": 100.0
+      },
+      "listing_date": {
+        "count": 338,
+        "total": 338,
+        "pct": 100.0
+      },
+      "exchange": {
+        "count": 338,
+        "total": 338,
+        "pct": 100.0
+      },
+      "currency": {
+        "count": 338,
+        "total": 338,
+        "pct": 100.0
+      },
+      "yfinance_ticker": {
+        "count": 338,
+        "total": 338,
+        "pct": 100.0
+      }
+    },
+    "derived": {
+      "asset_class": {
+        "count": 338,
+        "total": 338,
+        "pct": 100.0
+      },
+      "region": {
+        "count": 338,
+        "total": 338,
+        "pct": 100.0
+      },
+      "strategy_tags": {
+        "count": 338,
+        "total": 338,
+        "pct": 100.0
+      },
+      "risk_flags": {
+        "count": 338,
+        "total": 338,
+        "pct": 100.0
+      }
+    },
+    "curated": {
+      "category": {
+        "count": 7,
+        "total": 7,
+        "pct": 100.0
+      },
+      "expense_ratio": {
+        "count": 7,
+        "total": 7,
+        "pct": 100.0
+      },
+      "dividend_frequency": {
+        "count": 7,
+        "total": 7,
+        "pct": 100.0
+      },
+      "inception_date": {
+        "count": 7,
+        "total": 7,
+        "pct": 100.0
+      },
+      "aum": {
+        "count": 7,
+        "total": 7,
+        "pct": 100.0
+      },
+      "description": {
+        "count": 7,
+        "total": 7,
+        "pct": 100.0
+      },
+      "risk_level": {
+        "count": 7,
+        "total": 7,
+        "pct": 100.0
+      },
+      "suitable_for": {
+        "count": 7,
+        "total": 7,
+        "pct": 100.0
+      }
+    }
+  },
+  "distribution": {
+    "exchange": {
+      "TPEx": 114,
+      "TWSE": 224
+    },
+    "asset_class": {
+      "bond": 112,
+      "commodity": 7,
+      "currency": 10,
+      "equity": 206,
+      "real_estate": 3
+    },
+    "region": {
+      "China/HK": 33,
+      "Europe": 5,
+      "Global/Emerging": 28,
+      "India": 3,
+      "Japan": 11,
+      "Other": 80,
+      "Taiwan": 97,
+      "US": 81
+    },
+    "issuer_top20": {
+      "元大": 54,
+      "富邦": 50,
+      "國泰": 43,
+      "群益": 27,
+      "台新": 21,
+      "復華": 20,
+      "中國信託": 20,
+      "凱基": 17,
+      "中信": 15,
+      "永豐": 12,
+      "野村": 10,
+      "兆豐": 9,
+      "統一": 8,
+      "第一金": 5,
+      "富蘭克林": 5,
+      "大華銀": 5,
+      "街口": 3,
+      "玉山證券": 2,
+      "華南永昌": 2,
+      "安聯證券": 2
+    }
+  },
+  "issues": {
+    "malformed_symbols": [],
+    "symbol_key_mismatches": [],
+    "curated_missing_count": 331,
+    "curated_missing_sample": [
+      "00400A",
+      "00401A",
+      "0051",
+      "0052",
+      "0053",
+      "0055",
+      "0057",
+      "0061",
+      "006201",
+      "006203",
+      "006204",
+      "006205",
+      "006206",
+      "006207",
+      "00625K",
+      "00631L",
+      "00632R",
+      "00633L",
+      "00634R",
+      "00635U",
+      "00636",
+      "00636K",
+      "00637L",
+      "00638R",
+      "00639",
+      "00640L",
+      "00641R",
+      "00642U",
+      "00643",
+      "00643K",
+      "00645",
+      "00646",
+      "00647L",
+      "00648R",
+      "00650L",
+      "00651R",
+      "00652",
+      "00653L",
+      "00654R",
+      "00655L",
+      "00656R",
+      "00657",
+      "00657K",
+      "00660",
+      "00661",
+      "00662",
+      "00663L",
+      "00664R",
+      "00665L",
+      "00666R"
+    ],
+    "curated_stale": [],
+    "wiki_missing_count": 322,
+    "wiki_missing_sample": [
+      "00400A",
+      "00401A",
+      "0052",
+      "0053",
+      "0055",
+      "0057",
+      "0061",
+      "006201",
+      "006203",
+      "006205",
+      "006206",
+      "006207",
+      "00625K",
+      "00631L",
+      "00632R",
+      "00633L",
+      "00634R",
+      "00635U",
+      "00636",
+      "00636K",
+      "00637L",
+      "00638R",
+      "00639",
+      "00640L",
+      "00641R",
+      "00642U",
+      "00643",
+      "00643K",
+      "00645",
+      "00646",
+      "00647L",
+      "00648R",
+      "00650L",
+      "00651R",
+      "00652",
+      "00653L",
+      "00654R",
+      "00655L",
+      "00656R",
+      "00657",
+      "00657K",
+      "00660",
+      "00661",
+      "00662",
+      "00663L",
+      "00664R",
+      "00665L",
+      "00666R",
+      "00668",
+      "00668K"
+    ]
+  },
+  "recommendations": [
+    "Use data/etf_universe_tw.json as the broad tradable-universe truth source.",
+    "Keep data/etfs.json as a high-touch curated subset for dashboard explanations, not as a full-market catalog.",
+    "Prioritize curated depth for watchlist/holdings first: expense_ratio, dividend_frequency, risk_level, and description.",
+    "Generate wiki entity pages only for holdings/watchlist/core ETFs; full-market wiki for every ETF is optional and noisy."
+  ]
+}
