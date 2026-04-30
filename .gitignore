@@ -30,10 +30,7 @@ webui_state/
 # Exclude non-finance skills
 skills/*
 !skills/ETF_TW/
-!skills/stock-analysis-tw/
-!skills/stock-market-pro-tw/
 !skills/taiwan-finance/
-!skills/graphify
 
 # OS and IDE noise
 .DS_Store

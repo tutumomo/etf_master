@@ -1,0 +1,77 @@
+# ETF Master Skin — 金融管家質感
+name: etf-master
+description: "ETF Master — 金融管家風格，深色背景+黃金翠綠配色"
+
+colors:
+  # 主色調：沈穩深黑+金色主標
+  banner_border: "#2D6A4F"
+  banner_title: "#FFD700"
+  banner_accent: "#52B788"
+  banner_dim: "#40916C"
+  banner_text: "#B7E4C7"
+  # UI 色系
+  ui_accent: "#52B788"
+  ui_label: "#95D5B2"
+  ui_ok: "#40C057"
+  ui_error: "#FF6B6B"
+  ui_warn: "#FAB005"
+  prompt: "#B7E4C7"
+  input_rule: "#2D6A4F"
+  response_border: "#FFD700"
+  session_label: "#95D5B2"
+  session_border: "#40916C"
+  # 狀態列用 — 深墨綠底
+  status_bar_bg: "#0B2618"
+  voice_status_bg: "#0B2618"
+  completion_menu_bg: "#0D1B2A"
+  completion_menu_current_bg: "#1B4332"
+  completion_menu_meta_bg: "#0D1B2A"
+  completion_menu_meta_current_bg: "#1B4332"
+
+spinner:
+  waiting_faces:
+    - "(💎)"
+    - "(📈)"
+    - "(🛡)"
+    - "(⏳)"
+    - "(⚖)"
+  thinking_faces:
+    - "(📊)"
+    - "(🔍)"
+    - "(💰)"
+    - "(🧮)"
+    - "(📐)"
+  thinking_verbs:
+    - "評估風險"
+    - "計算持倉"
+    - "掃描市場"
+    - "校準策略"
+    - "檢視籌碼"
+    - "比對估值"
+    - "量化情境"
+    - "守護資產"
+  wings:
+    - ["▎◈ ", " ◈▏"]
+    - ["▎◆ ", " ◆▏"]
+    - ["▎▣ ", " ▣▏"]
+
+branding:
+  agent_name: "ETF Master"
+  welcome: "歡迎回來！ETF Master 已上線，隨時待命。"
+  goodbye: "收工！資產安全，明天見 💼"
+  response_label: " 💼 ETF Master "
+  prompt_symbol: "◈ ❯ "
+  help_header: "📊 可用指令"
+
+tool_prefix: "║"
+
+tool_emojis:
+  terminal: "⚙"
+  web_search: "🔍"
+  browser: "🌐"
+  read_file: "📄"
+  write_file: "📝"
+  patch: "🔧"
+  vision: "👁"
+  delegate_task: "🤝"
+  memory: "🧠"

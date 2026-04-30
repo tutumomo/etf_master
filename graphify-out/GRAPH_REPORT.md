@@ -1,7 +1,7 @@
 # Graph Report - /Users/tuchengshin/.hermes/profiles/etf_master  (2026-04-30)
 
 ## Corpus Check
-- 435 files · ~1,751,291 words
+- 435 files · ~1,794,730 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -3262,11 +3262,11 @@ Nodes (1): Symbol Normalization Rule
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `run()` connect `Community 8` to `Community 0`, `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 36`, `Community 6`, `Community 7`, `Community 5`, `Community 10`, `Community 45`, `Community 14`, `Community 21`, `Community 23`, `Community 24`, `Community 28`, `Community 30`?**
-  _High betweenness centrality (0.176) - this node is a cross-community bridge._
+  _High betweenness centrality (0.197) - this node is a cross-community bridge._
 - **Why does `safe_load_json()` connect `Community 5` to `Community 4`, `Community 36`, `Community 6`, `Community 7`, `Community 8`, `Community 10`, `Community 14`, `Community 17`, `Community 19`, `Community 20`, `Community 23`, `Community 28`, `Community 29`?**
-  _High betweenness centrality (0.128) - this node is a cross-community bridge._
+  _High betweenness centrality (0.116) - this node is a cross-community bridge._
 - **Why does `get_state_dir()` connect `Community 10` to `Community 3`, `Community 4`, `Community 36`, `Community 6`, `Community 7`, `Community 5`, `Community 9`, `Community 8`, `Community 39`, `Community 12`, `Community 14`, `Community 15`, `Community 16`, `Community 19`, `Community 23`, `Community 28`, `Community 29`?**
-  _High betweenness centrality (0.104) - this node is a cross-community bridge._
+  _High betweenness centrality (0.110) - this node is a cross-community bridge._
 - **Are the 288 inferred relationships involving `Order` (e.g. with `_Const` and `_FakeApi`) actually correct?**
   _`Order` has 288 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 144 inferred relationships involving `BaseAdapter` (e.g. with `AccountManager` and `Manages multiple trading accounts across different brokers.          Features:`) actually correct?**

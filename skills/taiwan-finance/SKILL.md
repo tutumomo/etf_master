@@ -16,6 +16,8 @@ metadata:
 
 | 模組名稱 | 涵蓋功能 | 參考路徑 |
 |---|---|---|
+| [財務分析核心](references/stock-analysis-tw.md) | 8 維度評分系統 (EPS/基本面/分析師/趨勢/板塊/動能/市場脈絡/情緒) | `references/stock-analysis-tw.md` |
+| [市場中控台](references/stock-market-pro-tw.md) | 全功能台股中控台 (yfinance 即時報價、基本面診斷、技術線圖) | `references/stock-market-pro-tw.md` |
 | [財務分析核心](references/financial-analysis.md) | 建模、估值 (DCF/Comps)、三表分析、LBO | [financial-analysis.md](references/financial-analysis.md) |
 | [個股研究 (ER)](references/equity-research.md) | 法說會、月營收、催化劑日曆、研究報告 | [equity-research.md](references/equity-research.md) |
 | [投資銀行 (IB)](references/investment-banking.md) | Pitch Deck、CIM、Teaser、併購模型 | [investment-banking.md](references/investment-banking.md) |
