@@ -1316,12 +1316,41 @@ def build_overview_model() -> dict:
         from scripts.auto_trade.peak_tracker import GROUP_TRAILING_PCT, TRAIL_LOCK_PCT
         from scripts.auto_trade.buy_scanner import DROP_LADDER_PCT
         from scripts.auto_trade.initial_dca import load_dca_state
+        from scripts.auto_trade.correlation_engine import (
+            CORRELATION_THRESHOLD, PENALTY_FLOOR,
+        )
+        # E2: 載入相關性矩陣摘要（顯示 high-corr pairs 與計算時間）
+        corr_data = safe_load_json(STATE / "correlation_matrix.json", default={})
+        corr_summary = None
+        if corr_data and "matrix" in corr_data:
+            high_pairs: list[dict] = []
+            mtx = corr_data["matrix"]
+            syms = corr_data.get("symbols") or list(mtx.keys())
+            for i, a in enumerate(syms):
+                for b in syms[i+1:]:
+                    try:
+                        c = float(mtx.get(a, {}).get(b, 0))
+                    except (TypeError, ValueError):
+                        c = 0
+                    if c >= CORRELATION_THRESHOLD:
+                        high_pairs.append({"a": a, "b": b, "corr": round(c, 3)})
+            high_pairs.sort(key=lambda x: -x["corr"])
+            corr_summary = {
+                "computed_at": corr_data.get("computed_at"),
+                "window_days": corr_data.get("window_days"),
+                "actual_bars": corr_data.get("actual_bars"),
+                "symbol_count": len(syms),
+                "high_corr_pairs": high_pairs[:20],  # top 20
+                "threshold": CORRELATION_THRESHOLD,
+                "penalty_floor": PENALTY_FLOOR,
+            }
         phase2_skeleton = {
             "version": "v2",
             "trailing_pct": dict(GROUP_TRAILING_PCT),
             "trailing_lock_pct": TRAIL_LOCK_PCT,
             "ladder_pct": [{"drop_pct": d, "spend_pct": p} for d, p in DROP_LADDER_PCT],
             "initial_dca": load_dca_state(STATE),
+            "correlation": corr_summary,
         }
     except Exception as _e:
         phase2_skeleton = {"version": "v2", "error": f"{type(_e).__name__}: {_e}"}

@@ -313,6 +313,12 @@
                 　|　策略={{ p.trigger_payload.base_strategy }}/{{ p.trigger_payload.scenario_overlay }}
                 　|　群組={{ p.trigger_payload.group }}
                 　|　乘數={{ '%.2f'|format((p.trigger_payload.strategy_multiplier or 1) * (p.trigger_payload.overlay_multiplier or 1) * (p.trigger_payload.risk_multiplier or 1) * (p.trigger_payload.defensive_boost or 1)) }}
+                {% if p.trigger_payload.macro_multiplier and p.trigger_payload.macro_multiplier != 1.0 %}
+                  　|　<span style="color:#ffd166;">macro×{{ '%.2f'|format(p.trigger_payload.macro_multiplier) }}</span>
+                {% endif %}
+                {% if p.trigger_payload.correlation_multiplier and p.trigger_payload.correlation_multiplier < 1.0 %}
+                  　|　<span style="color:#ff6b81;" title="與既有持倉相關性過高，倉位被折扣">相關懲罰×{{ '%.2f'|format(p.trigger_payload.correlation_multiplier) }} (avg ρ={{ '%.2f'|format(p.trigger_payload.correlation_avg or 0) }})</span>
+                {% endif %}
               {% endif %}
             {% else %}
               peak={{ '%.4f'|format(p.trigger_payload.peak_close or 0) }}　|
@@ -420,6 +426,31 @@
           {% endif %}
           <div id="phase2_dca_banner" class="muted" style="margin-top:8px; min-height:18px;"></div>
         </div>
+        {% if phase2_skeleton.correlation %}
+        <div style="font-size:12px; padding:8px 4px; border-top:1px dashed rgba(139,143,255,0.2); margin-top:6px;">
+          <div style="color:#ff9daf; margin-bottom:4px;">
+            🔗 持倉相關性懲罰
+            <span class="muted" style="margin-left:6px; font-weight:400;">
+              閥值 ρ &gt; {{ phase2_skeleton.correlation.threshold }}　|
+              懲罰下限 {{ phase2_skeleton.correlation.penalty_floor }}　|
+              視窗 {{ phase2_skeleton.correlation.window_days }} 日
+              ({{ phase2_skeleton.correlation.actual_bars }} bars,
+              {{ phase2_skeleton.correlation.symbol_count }} symbols)
+            </span>
+          </div>
+          {% if phase2_skeleton.correlation.high_corr_pairs %}
+          <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:6px;">
+            {% for pair in phase2_skeleton.correlation.high_corr_pairs %}
+            <span class="tag" style="background:rgba(255,107,129,{{ 0.05 + pair.corr * 0.15 }});color:#ff9daf;">
+              {{ pair.a }} ↔ {{ pair.b }}: ρ={{ '%.2f'|format(pair.corr) }}
+            </span>
+            {% endfor %}
+          </div>
+          {% else %}
+          <div class="muted">當前 watchlist 無高度相關 pair（&gt; {{ phase2_skeleton.correlation.threshold }}）</div>
+          {% endif %}
+        </div>
+        {% endif %}
       </details>
       {% endif %}
 

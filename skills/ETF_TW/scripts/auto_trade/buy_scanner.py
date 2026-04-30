@@ -238,6 +238,28 @@ def _load_market_context(state_dir: Path) -> dict:
     return {**event_context, **context}
 
 
+def _load_correlation_matrix(state_dir: Path):
+    """讀 state/correlation_matrix.json → CorrelationMatrix 物件。
+
+    檔不存在或解析失敗 → None（buy_scanner 將不套用相關性懲罰，行為向後相容）。
+    """
+    data = safe_load_json(state_dir / "correlation_matrix.json", default=None)
+    if not isinstance(data, dict) or "matrix" not in data:
+        return None
+    try:
+        import pandas as pd
+        from scripts.auto_trade.correlation_engine import CorrelationMatrix
+
+        raw = data["matrix"]
+        df = pd.DataFrame(raw).T  # raw[a][b] = value → 轉成正方矩陣
+        # 確保 index/columns 一致
+        symbols = list(data.get("symbols") or df.columns)
+        df = df.reindex(index=symbols, columns=symbols)
+        return CorrelationMatrix(matrix=df, symbols=symbols)
+    except Exception:
+        return None
+
+
 def _phase2_buy_adjustment(
     *,
     base_amount: int,
@@ -245,8 +267,15 @@ def _phase2_buy_adjustment(
     group: str,
     strategy: dict,
     market_context: dict,
+    correlation_info: dict | None = None,
 ) -> dict:
-    """Calculate Phase 2 strategy-aware amount adjustment without bypassing redlines."""
+    """Calculate Phase 2 strategy-aware amount adjustment without bypassing redlines.
+
+    Args:
+        correlation_info: 來自 correlation_engine.compute_penalty_for_candidate 的結果
+                          {avg_corr, multiplier, penalty_applied, reason}。
+                          None → 不套用相關性懲罰（向後相容）。
+    """
     group = (group or "other").lower()
     base_strategy = strategy.get("base_strategy") or "平衡配置"
     scenario_overlay = strategy.get("scenario_overlay") or "無"
@@ -254,6 +283,9 @@ def _phase2_buy_adjustment(
     risk_temperature = str(market_context.get("risk_temperature") or "normal").lower()
     defensive_tilt = str(market_context.get("defensive_tilt") or "").lower()
     macro_gate = _macro_buy_gate(market_context)
+    corr_multiplier = float(correlation_info.get("multiplier", 1.0)) if correlation_info else 1.0
+    corr_avg = correlation_info.get("avg_corr") if correlation_info else None
+    corr_reason = correlation_info.get("reason") if correlation_info else "not_applied"
 
     strategy_multiplier = STRATEGY_GROUP_MULTIPLIER.get(base_strategy, STRATEGY_GROUP_MULTIPLIER["平衡配置"]).get(group, 0.5)
     overlay_multiplier = OVERLAY_GROUP_MULTIPLIER.get(scenario_overlay, {}).get(group, 1.0)
@@ -284,7 +316,10 @@ def _phase2_buy_adjustment(
         threshold_note = f"{group} 已符合謹慎情境加嚴門檻"
 
     macro_multiplier = float(macro_gate.get("multiplier", 1.0))
-    final_multiplier = strategy_multiplier * overlay_multiplier * risk_multiplier * defensive_boost * macro_multiplier
+    final_multiplier = (
+        strategy_multiplier * overlay_multiplier * risk_multiplier
+        * defensive_boost * macro_multiplier * corr_multiplier
+    )
     final_amount = int(base_amount * final_multiplier)
 
     if final_amount <= 0:
@@ -301,6 +336,9 @@ def _phase2_buy_adjustment(
             "risk_multiplier": risk_multiplier,
             "defensive_boost": defensive_boost,
             "macro_multiplier": macro_multiplier,
+            "correlation_multiplier": corr_multiplier,
+            "correlation_avg": corr_avg,
+            "correlation_reason": corr_reason,
             "market_regime": market_regime,
             "risk_temperature": risk_temperature,
             "threshold_note": threshold_note,
@@ -318,6 +356,9 @@ def _phase2_buy_adjustment(
         "risk_multiplier": risk_multiplier,
         "defensive_boost": defensive_boost,
         "macro_multiplier": macro_multiplier,
+        "correlation_multiplier": corr_multiplier,
+        "correlation_avg": corr_avg,
+        "correlation_reason": corr_reason,
         "market_regime": market_regime,
         "risk_temperature": risk_temperature,
         "threshold_note": threshold_note,
@@ -630,6 +671,10 @@ def run_buy_scan(
         state_dir / "positions.json", default={}
     ).get("positions", [])}
 
+    # E2: 載入相關性矩陣（若存在），預先準備 holdings list 供 candidate 折扣計算
+    correlation_matrix = _load_correlation_matrix(state_dir)
+    holdings_list = [str(s).upper() for s in inventory.keys() if inventory.get(s, 0) > 0]
+
     max_conc_pct = redlines.get("max_buy_amount_pct")
     if max_conc_pct is None or not (0 < max_conc_pct <= 1):
         max_conc_pct = 0.5
@@ -717,12 +762,24 @@ def run_buy_scan(
             continue
 
         group = symbol_groups.get(symbol, "other")
+
+        # E2: 相關性懲罰 — candidate 與既有持倉的平均相關
+        correlation_info = None
+        if correlation_matrix is not None:
+            from scripts.auto_trade.correlation_engine import compute_penalty_for_candidate
+            correlation_info = compute_penalty_for_candidate(
+                correlation_matrix,
+                candidate=str(symbol).upper(),
+                holdings=holdings_list,
+            )
+
         adjustment = _phase2_buy_adjustment(
             base_amount=amount,
             drop_pct=drop_pct,
             group=group,
             strategy=strategy,
             market_context=market_context,
+            correlation_info=correlation_info,
         )
         if adjustment["blocked"]:
             result["strategy_skipped"].append({
@@ -869,6 +926,9 @@ def run_buy_scan(
                 "risk_multiplier": adjustment["risk_multiplier"],
                 "defensive_boost": adjustment["defensive_boost"],
                 "macro_multiplier": adjustment.get("macro_multiplier", 1.0),
+                "correlation_multiplier": adjustment.get("correlation_multiplier", 1.0),
+                "correlation_avg": adjustment.get("correlation_avg"),
+                "correlation_reason": adjustment.get("correlation_reason", "not_applied"),
                 "base_strategy": adjustment["base_strategy"],
                 "scenario_overlay": adjustment["scenario_overlay"],
                 "group": adjustment["group"],

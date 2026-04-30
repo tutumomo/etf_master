@@ -703,3 +703,160 @@ def test_run_buy_scan_circuit_breaker_skips_all(state_dir):
     assert res["skipped"] == "circuit_breaker"
     # 確認 reasons 列表不為空
     assert "master_switch" in str(res.get("circuit_breaker_reasons", []))
+
+
+# ---------------------------------------------------------------------------
+# E2: correlation penalty 整合測試
+# ---------------------------------------------------------------------------
+
+def test_run_buy_scan_applies_correlation_penalty_when_holding_high_corr(state_dir):
+    """已持有 0050（與 006208 corr=0.99）+ 候選買 006208 跌 -2.5%
+    → 相關性懲罰 multiplier ≈ 0.2（floor），最終金額大幅縮水"""
+    on_date = datetime(2026, 4, 25, 9, 30, tzinfo=TW_TZ)
+    bar_start = datetime(2026, 4, 25, 9, 0, tzinfo=TW_TZ)
+
+    intraday = {
+        "intraday": {
+            "006208": {
+                "ticker_used": "006208.TW",
+                "bars": _make_intraday("006208", bar_start, [97.5] * 30, volume=1000),
+                "bar_count": 30,
+                "latest_close": 97.5,
+                "latest_time": bar_start.isoformat(),
+            }
+        }
+    }
+    _write_state(state_dir, "watchlist.json", {"items": [
+        {"symbol": "0050", "group": "core"},
+        {"symbol": "006208", "group": "core"},
+    ]})
+    # 已持有 0050（quantity > 0），006208 為候選
+    _write_state(state_dir, "positions.json", {"positions": [
+        {"symbol": "0050", "quantity": 1000, "average_cost": 50.0, "entry_date": "2026-04-20"},
+    ]})
+    _write_state(state_dir, "intraday_quotes_1m.json", intraday)
+    _write_state(state_dir, "market_cache.json", {
+        "quotes": {"006208": {"current_price": 97.5, "prev_close": 100.0}}
+    })
+    _write_state(state_dir, "account_snapshot.json", {
+        "cash": 100000, "settlement_safe_cash": 100000,
+    })
+    _write_state(state_dir, "safety_redlines.json", {
+        "enabled": False, "max_buy_amount_pct": 0.5, "max_buy_amount_twd": 1000000,
+    })
+    # 寫一份 correlation_matrix.json：0050 vs 006208 = 0.99
+    _write_state(state_dir, "correlation_matrix.json", {
+        "computed_at": "2026-04-25T00:00:00",
+        "window_days": 60,
+        "actual_bars": 60,
+        "symbols": ["0050", "006208"],
+        "matrix": {
+            "0050": {"0050": 1.0, "006208": 0.99},
+            "006208": {"0050": 0.99, "006208": 1.0},
+        },
+    })
+
+    res = run_buy_scan(
+        trigger_time=time(9, 30), state_dir=state_dir,
+        on_date=on_date, skip_circuit_breaker=True,
+    )
+    assert len(res["enqueued"]) == 1
+    sig = res["enqueued"][0]
+    payload = sig["trigger_payload"]
+    # 驗證 correlation 資訊有寫進 payload
+    assert payload["correlation_avg"] == pytest.approx(0.99)
+    assert payload["correlation_multiplier"] == pytest.approx(0.2)  # floor
+    assert payload["correlation_reason"] == "high_correlation"
+    # 最終金額應該被砍到 ~20%
+    # base ladder = 1% × 100k = 1000，× 0.2 floor = 200
+    assert payload["ladder_amount"] == 200
+
+
+def test_run_buy_scan_no_correlation_penalty_when_no_holdings(state_dir):
+    """無既有持倉 → 相關性懲罰不啟動，multiplier=1.0"""
+    on_date = datetime(2026, 4, 25, 9, 30, tzinfo=TW_TZ)
+    bar_start = datetime(2026, 4, 25, 9, 0, tzinfo=TW_TZ)
+
+    intraday = {
+        "intraday": {
+            "0050": {
+                "ticker_used": "0050.TW",
+                "bars": _make_intraday("0050", bar_start, [97.5] * 30, volume=1000),
+                "bar_count": 30,
+                "latest_close": 97.5,
+                "latest_time": bar_start.isoformat(),
+            }
+        }
+    }
+    _write_state(state_dir, "watchlist.json", {"items": [{"symbol": "0050", "group": "core"}]})
+    _write_state(state_dir, "positions.json", {"positions": []})  # 無持倉
+    _write_state(state_dir, "intraday_quotes_1m.json", intraday)
+    _write_state(state_dir, "market_cache.json", {
+        "quotes": {"0050": {"current_price": 97.5, "prev_close": 100.0}}
+    })
+    _write_state(state_dir, "account_snapshot.json", {
+        "cash": 100000, "settlement_safe_cash": 100000,
+    })
+    _write_state(state_dir, "safety_redlines.json", {
+        "enabled": False, "max_buy_amount_pct": 0.5, "max_buy_amount_twd": 1000000,
+    })
+    _write_state(state_dir, "correlation_matrix.json", {
+        "computed_at": "2026-04-25T00:00:00",
+        "window_days": 60,
+        "actual_bars": 60,
+        "symbols": ["0050", "006208"],
+        "matrix": {
+            "0050": {"0050": 1.0, "006208": 0.99},
+            "006208": {"0050": 0.99, "006208": 1.0},
+        },
+    })
+
+    res = run_buy_scan(
+        trigger_time=time(9, 30), state_dir=state_dir,
+        on_date=on_date, skip_circuit_breaker=True,
+    )
+    assert len(res["enqueued"]) == 1
+    payload = res["enqueued"][0]["trigger_payload"]
+    assert payload["correlation_multiplier"] == pytest.approx(1.0)
+    assert payload["correlation_reason"] == "no_holdings"
+
+
+def test_run_buy_scan_no_correlation_matrix_falls_back_gracefully(state_dir):
+    """correlation_matrix.json 不存在 → multiplier=1.0，不爆錯（向後相容）"""
+    on_date = datetime(2026, 4, 25, 9, 30, tzinfo=TW_TZ)
+    bar_start = datetime(2026, 4, 25, 9, 0, tzinfo=TW_TZ)
+
+    intraday = {
+        "intraday": {
+            "0050": {
+                "ticker_used": "0050.TW",
+                "bars": _make_intraday("0050", bar_start, [97.5] * 30, volume=1000),
+                "bar_count": 30, "latest_close": 97.5,
+                "latest_time": bar_start.isoformat(),
+            }
+        }
+    }
+    _write_state(state_dir, "watchlist.json", {"items": [{"symbol": "0050", "group": "core"}]})
+    _write_state(state_dir, "positions.json", {"positions": []})
+    _write_state(state_dir, "intraday_quotes_1m.json", intraday)
+    _write_state(state_dir, "market_cache.json", {
+        "quotes": {"0050": {"current_price": 97.5, "prev_close": 100.0}}
+    })
+    _write_state(state_dir, "account_snapshot.json", {
+        "cash": 100000, "settlement_safe_cash": 100000,
+    })
+    _write_state(state_dir, "safety_redlines.json", {
+        "enabled": False, "max_buy_amount_pct": 0.5, "max_buy_amount_twd": 1000000,
+    })
+    # 故意不寫 correlation_matrix.json
+
+    res = run_buy_scan(
+        trigger_time=time(9, 30), state_dir=state_dir,
+        on_date=on_date, skip_circuit_breaker=True,
+    )
+    # 應該照常 enqueue，沒有相關性懲罰
+    assert len(res["enqueued"]) == 1
+    payload = res["enqueued"][0]["trigger_payload"]
+    # 沒有 correlation_matrix → trigger_payload 不一定有 correlation_* 鍵
+    # 但最終金額應該與「無相關懲罰」相同
+    assert payload["ladder_amount"] == 1000  # 1% × 100k = 1000，無折扣
