@@ -821,6 +821,53 @@ def test_run_buy_scan_no_correlation_penalty_when_no_holdings(state_dir):
     assert payload["correlation_reason"] == "no_holdings"
 
 
+def test_run_buy_scan_applies_news_haircut_when_high_signal(state_dir):
+    """signal_strength=high → news multiplier=0.4，最終金額大幅縮水"""
+    on_date = datetime(2026, 4, 25, 9, 30, tzinfo=TW_TZ)
+    bar_start = datetime(2026, 4, 25, 9, 0, tzinfo=TW_TZ)
+
+    intraday = {
+        "intraday": {
+            "0050": {
+                "ticker_used": "0050.TW",
+                "bars": _make_intraday("0050", bar_start, [97.5] * 30, volume=1000),
+                "bar_count": 30, "latest_close": 97.5,
+                "latest_time": bar_start.isoformat(),
+            }
+        }
+    }
+    _write_state(state_dir, "watchlist.json", {"items": [{"symbol": "0050", "group": "core"}]})
+    _write_state(state_dir, "positions.json", {"positions": []})
+    _write_state(state_dir, "intraday_quotes_1m.json", intraday)
+    _write_state(state_dir, "market_cache.json", {
+        "quotes": {"0050": {"current_price": 97.5, "prev_close": 100.0}}
+    })
+    _write_state(state_dir, "account_snapshot.json", {
+        "cash": 100000, "settlement_safe_cash": 100000,
+    })
+    _write_state(state_dir, "safety_redlines.json", {
+        "enabled": False, "max_buy_amount_pct": 0.5, "max_buy_amount_twd": 1000000,
+    })
+    # F-news: 寫高風險訊號 → multiplier 0.4
+    _write_state(state_dir, "news_intelligence_report.json", {
+        "signal_strength": "high",
+        "risk_flagged": 5,
+    })
+
+    res = run_buy_scan(
+        trigger_time=time(9, 30), state_dir=state_dir,
+        on_date=on_date, skip_circuit_breaker=True,
+    )
+    assert len(res["enqueued"]) == 1
+    sig = res["enqueued"][0]
+    payload = sig["trigger_payload"]
+    assert payload["news_multiplier"] == pytest.approx(0.4)
+    assert payload["news_signal_strength"] == "high"
+    assert payload["news_risk_flagged"] == 5
+    # 1% × 100k × 0.4 = 400 TWD
+    assert payload["ladder_amount"] == 400
+
+
 def test_run_buy_scan_no_correlation_matrix_falls_back_gracefully(state_dir):
     """correlation_matrix.json 不存在 → multiplier=1.0，不爆錯（向後相容）"""
     on_date = datetime(2026, 4, 25, 9, 30, tzinfo=TW_TZ)

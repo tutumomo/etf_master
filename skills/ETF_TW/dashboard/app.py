@@ -1344,6 +1344,10 @@ def build_overview_model() -> dict:
                 "threshold": CORRELATION_THRESHOLD,
                 "penalty_floor": PENALTY_FLOOR,
             }
+        # F-news: 讀取當前新聞風險訊號摘要
+        from scripts.auto_trade.buy_scanner import _news_risk_gate
+        news_gate_state = _news_risk_gate(STATE)
+
         phase2_skeleton = {
             "version": "v2",
             "trailing_pct": dict(GROUP_TRAILING_PCT),
@@ -1351,6 +1355,7 @@ def build_overview_model() -> dict:
             "ladder_pct": [{"drop_pct": d, "spend_pct": p} for d, p in DROP_LADDER_PCT],
             "initial_dca": load_dca_state(STATE),
             "correlation": corr_summary,
+            "news_gate": news_gate_state,
         }
     except Exception as _e:
         phase2_skeleton = {"version": "v2", "error": f"{type(_e).__name__}: {_e}"}

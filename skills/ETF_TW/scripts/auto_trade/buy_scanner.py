@@ -268,13 +268,13 @@ def _phase2_buy_adjustment(
     strategy: dict,
     market_context: dict,
     correlation_info: dict | None = None,
+    news_gate: dict | None = None,
 ) -> dict:
     """Calculate Phase 2 strategy-aware amount adjustment without bypassing redlines.
 
     Args:
-        correlation_info: 來自 correlation_engine.compute_penalty_for_candidate 的結果
-                          {avg_corr, multiplier, penalty_applied, reason}。
-                          None → 不套用相關性懲罰（向後相容）。
+        correlation_info: 相關性懲罰結果（E2）
+        news_gate: 來自 _news_risk_gate 的結果（F-news）
     """
     group = (group or "other").lower()
     base_strategy = strategy.get("base_strategy") or "平衡配置"
@@ -286,6 +286,9 @@ def _phase2_buy_adjustment(
     corr_multiplier = float(correlation_info.get("multiplier", 1.0)) if correlation_info else 1.0
     corr_avg = correlation_info.get("avg_corr") if correlation_info else None
     corr_reason = correlation_info.get("reason") if correlation_info else "not_applied"
+    news_multiplier = float(news_gate.get("multiplier", 1.0)) if news_gate else 1.0
+    news_signal = news_gate.get("signal_strength") if news_gate else None
+    news_risk = int(news_gate.get("risk_flagged", 0) or 0) if news_gate else 0
 
     strategy_multiplier = STRATEGY_GROUP_MULTIPLIER.get(base_strategy, STRATEGY_GROUP_MULTIPLIER["平衡配置"]).get(group, 0.5)
     overlay_multiplier = OVERLAY_GROUP_MULTIPLIER.get(scenario_overlay, {}).get(group, 1.0)
@@ -318,7 +321,7 @@ def _phase2_buy_adjustment(
     macro_multiplier = float(macro_gate.get("multiplier", 1.0))
     final_multiplier = (
         strategy_multiplier * overlay_multiplier * risk_multiplier
-        * defensive_boost * macro_multiplier * corr_multiplier
+        * defensive_boost * macro_multiplier * corr_multiplier * news_multiplier
     )
     final_amount = int(base_amount * final_multiplier)
 
@@ -339,6 +342,9 @@ def _phase2_buy_adjustment(
             "correlation_multiplier": corr_multiplier,
             "correlation_avg": corr_avg,
             "correlation_reason": corr_reason,
+            "news_multiplier": news_multiplier,
+            "news_signal_strength": news_signal,
+            "news_risk_flagged": news_risk,
             "market_regime": market_regime,
             "risk_temperature": risk_temperature,
             "threshold_note": threshold_note,
@@ -359,9 +365,55 @@ def _phase2_buy_adjustment(
         "correlation_multiplier": corr_multiplier,
         "correlation_avg": corr_avg,
         "correlation_reason": corr_reason,
+        "news_multiplier": news_multiplier,
+        "news_signal_strength": news_signal,
+        "news_risk_flagged": news_risk,
         "market_regime": market_regime,
         "risk_temperature": risk_temperature,
         "threshold_note": threshold_note,
+    }
+
+
+def _news_risk_gate(state_dir: Path) -> dict:
+    """
+    F-news 接線：讀取 news_intelligence_report.json 的 signal_strength，
+    依強度回傳 multiplier。
+
+    規則：
+      none / low / 缺資料 → 1.0（不折扣）
+      medium → 0.7
+      high   → 0.4
+
+    不直接擋買（避免噪訊），只 haircut 倉位 → 與 macro_buy_gate 概念互補。
+    """
+    data = safe_load_json(state_dir / "news_intelligence_report.json", default=None)
+    if not isinstance(data, dict):
+        return {
+            "action": "allow", "multiplier": 1.0,
+            "source": "missing_news_intelligence",
+            "signal_strength": None, "risk_flagged": 0,
+        }
+
+    signal = str(data.get("signal_strength") or "none").lower()
+    risk_flagged = int(data.get("risk_flagged") or 0)
+
+    if signal == "high":
+        return {
+            "action": "strong_haircut", "multiplier": 0.4,
+            "source": "news_intelligence",
+            "signal_strength": signal, "risk_flagged": risk_flagged,
+        }
+    if signal == "medium":
+        return {
+            "action": "haircut", "multiplier": 0.7,
+            "source": "news_intelligence",
+            "signal_strength": signal, "risk_flagged": risk_flagged,
+        }
+    # none / low / 其他 → allow
+    return {
+        "action": "allow", "multiplier": 1.0,
+        "source": "news_intelligence",
+        "signal_strength": signal, "risk_flagged": risk_flagged,
     }
 
 
@@ -675,6 +727,10 @@ def run_buy_scan(
     correlation_matrix = _load_correlation_matrix(state_dir)
     holdings_list = [str(s).upper() for s in inventory.keys() if inventory.get(s, 0) > 0]
 
+    # F-news: 載入新聞風險 gate
+    news_gate = _news_risk_gate(state_dir)
+    result["news_gate"] = news_gate
+
     max_conc_pct = redlines.get("max_buy_amount_pct")
     if max_conc_pct is None or not (0 < max_conc_pct <= 1):
         max_conc_pct = 0.5
@@ -780,6 +836,7 @@ def run_buy_scan(
             strategy=strategy,
             market_context=market_context,
             correlation_info=correlation_info,
+            news_gate=news_gate,
         )
         if adjustment["blocked"]:
             result["strategy_skipped"].append({
@@ -929,6 +986,9 @@ def run_buy_scan(
                 "correlation_multiplier": adjustment.get("correlation_multiplier", 1.0),
                 "correlation_avg": adjustment.get("correlation_avg"),
                 "correlation_reason": adjustment.get("correlation_reason", "not_applied"),
+                "news_multiplier": adjustment.get("news_multiplier", 1.0),
+                "news_signal_strength": adjustment.get("news_signal_strength"),
+                "news_risk_flagged": adjustment.get("news_risk_flagged", 0),
                 "base_strategy": adjustment["base_strategy"],
                 "scenario_overlay": adjustment["scenario_overlay"],
                 "group": adjustment["group"],

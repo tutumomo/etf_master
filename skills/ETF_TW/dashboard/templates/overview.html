@@ -319,6 +319,9 @@
                 {% if p.trigger_payload.correlation_multiplier and p.trigger_payload.correlation_multiplier < 1.0 %}
                   　|　<span style="color:#ff6b81;" title="與既有持倉相關性過高，倉位被折扣">相關懲罰×{{ '%.2f'|format(p.trigger_payload.correlation_multiplier) }} (avg ρ={{ '%.2f'|format(p.trigger_payload.correlation_avg or 0) }})</span>
                 {% endif %}
+                {% if p.trigger_payload.news_multiplier and p.trigger_payload.news_multiplier < 1.0 %}
+                  　|　<span style="color:#ff9daf;" title="新聞風險訊號 → 倉位 haircut">📰 news×{{ '%.2f'|format(p.trigger_payload.news_multiplier) }} ({{ p.trigger_payload.news_signal_strength }}, {{ p.trigger_payload.news_risk_flagged }} risks)</span>
+                {% endif %}
               {% endif %}
             {% else %}
               {% if p.trigger_payload.momentum_triggered %}
@@ -432,6 +435,20 @@
           {% endif %}
           <div id="phase2_dca_banner" class="muted" style="margin-top:8px; min-height:18px;"></div>
         </div>
+        {% if phase2_skeleton.news_gate %}
+        <div style="font-size:12px; padding:8px 4px; border-top:1px dashed rgba(139,143,255,0.2); margin-top:6px;">
+          {% set ng = phase2_skeleton.news_gate %}
+          <div style="color:{% if ng.multiplier < 0.5 %}#ff6b81{% elif ng.multiplier < 1.0 %}#ffd166{% else %}#9aa3b2{% endif %}; margin-bottom:4px;">
+            📰 新聞風險 Gate
+            <span class="muted" style="margin-left:6px; font-weight:400;">
+              訊號強度 {{ ng.signal_strength or 'none' }}　|
+              風險標記 {{ ng.risk_flagged or 0 }} 篇　|
+              倉位 multiplier × {{ '%.2f'|format(ng.multiplier or 1.0) }}　|
+              動作 {{ ng.action }}
+            </span>
+          </div>
+        </div>
+        {% endif %}
         {% if phase2_skeleton.correlation %}
         <div style="font-size:12px; padding:8px 4px; border-top:1px dashed rgba(139,143,255,0.2); margin-top:6px;">
           <div style="color:#ff9daf; margin-bottom:4px;">
