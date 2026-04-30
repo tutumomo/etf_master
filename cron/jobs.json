@@ -3,11 +3,11 @@
     {
       "id": "9b8156126bbd",
       "name": "ETF \u65e9\u73ed\u6e96\u5099",
-      "prompt": "ETF_TW \u65e9\u73ed\u6e96\u5099\uff1a\u76e4\u524d\u611f\u77e5 + \u5fa9\u76e4\u3002\u9019\u662f\u300c\u77e5\u8b58\u2192\u884c\u52d5\u6c7a\u7b56\u93c8\u300d\u7684\u7b2c\u4e00\u6b65\u3002\n\n## \u6c7a\u7b56\u93c8\u4f4d\u7f6e\uff1a\u611f\u77e5 \u2192 \u5224\u8b80\n\n## \u57f7\u884c\u6b65\u9a5f\n\n### 1. \u8cc7\u6599\u540c\u6b65\uff08\u611f\u77e5\uff09\n\u57f7\u884c\u4ee5\u4e0b\u8173\u672c\uff0c\u4f9d\u5e8f\uff1a\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_market_cache.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_portfolio_snapshot.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_orders_open_state.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/generate_watchlist_summary.py\n```\n\n### 2. \u65e9\u671f\u5fa9\u76e4\uff08T+1 / T+3 / T+10\uff09\n\u57f7\u884c\u5206\u5c64\u5fa9\u76e4\uff1a\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && AGENT_ID=etf_master .venv/bin/python scripts/layered_review_cron_registry_live.py\n```\n\n### 3. \u7522\u51fa\u683c\u5f0f\uff08\u5224\u8b80\uff09\n\u5206\u6790\u540c\u6b65\u5f8c\u7684\u6578\u64da\uff0c\u8f38\u51fa\u4ee5\u4e0b\u5167\u5bb9\uff1a\n\n**\ud83d\udcca \u65e9\u73ed\u5831\u544a**\n\n**\u4e00\u3001\u6301\u5009\u8207\u5e33\u6236**\n- \u73fe\u91d1\u9918\u984d\u3001\u7e3d\u8cc7\u7522\u3001\u5404\u90e8\u4f4d\u6bd4\u91cd\n- \u6628\u65e5\u6536\u76e4\u81f3\u4eca\u7684\u6709\u610f\u7fa9\u8b8a\u5316\n\n**\u4e8c\u3001\u5e02\u5834\u9ad4\u5236\u5224\u8b80**\n- \u8b80\u53d6 ETF_TW state \u7684 market_context_taiwan.json \u548c market_event_context.json\n- \u5c0d\u7167 ~/wiki/concepts/market-view.md \u7684\u9ad4\u5236\u5b9a\u7fa9\uff0c\u5224\u5b9a\u7576\u524d\u9ad4\u5236\n- \u66f4\u65b0 ~/wiki/concepts/market-view.md \u7684\u300c\u7576\u524d\u9ad4\u5236\u5224\u5b9a\u300d\u548c\u300c\u7576\u524d\u9a45\u52d5\u56e0\u5b50\u300d\n\n**\u4e09\u3001\u98a8\u96aa\u8a0a\u865f\u66f4\u65b0**\n- \u8b80\u53d6 market_event_context.json \u7684\u98a8\u96aa\u6578\u64da\n- \u66f4\u65b0 ~/wiki/concepts/risk-signal.md \u7684\u6838\u5fc3\u8a0a\u865f\u8868\u548c\u6d3b\u8e8d\u98a8\u96aa\u4e8b\u4ef6\n- \u5728\u98a8\u96aa\u8a0a\u865f\u8b8a\u52d5\u6b77\u53f2\u8868\u52a0\u5165\u4eca\u65e5\u7d00\u9304\n\n**\u56db\u3001\u4eca\u65e5\u89c0\u5bdf\u91cd\u9ede**\n- \u5217\u51fa 3 \u500b\u4eca\u65e5\u76e4\u4e2d\u9700\u95dc\u6ce8\u7684\u9ede\n- \u5c0d\u61c9\u5230\u6c7a\u7b56\u93c8\u7684\u54ea\u500b\u6b65\u9a5f\n\n\u5168\u90e8\u4ee5\u7e41\u9ad4\u4e2d\u6587\u8f38\u51fa\u3002",
+      "prompt": "ETF_TW \u65e9\u73ed\u6e96\u5099\uff1a\u76e4\u524d\u611f\u77e5 + \u5fa9\u76e4\u3002\u9019\u662f\u300c\u77e5\u8b58\u2192\u884c\u52d5\u6c7a\u7b56\u93c8\u300d\u7684\u7b2c\u4e00\u6b65\u3002\n\n## \u6c7a\u7b56\u93c8\u4f4d\u7f6e\uff1a\u611f\u77e5 \u2192 \u5224\u8b80\n\n## \u57f7\u884c\u6b65\u9a5f\n\n### 1. \u8cc7\u6599\u540c\u6b65\uff08\u611f\u77e5\uff09\n\u57f7\u884c\u4ee5\u4e0b\u8173\u672c\uff0c\u4f9d\u5e8f\uff1a\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_market_cache.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_portfolio_snapshot.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_orders_open_state.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && AGENT_ID=etf_master .venv/bin/python scripts/generate_watchlist_summary.py --mode am\n```\n\n### 2. \u65e9\u671f\u5fa9\u76e4\uff08T+1 / T+3 / T+10\uff09\n\u57f7\u884c\u5206\u5c64\u5fa9\u76e4\uff1a\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && AGENT_ID=etf_master .venv/bin/python scripts/layered_review_cron_registry_live.py\n```\n\n### 3. \u7522\u51fa\u683c\u5f0f\uff08\u5224\u8b80\uff09\n\u5206\u6790\u540c\u6b65\u5f8c\u7684\u6578\u64da\uff0c\u8f38\u51fa\u4ee5\u4e0b\u5167\u5bb9\uff1a\n\n**\ud83d\udcca \u65e9\u73ed\u5831\u544a**\n\n**\u4e00\u3001\u6301\u5009\u8207\u5e33\u6236**\n- \u73fe\u91d1\u9918\u984d\u3001\u7e3d\u8cc7\u7522\u3001\u5404\u90e8\u4f4d\u6bd4\u91cd\n- \u6628\u65e5\u6536\u76e4\u81f3\u4eca\u7684\u6709\u610f\u7fa9\u8b8a\u5316\n\n**\u4e8c\u3001\u5e02\u5834\u9ad4\u5236\u5224\u8b80**\n- \u8b80\u53d6 ETF_TW state \u7684 market_context_taiwan.json \u548c market_event_context.json\n- \u5c0d\u7167 ~/wiki/concepts/market-view.md \u7684\u9ad4\u5236\u5b9a\u7fa9\uff0c\u5224\u5b9a\u7576\u524d\u9ad4\u5236\n- \u66f4\u65b0 ~/wiki/concepts/market-view.md \u7684\u300c\u7576\u524d\u9ad4\u5236\u5224\u5b9a\u300d\u548c\u300c\u7576\u524d\u9a45\u52d5\u56e0\u5b50\u300d\n\n**\u4e09\u3001\u98a8\u96aa\u8a0a\u865f\u66f4\u65b0**\n- \u8b80\u53d6 market_event_context.json \u7684\u98a8\u96aa\u6578\u64da\n- \u66f4\u65b0 ~/wiki/concepts/risk-signal.md \u7684\u6838\u5fc3\u8a0a\u865f\u8868\u548c\u6d3b\u8e8d\u98a8\u96aa\u4e8b\u4ef6\n- \u5728\u98a8\u96aa\u8a0a\u865f\u8b8a\u52d5\u6b77\u53f2\u8868\u52a0\u5165\u4eca\u65e5\u7d00\u9304\n\n**\u56db\u3001\u4eca\u65e5\u89c0\u5bdf\u91cd\u9ede**\n- \u5217\u51fa 3 \u500b\u4eca\u65e5\u76e4\u4e2d\u9700\u95dc\u6ce8\u7684\u9ede\n- \u5c0d\u61c9\u5230\u6c7a\u7b56\u93c8\u7684\u54ea\u500b\u6b65\u9a5f\n\n\u5168\u90e8\u4ee5\u7e41\u9ad4\u4e2d\u6587\u8f38\u51fa\u3002",
       "skills": [],
       "skill": null,
-      "model": null,
-      "provider": null,
+      "model": "gpt-5.5",
+      "provider": "openai-codex",
       "base_url": null,
       "script": null,
       "schedule": {
@@ -18,15 +18,15 @@
       "schedule_display": "45 8 * * 1-5",
       "repeat": {
         "times": null,
-        "completed": 9
+        "completed": 13
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-11T17:55:09.601824+08:00",
-      "next_run_at": "2026-04-27T08:45:00+08:00",
-      "last_run_at": "2026-04-24T08:52:45.905568+08:00",
+      "next_run_at": "2026-05-01T08:45:00+08:00",
+      "last_run_at": "2026-04-30T08:50:38.504924+08:00",
       "last_status": "ok",
       "last_error": null,
       "deliver": "telegram",
@@ -41,11 +41,11 @@
     {
       "id": "1090aafd4264",
       "name": "ETF \u76e4\u4e2d\u667a\u6167\u6383\u63cf",
-      "prompt": "ETF_TW \u76e4\u4e2d\u667a\u6167\u6383\u63cf\uff1a\u5408\u4f75\u539f\u300c\u76e4\u52e2\u6383\u63cf + \u91cd\u5927\u4e8b\u4ef6\u5075\u6e2c + \u5916\u90e8\u4e8b\u4ef6\u60c5\u5883\u66f4\u65b0 + \u6c7a\u7b56\u5f15\u64ce\u5237\u65b0\u300d\u3002\u9019\u662f\u300c\u77e5\u8b58\u2192\u884c\u52d5\u6c7a\u7b56\u93c8\u300d\u7684\u5373\u6642\u611f\u77e5\u8207\u5224\u8b80\u74b0\u7bc0\u3002\n\n## \u6c7a\u7b56\u93c8\u4f4d\u7f6e\uff1a\u611f\u77e5 \u2192 \u5224\u8b80\uff08\u76e4\u4e2d\u5373\u6642\uff09\n\n## \u57f7\u884c\u6b65\u9a5f\n\n### 1. \u8cc7\u6599\u540c\u6b65\u8207\u60c5\u5883\u66f4\u65b0\n\u4f9d\u5e8f\u57f7\u884c\uff1a\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_market_cache.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/generate_intraday_tape_context.py\n# \u6574\u5408\u91cf\u5316\u8a3a\u65b7\uff1a\u91dd\u5c0d\u6301\u5009\u8207\u95dc\u6ce8\u6a19\u7684\u57f7\u884c\u5feb\u901f\u6383\u63cf\nuv run skills/stock-analysis-tw/scripts/analyze_stock.py --portfolio active --fast --state-dir skills/ETF_TW/instances/etf_master/state/\n# \u5c07\u6700\u65b0\u8a3a\u65b7\u6c89\u6fb1\u81f3 Wiki \u77e5\u8b58\u5eab\npython3 scripts/distill_to_wiki.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/generate_market_event_context.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/generate_taiwan_market_context.py\n```\n\n### 2. \u91cd\u5927\u4e8b\u4ef6\u5075\u6e2c\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/check_major_event_trigger.py\n```\n\n### 3. \u6c7a\u7b56\u5f15\u64ce\u5237\u65b0\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/refresh_decision_engine_state.py\n```\n\n### 4. Wiki \u77e5\u8b58\u66f4\u65b0\uff08\u5224\u8b80\u5c64\uff09\n... (\u5176\u9918\u5167\u5bb9\u4fdd\u6301\u4e00\u81f4)\n",
+      "prompt": "ETF_TW \u76e4\u4e2d\u667a\u6167\u6383\u63cf\uff1a\u5408\u4f75\u539f\u300c\u76e4\u52e2\u6383\u63cf + \u91cd\u5927\u4e8b\u4ef6\u5075\u6e2c + \u5916\u90e8\u4e8b\u4ef6\u60c5\u5883\u66f4\u65b0 + \u6c7a\u7b56\u5f15\u64ce\u5237\u65b0\u300d\u3002\u9019\u662f\u300c\u77e5\u8b58\u2192\u884c\u52d5\u6c7a\u7b56\u93c8\u300d\u7684\u5373\u6642\u611f\u77e5\u8207\u5224\u8b80\u74b0\u7bc0\u3002\n\n## \u6c7a\u7b56\u93c8\u4f4d\u7f6e\uff1a\u611f\u77e5 \u2192 \u5224\u8b80\uff08\u76e4\u4e2d\u5373\u6642\uff09\n\n## \u57f7\u884c\u6b65\u9a5f\n\n### 1. \u8cc7\u6599\u540c\u6b65\u8207\u60c5\u5883\u66f4\u65b0\n\u4f9d\u5e8f\u57f7\u884c\uff1a\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_market_cache.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/generate_intraday_tape_context.py\n# ETF_TW \u5167\u5efa\u76e4\u4e2d\u91cf\u5316\u8a3a\u65b7\uff1a\u4e0d\u518d\u4f9d\u8cf4\u5df2\u5438\u6536\u7684 stock-analysis-tw \u5916\u90e8\u6280\u80fd\u8def\u5f91\nAGENT_ID=etf_master .venv/bin/python scripts/run_intraday_quant_diagnosis.py\n# \u5c07\u6700\u65b0\u8a3a\u65b7\u6c89\u6fb1\u81f3 Wiki \u77e5\u8b58\u5eab\nAGENT_ID=etf_master .venv/bin/python scripts/distill_to_wiki.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/generate_market_event_context.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/generate_taiwan_market_context.py\n```\n\n### 2. \u91cd\u5927\u4e8b\u4ef6\u5075\u6e2c\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/check_major_event_trigger.py\n```\n\n### 3. \u6c7a\u7b56\u5f15\u64ce\u5237\u65b0\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/refresh_decision_engine_state.py\n```\n\n### 4. Wiki \u77e5\u8b58\u66f4\u65b0\uff08\u5224\u8b80\u5c64\uff09\n... (\u5176\u9918\u5167\u5bb9\u4fdd\u6301\u4e00\u81f4)\n",
       "skills": [],
       "skill": null,
-      "model": null,
-      "provider": null,
+      "model": "gpt-5.5",
+      "provider": "openai-codex",
       "base_url": null,
       "script": null,
       "schedule": {
@@ -56,15 +56,15 @@
       "schedule_display": "0 9-13 * * 1-5",
       "repeat": {
         "times": null,
-        "completed": 78
+        "completed": 100
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-11T17:55:45.329827+08:00",
-      "next_run_at": "2026-04-24T11:00:00+08:00",
-      "last_run_at": "2026-04-24T10:06:04.273044+08:00",
+      "next_run_at": "2026-04-30T13:00:00+08:00",
+      "last_run_at": "2026-04-30T12:02:21.706255+08:00",
       "last_status": "ok",
       "last_error": null,
       "deliver": "telegram",
@@ -79,11 +79,11 @@
     {
       "id": "efd0904b9cc7",
       "name": "ETF \u76e4\u5f8c\u6536\u5de5",
-      "prompt": "ETF_TW \u76e4\u5f8c\u6536\u5de5\uff1a\u5408\u4f75\u539f\u300c\u76e4\u5f8c\u6458\u8981 + \u6bcf\u65e5\u5fa9\u76e4 + \u6c7a\u7b56\u54c1\u8cea\u8a55\u5206\u300d\u3002\u6c7a\u7b56\u93c8\u9032\u5165\u300c\u5224\u8b80 \u2192 \u9810\u5224\u300d\u968e\u6bb5\u3002\n\n## \u6c7a\u7b56\u93c8\u4f4d\u7f6e\uff1a\u611f\u77e5 \u2192 \u5224\u8b80 \u2192 \u9810\u5224\n\n## \u57f7\u884c\u6b65\u9a5f\n\n### 1. \u76e4\u5f8c\u8cc7\u6599\u540c\u6b65\u8207\u6df1\u5ea6\u8a3a\u65b7\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_market_cache.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_portfolio_snapshot.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_positions.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/generate_watchlist_summary.py\n# \u751f\u6210\u4eca\u65e5\u5168\u7dad\u5ea6\u91cf\u5316\u8a3a\u65b7\u8207\u5c08\u696d\u5831\u544a\nuv run skills/stock-analysis-tw/scripts/analyze_stock.py --portfolio active --state-dir skills/ETF_TW/instances/etf_master/state/\n# \u5c07\u6700\u65b0\u8a3a\u65b7\u6c89\u6fb1\u81f3 Wiki \u77e5\u8b58\u5eab\npython3 scripts/distill_to_wiki.py\n# \u7522\u751f\u4eca\u65e5\u6536\u76e4\u5c08\u696d\u7dda\u5716 (\u4ee5 0050 \u70ba\u4f8b)\nuv run skills/stock-market-pro-tw/scripts/yf.py report 0050.TW 3mo\n```\n\n### 2. \u6c7a\u7b56\u54c1\u8cea\u8a55\u5206\n... (\u5176\u9918\u5167\u5bb9\u4fdd\u6301\u4e00\u81f4)\n",
+      "prompt": "ETF_TW \u76e4\u5f8c\u6536\u5de5\uff1a\u5408\u4f75\u539f\u300c\u76e4\u5f8c\u6458\u8981 + \u6bcf\u65e5\u5fa9\u76e4 + \u6c7a\u7b56\u54c1\u8cea\u8a55\u5206\u300d\u3002\u6c7a\u7b56\u93c8\u9032\u5165\u300c\u5224\u8b80 \u2192 \u9810\u5224\u300d\u968e\u6bb5\u3002\n\n## \u6c7a\u7b56\u93c8\u4f4d\u7f6e\uff1a\u611f\u77e5 \u2192 \u5224\u8b80 \u2192 \u9810\u5224\n\n## \u57f7\u884c\u6b65\u9a5f\n\n### 1. \u76e4\u5f8c\u8cc7\u6599\u540c\u6b65\u8207\u6df1\u5ea6\u8a3a\u65b7\n```bash\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_market_cache.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_portfolio_snapshot.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_positions.py\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && AGENT_ID=etf_master .venv/bin/python scripts/generate_watchlist_summary.py --mode pm\n# ETF_TW \u5167\u5efa\u91cf\u5316\u8a3a\u65b7\uff1a\u4e0d\u518d\u4f9d\u8cf4\u5df2\u5438\u6536\u7684 stock-analysis-tw / stock-market-pro-tw \u5916\u90e8\u6280\u80fd\u8def\u5f91\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && AGENT_ID=etf_master .venv/bin/python scripts/run_intraday_quant_diagnosis.py\n# \u5c07\u6700\u65b0\u8a3a\u65b7\u6c89\u6fb1\u81f3 Wiki \u77e5\u8b58\u5eab\ncd ~/.hermes/profiles/etf_master/skills/ETF_TW && AGENT_ID=etf_master .venv/bin/python scripts/distill_to_wiki.py\n```\n\n### 2. \u6c7a\u7b56\u54c1\u8cea\u8a55\u5206\n... (\u5176\u9918\u5167\u5bb9\u4fdd\u6301\u4e00\u81f4)\n",
       "skills": [],
       "skill": null,
-      "model": "glm-5.1:cloud",
-      "provider": "ollama-cloud",
+      "model": "gpt-5.5",
+      "provider": "openai-codex",
       "base_url": null,
       "script": null,
       "schedule": {
@@ -94,15 +94,15 @@
       "schedule_display": "0 15 * * 1-5",
       "repeat": {
         "times": null,
-        "completed": 10
+        "completed": 14
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-11T17:57:03.961144+08:00",
-      "next_run_at": "2026-04-24T15:00:00+08:00",
-      "last_run_at": "2026-04-23T15:13:36.171206+08:00",
+      "next_run_at": "2026-04-30T15:00:00+08:00",
+      "last_run_at": "2026-04-29T15:04:46.679362+08:00",
       "last_status": "ok",
       "last_error": null,
       "deliver": "telegram",
@@ -122,8 +122,8 @@
         "etf-tw-health-check"
       ],
       "skill": "etf-tw-health-check",
-      "model": null,
-      "provider": null,
+      "model": "gpt-5.5",
+      "provider": "openai-codex",
       "base_url": null,
       "script": null,
       "schedule": {
@@ -134,15 +134,15 @@
       "schedule_display": "0 8 * * *",
       "repeat": {
         "times": null,
-        "completed": 6
+        "completed": 12
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-18T15:22:48.207291+08:00",
-      "next_run_at": "2026-04-25T08:00:00+08:00",
-      "last_run_at": "2026-04-24T08:05:02.467689+08:00",
+      "next_run_at": "2026-05-01T08:00:00+08:00",
+      "last_run_at": "2026-04-30T08:03:14.232009+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -157,13 +157,11 @@
     {
       "id": "c3f8e15818dd",
       "name": "ETF \u6bcf\u9031\u6df1\u5ea6\u5fa9\u76e4",
-      "prompt": "\u57f7\u884c ETF \u6bcf\u9031\u6df1\u5ea6\u5fa9\u76e4\u5206\u6790",
-      "skills": [
-        "stock-analysis-tw"
-      ],
-      "skill": "stock-analysis-tw",
-      "model": null,
-      "provider": null,
+      "prompt": "\u57f7\u884c ETF_TW \u6bcf\u9031\u6df1\u5ea6\u5fa9\u76e4\u5206\u6790\u3002\u4f7f\u7528 ETF_TW state\u3001decision_quality\u3001regime_bucket_stats\u3001context_weights\u3001trade_journal \u8207 wiki \u77e5\u8b58\u5eab\uff1b\u4e0d\u8981\u4f9d\u8cf4\u5df2\u5438\u6536\u7684 stock-analysis-tw \u5916\u90e8\u6280\u80fd\u8def\u5f91\u3002",
+      "skills": [],
+      "skill": null,
+      "model": "gpt-5.5",
+      "provider": "openai-codex",
       "base_url": null,
       "script": null,
       "schedule": {
@@ -174,15 +172,15 @@
       "schedule_display": "0 9 * * 6",
       "repeat": {
         "times": null,
-        "completed": 1
+        "completed": 4
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-18T15:22:52.049900+08:00",
-      "next_run_at": "2026-04-25T09:00:00+08:00",
-      "last_run_at": "2026-04-19T20:05:01.699810+08:00",
+      "next_run_at": "2026-05-02T09:00:00+08:00",
+      "last_run_at": "2026-04-25T11:20:22.301493+08:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -201,8 +199,8 @@
       "script": "sync_worldmonitor_daily.py",
       "skills": [],
       "skill": null,
-      "model": null,
-      "provider": null,
+      "model": "gpt-5.5",
+      "provider": "openai-codex",
       "base_url": null,
       "schedule": {
         "kind": "cron",
@@ -212,15 +210,15 @@
       "schedule_display": "50 7 * * 1-5",
       "repeat": {
         "times": null,
-        "completed": 6
+        "completed": 10
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-19T00:00:00+08:00",
-      "next_run_at": "2026-04-27T07:50:00+08:00",
-      "last_run_at": "2026-04-24T07:50:59.507192+08:00",
+      "next_run_at": "2026-05-01T07:50:00+08:00",
+      "last_run_at": "2026-04-30T07:50:51.205812+08:00",
       "last_status": "ok",
       "last_error": null,
       "deliver": "telegram",
@@ -239,8 +237,8 @@
       "script": "sync_worldmonitor_watch.py",
       "skills": [],
       "skill": null,
-      "model": null,
-      "provider": null,
+      "model": "gpt-5.5",
+      "provider": "openai-codex",
       "base_url": null,
       "schedule": {
         "kind": "cron",
@@ -250,15 +248,15 @@
       "schedule_display": "*/30 9-13 * * 1-5",
       "repeat": {
         "times": null,
-        "completed": 40
+        "completed": 84
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-19T00:00:00+08:00",
-      "next_run_at": "2026-04-24T11:00:00+08:00",
-      "last_run_at": "2026-04-24T10:31:46.191046+08:00",
+      "next_run_at": "2026-04-30T13:00:00+08:00",
+      "last_run_at": "2026-04-30T12:30:36.536057+08:00",
       "last_status": "ok",
       "last_error": null,
       "deliver": "telegram",
@@ -277,8 +275,8 @@
       "script": "sync_decision_reviews.py",
       "skills": [],
       "skill": null,
-      "model": null,
-      "provider": null,
+      "model": "gpt-5.5",
+      "provider": "openai-codex",
       "base_url": null,
       "schedule": {
         "kind": "cron",
@@ -288,16 +286,16 @@
       "schedule_display": "5 15 * * 1-5",
       "repeat": {
         "times": null,
-        "completed": 0
+        "completed": 3
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-20T00:00:00+08:00",
-      "next_run_at": null,
-      "last_run_at": null,
-      "last_status": null,
+      "next_run_at": "2026-04-30T15:05:00+08:00",
+      "last_run_at": "2026-04-29T15:06:03.854042+08:00",
+      "last_status": "ok",
       "last_error": null,
       "deliver": "telegram",
       "origin": {
@@ -315,8 +313,8 @@
       "script": "generate_decision_quality_weekly.py",
       "skills": [],
       "skill": null,
-      "model": null,
-      "provider": null,
+      "model": "gpt-5.5",
+      "provider": "openai-codex",
       "base_url": null,
       "schedule": {
         "kind": "cron",
@@ -333,7 +331,7 @@
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-20T00:00:00+08:00",
-      "next_run_at": null,
+      "next_run_at": "2026-05-02T09:05:00+08:00",
       "last_run_at": null,
       "last_status": null,
       "last_error": null,
@@ -347,5 +345,5 @@
       "last_delivery_error": null
     }
   ],
-  "updated_at": "2026-04-24T10:31:46.191974+08:00"
+  "updated_at": "2026-04-30T12:30:36.536373+08:00"
 }

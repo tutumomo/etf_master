@@ -1,9 +1,9 @@
 ---
 name: etf-tw-weekly-deep-review
-description: ETF_TW 每週深度復盤 cron 流程 — 週六執行，整合持倉快照、市場體制、stock-analysis-tw、決策品質週報與下週操作傾向。
+description: ETF_TW 每週深度復盤 cron 流程 — 週六執行，整合持倉快照、市場體制、ETF_TW 內建量化診斷、決策品質週報與下週操作傾向。
 version: 1.0.0
 created: 2026-04-25
-tags: [etf-tw, cron, weekly-review, decision-quality, stock-analysis-tw, portfolio-review]
+tags: [etf-tw, cron, weekly-review, decision-quality, portfolio-review]
 ---
 
 # ETF_TW 每週深度復盤流程
@@ -65,7 +65,7 @@ cd ~/.hermes/profiles/etf_master/skills/ETF_TW
 - `[quality-report] Generated: ...decision_quality_report.json`
 - `GENERATE_DECISION_QUALITY_WEEKLY_OK:week=YYYY-WNN ...`
 
-## stock-analysis-tw 持倉診斷
+## ETF_TW 內建持倉診斷
 
 從 `instances/etf_master/state/positions.json` 的 `positions` 陣列動態取 ticker，不要硬編碼。
 
@@ -74,7 +74,8 @@ cd ~/.hermes/profiles/etf_master/skills/ETF_TW
 - 其他多數台股 ETF → `.TW`
 
 ```bash
-cd ~/.hermes/profiles/etf_master/skills/stock-analysis-tw
+cd ~/.hermes/profiles/etf_master/skills/ETF_TW
+AGENT_ID=etf_master .venv/bin/python scripts/run_intraday_quant_diagnosis.py
 uv run scripts/analyze_stock.py 0050.TW 0056.TW 006208.TW 00679B.TWO 00878.TW 00919.TW 00922.TW --fast --state-dir ~/.hermes/profiles/etf_master/skills/ETF_TW/instances/etf_master/state/stock_analysis
 ```
 

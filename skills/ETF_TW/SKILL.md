@@ -1,6 +1,6 @@
 ---
 name: ETF_TW
-version: v1.8.1
+version: v1.8.2
 description: 台灣 ETF 投資助理技能（包含 state-driven dashboard、orders_open lifecycle、callback/polling reconciliation、交易流程驗證、回測去重與報酬回補、worldmonitor 全球風險雷達整合）
 ---
 
@@ -655,6 +655,9 @@ decision_log   orders_open  trade_logs  trade_journal/{date}.json
   - `--portfolio active` **不存在**，會報 `Error: Portfolio 'active' not found`
   - 正確做法：從 `positions.json` 讀取持倉 ticker → 轉換為 yfinance 格式（0050→0050.TW, 00679B→00679B.TWO）→ 作為 positional arguments 傳入
   - 路徑必須用絕對路徑：`uv run {home}/.hermes/.../stock-analysis-tw/scripts/analyze_stock.py 0050.TW 00679B.TWO --fast --state-dir ...`，相對路徑 `skills/stock-analysis-tw/...` 在 cron 中無法解析
+  - 2026-04-30 實測：`stock-analysis-tw/scripts/analyze_stock.py` 可能在 etf_master profile 未安裝（只剩 `taiwan-finance/references/stock-analysis-tw.md`），此時不要讓整個盤中掃描失敗；應記錄「量化診斷子步驟跳過 / script missing」，繼續執行 market context、major event、decision refresh，並在最終報告標註缺口
+  - 2026-04-30 修正：cron 不應再直接呼叫缺失的外部技能路徑；改用 ETF_TW 內建 `scripts/run_intraday_quant_diagnosis.py`，輸出 `intraday_quant_diagnosis.json`
+  - Cron 直接呼叫 ETF_TW 腳本時最好顯式加 `AGENT_ID=etf_master`，否則腳本會 fallback 但反覆輸出 missing AGENT_ID warning，干擾報告解析
 - **terminal() 讀取 JSON state 檔案坑**（2026-04-17 驗證）：
   - `terminal(f"cat {path} | python3 -c \"import sys,json; print(json.load(sys.stdin))\"")` 回傳空字串
   - 必須改用 `terminal(f'python3 -c "import json; d=json.load(open(\'{path}\')); print(json.dumps(d, ensure_ascii=False, indent=2))"')` 直接用 `open()` 讀檔
@@ -668,6 +671,7 @@ decision_log   orders_open  trade_logs  trade_journal/{date}.json
 ```bash
 cd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/sync_market_cache.py
 cd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/generate_intraday_tape_context.py
+cd ~/.hermes/profiles/etf_master/skills/ETF_TW && AGENT_ID=etf_master .venv/bin/python scripts/run_intraday_quant_diagnosis.py
 cd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/generate_market_event_context.py
 cd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/generate_taiwan_market_context.py
 ```
@@ -683,6 +687,8 @@ cd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/refre
 ```
 
 **4. Wiki 知識更新（判讀層）**
+
+2026-04-30 實測補充：`scripts/distill_to_wiki.py` 只會更新個別 ETF wiki 頁面，不等於完成盤中判讀層的 `market-view.md` / `risk-signal.md`。盤中智慧掃描跑完 context / major event / decision refresh 後，仍需明確讀取 state 檔並更新這兩個判讀頁，否則 wiki 會停留在上一輪體制與風險訊號。
 
 注意：State 檔案名稱對照
 - 重大事件觸發檔案：`major_event_flag.json`（不是 `major_event_trigger.json`）
@@ -869,6 +875,13 @@ cd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/refre
 - 若 tag 已推送後才補文件，需把 tag 移到最新 commit 並 force push tag；同時明確回報這是 tag 重定位，不是改寫 main history。
 
 ## 版本歷史
+
+- **v1.8.2**（2026-04-30）：cron 缺失腳本修復 + ETF_TW 內建量化診斷
+  - 新增 `scripts/run_intraday_quant_diagnosis.py`，輸出 `intraday_quant_diagnosis.json`
+  - 盤中智慧掃描 cron 不再呼叫缺失的 `stock-analysis-tw/scripts/analyze_stock.py`
+  - 盤後與每週深度復盤移除 `stock-analysis-tw` / `stock-market-pro-tw` 必跑依賴
+  - 早班 / 盤後 `generate_watchlist_summary.py` 補上 `--mode am/pm`
+  - 更新 cron references / SOP；全測 668 passed，graphify 3776 nodes / 6502 edges
 
 - **v1.8.1**（2026-04-29）：live submit 盤後零股修正 + submission journal + orders_open 清理
   - `live_submit_sop.py` 優先使用 instance account credentials，env vars 僅作 fallback

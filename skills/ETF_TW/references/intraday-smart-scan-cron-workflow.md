@@ -25,13 +25,8 @@ cd ~/.hermes/profiles/etf_master/skills/ETF_TW
 # Step 1b: 盤中 tape context
 .venv/bin/python scripts/generate_intraday_tape_context.py
 
-# Step 1c: 量化診斷（⚠️ ETF 持倉跳過此步驟）
-# stock-analysis-tw 對 ETF 會因無基本面資料超時（180s+），ETF 掃描流程應跳過。
-# tape_context + market_context 已提供盤中所需量化數據。
-# 若需對非 ETF 標的執行，才啟用此步驟：
-# cd ~/.hermes/profiles/etf_master
-# uv run skills/stock-analysis-tw/scripts/analyze_stock.py <TICKERS> --fast --state-dir skills/ETF_TW/instances/etf_master/state/
-# cd ~/.hermes/profiles/etf_master/skills/ETF_TW
+# Step 1c: ETF_TW 內建盤中量化診斷
+AGENT_ID=etf_master .venv/bin/python scripts/run_intraday_quant_diagnosis.py
 
 # Step 1d: Wiki 知識沉澱
 python3 scripts/distill_to_wiki.py
@@ -45,9 +40,9 @@ python3 scripts/distill_to_wiki.py
 
 **⚠️ Pitfall #1（yfinance .TW/.TWO 後綴問題）**: `sync_market_cache.py` 對部分 ETF 會報 HTTP 404 "possibly delisted"。已確認受影響標的：00679B、00928。這是 yfinance 的 `.TW` vs `.TWO` 問題。腳本內部有 fallback 到 `.TWO`，日誌中出現可忽略，不影響功能。
 
-**⚠️ Pitfall #2（stock-analysis-tw 不適用 ETF 盤中掃描）**: `analyze_stock.py` 的 `--portfolio active` 參數不可用（回傳 "Portfolio 'active' not found"）。即使手動拼 ticker list 傳入，ETF 標的會因無基本面資料觸發大量 HTTP 404，且腳本在 180s timeout 內仍無法完成（實測超時）。**結論：ETF 盤中掃描流程應跳過 Step 1c（量化診斷），改由 tape_context + market_context 提供所需數據。** 若未來需要個股診斷，僅對非 ETF 標的執行。
+**⚠️ Pitfall #2（stock-analysis-tw 已非盤中依賴）**: `stock-analysis-tw/scripts/analyze_stock.py` 在目前 etf_master profile 可能不存在，且 `--portfolio active` 本來就不可用。ETF 盤中掃描不可再呼叫該外部技能路徑；量化診斷改用 ETF_TW 內建 `scripts/run_intraday_quant_diagnosis.py`，它直接讀取 `market_cache.json`、`watchlist.json`、`positions.json` 與 `intraday_tape_context.json`，輸出 `intraday_quant_diagnosis.json`。
 
-**Cron 指令衝突處理（2026-04-28 實測）**：若 cron prompt 仍明文要求執行 `uv run skills/stock-analysis-tw/scripts/analyze_stock.py --portfolio active --fast ...`，可依 prompt 先跑一次，但必須視為 **non-blocking optional step**：設定 timeout（≤180s）、失敗不阻斷後續 `distill_to_wiki` / event context / decision refresh，最後在「執行摘要」標註 `Portfolio 'active' not found`。不要因這一步失敗而回報整體掃描失敗。
+**Cron 指令衝突處理（2026-04-30 修正）**：若 cron prompt 又出現 `uv run skills/stock-analysis-tw/scripts/analyze_stock.py ...`，應視為舊版殘留並改成 `AGENT_ID=etf_master .venv/bin/python scripts/run_intraday_quant_diagnosis.py`。不要讓缺失外部技能成為報告缺口。
 
 **macOS cron 注意（2026-04-29 實測）**：macOS 預設沒有 GNU `timeout` 指令；不要在 cron shell 中直接用 `timeout 180 ...`。若需要限時執行 optional stock-analysis，改用 `python3 -c` / 小型 Python wrapper 的 `subprocess.run(..., timeout=180)`，或直接跳過該 optional step。
 
@@ -155,4 +150,4 @@ cd ~/.hermes/profiles/etf_master/skills/ETF_TW
 - 策略抬頭從 `agent_summary.json` 的 `strategy_header` 欄位讀取，必須在回覆最前面顯示
 - `distill_to_wiki.py` 使用系統 `python3`（非 .venv），其餘腳本使用 `.venv/bin/python`
 - 00679B 在 Yahoo Finance (.TW suffix) 會 404；market_cache 腳本已有 .TWO fallback 但仍會噴 HTTP 404 log，可忽略
-- stock-analysis-tw 對 ETF 類標的會回報 "No fundamentals data" 和 "No earnings dates"，信心度偏低（1-22%），這是 ETF 缺乏基本面資料的正常現象
+- `run_intraday_quant_diagnosis.py` 是 ETF_TW 內建量化診斷入口；不要依賴已吸收的 `stock-analysis-tw` 外部技能路徑

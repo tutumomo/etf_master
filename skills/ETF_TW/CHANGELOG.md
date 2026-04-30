@@ -1,5 +1,23 @@
 # CHANGELOG
 
+## v1.8.2 — 2026-04-30
+
+### Added
+- **ETF_TW 內建盤中量化診斷**：新增 `scripts/run_intraday_quant_diagnosis.py`，直接從 `market_cache.json`、`watchlist.json`、`positions.json` 與 `intraday_tape_context.json` 產生 `intraday_quant_diagnosis.json`。
+
+### Changed
+- **盤中智慧掃描 cron**：`cron/jobs.json` 改用 ETF_TW 內建量化診斷，不再呼叫缺失的 `skills/stock-analysis-tw/scripts/analyze_stock.py`。
+- **盤後 / 週復盤 cron**：移除已吸收外部技能 `stock-analysis-tw` / `stock-market-pro-tw` 的必跑路徑，改以 ETF_TW state 與內建診斷生成報告素材。
+- **Cron SOP 文件**：更新 intraday、post-market、weekly review references 與 `SKILL.md`，把 `run_intraday_quant_diagnosis.py` 列為標準入口。
+
+### Fixed
+- **watchlist summary 缺參數**：早班 / 盤後 cron 對 `generate_watchlist_summary.py` 補上 `--mode am/pm`。
+- **缺失腳本缺口回報**：消除盤中報告「stock-analysis-tw 腳本不存在」缺口。
+
+### Tests
+- **全測驗證**：`668 passed`。
+- **Graphify 同步**：重建 graphify code graph，產出 3776 nodes / 6502 edges / 441 communities。
+
 ## v1.8.1 — 2026-04-29
 
 ### Added

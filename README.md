@@ -1,4 +1,4 @@
-# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.8.1)
+# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.8.2)
 
 `ETF_Master` 是一款專為台灣 ETF 投資者設計的 AI 輔助決策與資產管理系統。本專案秉持「**交易安全優先於功能完備**」的核心價值，透過「三層真相層級」治理與「雙鏈決策仲裁」機制，為投資者提供一個穩定、透明且具備深度洞察的投資工作台。
 
@@ -27,8 +27,8 @@
 ### 2. 多技能財經生態系
 整合了四個專業級財經技能：
 - **`ETF_TW`**：核心交易適配器，支援永豐金 (Shioaji) API、模擬交易與持倉同步。
-- **`stock-analysis-tw`**：8 維度量化診斷工具，自動計算標的健康度與風險溫度。
-- **`stock-market-pro-tw`**：產生高品質技術線圖與 ASCII 趨勢報告。
+- **ETF_TW 內建量化診斷**：`run_intraday_quant_diagnosis.py` 直接讀取 ETF_TW state，避免 cron 依賴已吸收的外部技能路徑。
+- **知識庫 references**：保留原 `stock-analysis-tw` / `stock-market-pro-tw` 工作流知識，但 cron 不再將它們當作必跑腳本。
 - **`taiwan-finance`**：投行級估值框架（DCF, Comps）與法說會分析。
 
 ### 3. 自動化知識沉澱 (graphify + llm-wiki)
@@ -58,8 +58,8 @@ python scripts/etf_tw.py dashboard
 # 查詢即時持倉
 python scripts/etf_tw.py portfolio
 
-# 執行標的診斷
-uv run skills/stock-analysis-tw/scripts/analyze_stock.py 0050.TW
+# 執行 ETF_TW 內建盤中量化診斷
+AGENT_ID=etf_master .venv/bin/python scripts/run_intraday_quant_diagnosis.py
 ```
 
 ---
@@ -108,6 +108,13 @@ AGENT_ID=etf_master .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.
 ---
 
 ## 📦 版本紀錄
+
+### v1.8.2 (2026-04-30)
+- fix(cron): 盤中智慧掃描改用 ETF_TW 內建 `run_intraday_quant_diagnosis.py`，不再呼叫缺失的 `skills/stock-analysis-tw/scripts/analyze_stock.py`。
+- fix(cron): 盤後收工與每週深度復盤移除已吸收的 `stock-analysis-tw` / `stock-market-pro-tw` 外部腳本依賴。
+- fix(cron): 早班與盤後 `generate_watchlist_summary.py` 補上 `--mode am/pm`，避免缺參數造成 cron 失敗。
+- docs(knowledge): 更新 ETF_TW cron references 與 SKILL SOP，標準化內建量化診斷入口。
+- test: 全測 `668 passed`；graphify rebuild 產出 3776 nodes / 6502 edges / 441 communities。
 
 ### v1.8.1 (2026-04-29)
 - safety(live): `live_submit_sop.py` 優先使用 instance account credentials，避免 dashboard process env 缺少 Sinopac key 時誤報 authenticate failed。

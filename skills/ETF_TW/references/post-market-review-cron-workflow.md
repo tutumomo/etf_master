@@ -29,7 +29,7 @@ cd ~/.hermes/profiles/etf_master/skills/ETF_TW
 
 ### 2. 全維度量化診斷
 
-**必須動態讀取** `positions.json` 的 `positions` 陣列（鍵名是 `positions`，不是頂層），提取所有 `symbol` 欄位，轉換為 yfinance ticker 格式後傳給 analyze_stock。不要硬編碼 ticker 列表——持倉會變動。
+**必須動態讀取** ETF_TW state。2026-04-30 起盤後量化診斷改用內建 `run_intraday_quant_diagnosis.py`，不再把持倉轉成 yfinance ticker 後傳給外部 `analyze_stock.py`。
 
 ```python
 # positions.json 結構：{"positions": [{"symbol": "00679B", ...}, ...], "updated_at": ...}
@@ -38,10 +38,8 @@ cd ~/.hermes/profiles/etf_master/skills/ETF_TW
 ```
 
 ```bash
-cd ~/.hermes/profiles/etf_master
-uv run skills/stock-analysis-tw/scripts/analyze_stock.py --fast \
-  --state-dir skills/ETF_TW/instances/etf_master/state/ \
-  0056.TW 006208.TW 00679B.TWO 00878.TW 00919.TW 00922.TW 00923.TW 00939.TW
+cd ~/.hermes/profiles/etf_master/skills/ETF_TW
+AGENT_ID=etf_master .venv/bin/python scripts/run_intraday_quant_diagnosis.py
 ```
 
 **⚠️ Pitfall #3**: `--portfolio active` 參數不存在（會報 "Portfolio 'active' not found"）。必須從 positions.json 讀取 ticker 列表，逐一作為 positional argument 傳入。
@@ -52,7 +50,7 @@ uv run skills/stock-analysis-tw/scripts/analyze_stock.py --fast \
 
 **⚠️ Pitfall #5b**: `00928.TW` 會導致 `analyze_stock.py` 報 `Error: Invalid ticker '00928.TW' or data unavailable` 並 exit code 2，整批分析中斷。解法：從 positional args 中剔除 00928.TW，連同其他 .TWO 標的一併排除後重跑。建議在拼湊 ticker 列表時，先過濾掉已知會失敗的標的。
 
-**⚠️ Pitfall #5c**: 在 Hermes profile 的傘狀整理後，`skills/stock-analysis-tw/scripts/analyze_stock.py` 可能不存在（僅留下 `taiwan-finance/references/stock-analysis-tw.md` 文件）。盤後 cron 不可因此中斷；應先用 `search_files(target="files", pattern="analyze_stock.py", path="~/.hermes")` 或 Python `Path.exists()` 驗證腳本存在。若不存在，改用 yfinance fallback 自行計算持倉技術診斷（收盤、日漲跌、RSI14、MA20、布林位置、MACD、20日動能、成交量），並在系統狀態表標記 `stock-analysis-tw analyze_stock.py：路徑不存在，已用 yfinance fallback`。
+**⚠️ Pitfall #5c（2026-04-30 修正）**: 在 Hermes profile 的傘狀整理後，`skills/stock-analysis-tw/scripts/analyze_stock.py` 可能不存在。盤後 cron 不可再直接呼叫該外部路徑；改用 ETF_TW 內建 `scripts/run_intraday_quant_diagnosis.py` 產生 `intraday_quant_diagnosis.json`，再由報告讀取該 state 檔。
 
 ### 3. Wiki 知識沉澱
 
@@ -63,14 +61,9 @@ python3 scripts/distill_to_wiki.py
 
 正常輸出類似：`完成：更新 11 個 wiki 頁面，跳過 7 個`
 
-### 4. 收盤專業線圖
+### 4. 收盤技術摘要
 
-```bash
-cd ~/.hermes/profiles/etf_master
-uv run skills/stock-market-pro-tw/scripts/yf.py report 0050.TW 3mo
-```
-
-產出 PNG 至 `/tmp/0050.TW_pro.png`，同時輸出文字摘要含 RSI/MACD/BB 等關鍵指標。
+不再要求外部 `stock-market-pro-tw/scripts/yf.py` 產生 PNG。收盤摘要應讀取 `market_cache.json`、`intraday_tape_context.json` 與 `intraday_quant_diagnosis.json` 產生文字版技術摘要。
 
 ### 5. 讀取 State 數據（決策品質評分用）
 
@@ -104,7 +97,7 @@ uv run skills/stock-market-pro-tw/scripts/yf.py report 0050.TW 3mo
 
 **⚠️ Pitfall #10**: 部分 cron 排程的 model（如 glm-5.1:cloud via ollama-cloud）不支援 vision_analyze，呼叫會報 400 錯誤。盤後報告中線圖分析僅依賴 `yf.py report` 的文字輸出即可（RSI/MACD/BB 數值都在 stdout），不需強制截圖分析。
 
-**⚠️ Pitfall #10b**: `skills/stock-market-pro-tw/scripts/yf.py` 也可能在 Hermes profile 中不存在。若 `uv run .../yf.py report 0050.TW 3mo` 報 `No such file or directory`，不要停在錯誤；改用 yfinance fallback 產生 0050 技術摘要（至少包含收盤、日漲跌、RSI14、MA20、布林位置、MACD/Signal、20日動能、成交量），並明確標記「專業線圖腳本不存在，已用 yfinance fallback；未產生 PNG」。
+**⚠️ Pitfall #10b（2026-04-30 修正）**: `skills/stock-market-pro-tw/scripts/yf.py` 也可能不存在。盤後 cron 不應再把它列為必跑步驟；需要技術摘要時讀取 `market_cache.json`、`intraday_tape_context.json` 與 `intraday_quant_diagnosis.json` 產生文字摘要，不要求 PNG。
 
 **⚠️ Pitfall #11**: `daily_pnl.json` 可能嚴重過期（曾觀察到資料停留在 4 天前），與實際交易日不匹配。使用前應檢查 `date` 欄位是否為今日，若過期則標註「⚠️ 數據缺失」。
 
