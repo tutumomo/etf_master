@@ -16,6 +16,9 @@ from scripts.ai_decision_memory_context import build_decision_memory_context
 from scripts.write_layered_review_plan import write_layered_review_plan
 from market_calendar_tw import get_today_market_status
 
+ETF_CURATED_PATH = ROOT / 'data' / 'etfs.json'
+ETF_UNIVERSE_PATH = ROOT / 'data' / 'etf_universe_tw.json'
+
 
 def _load_json(path: Path) -> dict:
     if not path.exists():
@@ -25,6 +28,16 @@ def _load_json(path: Path) -> dict:
         return json.loads(text) if text else {}
     except Exception:
         return {}
+
+
+def _load_etf_catalog() -> dict:
+    catalog = {}
+    for path in (ETF_UNIVERSE_PATH, ETF_CURATED_PATH):
+        payload = _load_json(path)
+        etfs = payload.get('etfs', {})
+        if isinstance(etfs, dict):
+            catalog.update(etfs)
+    return catalog
 
 
 def _compute_input_fingerprint(payload: dict) -> str:
@@ -40,6 +53,7 @@ def _compute_input_fingerprint(payload: dict) -> str:
     tape_ctx = inputs.get('intraday_tape_context', {})
     strategy = inputs.get('strategy', {})
     positions = inputs.get('positions', {})
+    watchlist_context = inputs.get('watchlist_context', {})
 
     fingerprint_data = {
         'market_regime': market_ctx.get('market_regime'),
@@ -52,6 +66,10 @@ def _compute_input_fingerprint(payload: dict) -> str:
         'position_symbols': sorted([
             p.get('symbol') for p in positions.get('positions', [])
             if p.get('symbol')
+        ]),
+        'watchlist_symbols': sorted([
+            item.get('symbol') for item in watchlist_context.get('items', [])
+            if item.get('symbol')
         ]),
     }
     serialized = json.dumps(fingerprint_data, sort_keys=True, ensure_ascii=False)
@@ -165,6 +183,79 @@ def _load_entity_wiki(entity_dirs: list[Path], symbol: str, limit: int = 800) ->
     return ''
 
 
+def _has_entity_wiki(entity_dirs: list[Path], symbol: str) -> bool:
+    if not symbol:
+        return False
+    for d in entity_dirs:
+        if (d / f'{symbol}.md').exists():
+            return True
+        if any(d.glob(f'{symbol}-*.md')):
+            return True
+    return False
+
+
+def _compact_market_metrics(symbol: str, market_cache: dict, market_intelligence: dict) -> dict:
+    quote = (market_cache.get('quotes') or {}).get(symbol) or {}
+    metrics = (market_intelligence.get('intelligence') or {}).get(symbol) or {}
+    compact = {}
+    for key in (
+        'current_price', 'open', 'high', 'low', 'prev_close', 'source', 'updated_at'
+    ):
+        if key in quote:
+            compact[key] = quote.get(key)
+    for key in (
+        'last_price', 'rsi', 'momentum_20d', 'sharpe_30d', 'return_1y',
+        'sma5', 'sma20', 'sma60', 'macd', 'macd_signal', 'updated_at'
+    ):
+        if key in metrics:
+            compact[key] = metrics.get(key)
+    return compact
+
+
+def _build_watchlist_context(
+    watchlist: dict,
+    positions: dict,
+    market_cache: dict,
+    market_intelligence: dict,
+    entity_dirs: list[Path],
+) -> dict:
+    catalog = _load_etf_catalog()
+    held_symbols = {
+        (p.get('symbol') or '').upper()
+        for p in positions.get('positions', [])
+        if p.get('symbol')
+    }
+    items = []
+    for item in watchlist.get('items', []):
+        symbol = (item.get('symbol') or '').upper()
+        if not symbol:
+            continue
+        profile = catalog.get(symbol, {})
+        items.append({
+            'symbol': symbol,
+            'name': profile.get('name') or item.get('name') or symbol,
+            'watchlist_group': item.get('group') or item.get('category'),
+            'watchlist_status': item.get('status'),
+            'is_held': symbol in held_symbols,
+            'has_wiki_entity': _has_entity_wiki(entity_dirs, symbol),
+            'exchange': profile.get('exchange'),
+            'issuer_short': profile.get('issuer_short') or profile.get('issuer'),
+            'asset_class': profile.get('asset_class') or profile.get('category'),
+            'region': profile.get('region'),
+            'strategy_tags': profile.get('strategy_tags', []),
+            'risk_flags': profile.get('risk_flags', []),
+            'index_name': profile.get('index_name') or profile.get('index'),
+            'currency': profile.get('currency'),
+            'yfinance_ticker': profile.get('yfinance_ticker'),
+            'market_metrics': _compact_market_metrics(symbol, market_cache, market_intelligence),
+        })
+    return {
+        'source': 'watchlist + etf_universe_tw + etfs + market_state',
+        'count': len(items),
+        'items': items,
+    }
+
+
 def generate_request_payload_from_state_dir(state_dir: Path, requested_by: str = 'system', mode: str = 'decision_only') -> dict:
     strategy = _load_json(state_dir / 'strategy_link.json')
     positions = _load_json(state_dir / 'positions.json')
@@ -179,6 +270,7 @@ def generate_request_payload_from_state_dir(state_dir: Path, requested_by: str =
     market_calendar_payload = _load_json(state_dir / 'market_calendar_tw.json')
     reconciliation = _load_json(state_dir / 'filled_reconciliation.json')
     stock_intelligence = _load_json(state_dir / 'stock_intelligence.json')
+    watchlist = _load_json(state_dir / 'watchlist.json')
     
     # 注入 Wiki 背景知識（profile wiki + instance wiki fallback）
     wiki_roots = _resolve_wiki_roots()
@@ -203,7 +295,7 @@ def generate_request_payload_from_state_dir(state_dir: Path, requested_by: str =
         })
 
     # 標記關注清單但未持有的標的
-    watchlist_symbols = {item['symbol'] for item in _load_json(state_dir / 'watchlist.json').get('items', [])}
+    watchlist_symbols = {item['symbol'] for item in watchlist.get('items', []) if item.get('symbol')}
     held_symbols = {p.get('symbol') for p in positions.get('positions', [])}
     for sym in watchlist_symbols:
         if sym not in held_symbols:
@@ -257,6 +349,14 @@ def generate_request_payload_from_state_dir(state_dir: Path, requested_by: str =
         mode=mode,
         context_version=context_version,
     )
+    watchlist_context = _build_watchlist_context(
+        watchlist=watchlist,
+        positions=positions,
+        market_cache=market_cache,
+        market_intelligence=market_intelligence,
+        entity_dirs=entity_dirs,
+    )
+    payload['inputs']['watchlist_context'] = watchlist_context
     # 合併額外背景知識
     payload['portfolio_context'] = portfolio_context
     payload['wiki_context'] = {

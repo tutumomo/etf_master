@@ -1,5 +1,25 @@
 # CHANGELOG
 
+## v1.10.1 — 2026-05-01
+
+### Added
+- **ETF universe metadata audit**：新增 `scripts/audit_etf_metadata.py`，產出 `data/etf_metadata_audit.json` 與 `docs/etf-metadata-audit-2026-05-01.md`，確認 338 檔 universe core / derived metadata 100% 完整。
+- **AI Bridge watchlist_context**：`generate_ai_decision_request.py` 將 watchlist 候選、完整 ETF universe metadata、market metrics、持倉狀態與 `has_wiki_entity` 放入 decision-critical `inputs.watchlist_context`。
+- **策略情境回歸測試**：新增 `test_generate_decision_consensus.py` 與 `test_run_auto_decision_scan_strategy_modes.py`，鎖定 universe-only 標的與不同投資策略情境輸出。
+
+### Changed
+- **台股 ETF universe 同步強化**：`sync_etf_universe_tw.py` 正確拆分 TWSE `<br>` 多幣別列，並補齊 issuer_short、asset_class、region、strategy_tags、risk_flags、currency、yfinance_ticker 等衍生欄位。
+- **決策輸出語意分層**：規則引擎與 AI Bridge 分離 `buy-preview`、`watch_only`、advisory candidate 與 best buy candidate；未達下單門檻時仍提供觀察建議，不再讓 dashboard 顯示空白。
+- **策略情境對齊**：AI Bridge 不再單純挑低 RSI 或固定防守 ETF，會先套用策略允許群組；規則引擎補齊 `高波動警戒`、`逢低觀察` overlay，`觀察模式` 僅觀察不建立 preview。
+
+### Fixed
+- **Universe-only consensus lookup**：`generate_decision_consensus.py` 改用 `etf_universe_tw.json + etfs.json` 合併 catalog，避免 `00939`、`00720B` 等非 curated ETF 被顯示為「查無標的」。
+- **Wiki entity 偏差風險**：AI Bridge 候選不再依賴 16 個 wiki entity；watchlist 中沒有 wiki entity 的標的仍具備完整候選上下文。
+
+### Tests
+- **全測驗證**：`776 passed`（1 個 Shioaji UTC deprecation warning）。
+- **Graphify 同步**：重建 graphify code graph，產出 4538 nodes / 8493 edges / 495 communities。
+
 ## v1.10.0 — 2026-05-01
 
 ### Added

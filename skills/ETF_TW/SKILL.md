@@ -1,6 +1,6 @@
 ---
 name: ETF_TW
-version: v1.10.0
+version: v1.10.1
 description: 台灣 ETF 投資助理技能（包含 state-driven dashboard、orders_open lifecycle、callback/polling reconciliation、交易流程驗證、回測去重與報酬回補、worldmonitor 全球風險雷達整合）
 ---
 
@@ -875,6 +875,13 @@ cd ~/.hermes/profiles/etf_master/skills/ETF_TW && .venv/bin/python scripts/refre
 - 若 tag 已推送後才補文件，需把 tag 移到最新 commit 並 force push tag；同時明確回報這是 tag 重定位，不是改寫 main history。
 
 ## 版本歷史
+
+- **v1.10.1**（2026-05-01）：ETF universe metadata + 雙鏈決策候選語意修正
+  - 台股 ETF universe 同步至 338 檔，補齊 TWSE / TPEx 多幣別拆分與 issuer / asset_class / region / strategy_tags / risk_flags / yfinance ticker 衍生欄位
+  - AI Bridge request 新增 `watchlist_context`，watchlist 候選不再依賴 16 個 wiki entity 才能取得完整上下文
+  - `generate_decision_consensus.py` 改用 universe + curated 合併 catalog，修正 `00939` / `00720B` 被判成查無資料
+  - 規則引擎與 AI Bridge 分離 `buy-preview`、`watch_only`、advisory candidate；觀察模式不建立 preview，高波動警戒/逢低觀察 overlay 正確生效
+  - 全測 776 passed；graphify 4538 nodes / 8493 edges / 495 communities
 
 - **v1.10.0**（2026-05-01）：智能 multiplier 鏈完整化（E2 + F1 + F-news）
   - 新增 **持倉相關性懲罰**：`correlation_engine` + `compute_correlation_matrix.py`，買進時 ρ>0.7 線性折扣倉位（floor 0.2）

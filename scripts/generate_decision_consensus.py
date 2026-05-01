@@ -13,6 +13,7 @@ AI_STATE_PATH = STATE_DIR / "ai_decision_response.json"
 CONSENSUS_PATH = STATE_DIR / "decision_consensus.json"
 STRATEGY_PATH = STATE_DIR / "strategy_link.json"
 ETFS_DATA_PATH = DATA_DIR / "etfs.json"
+ETF_UNIVERSE_PATH = DATA_DIR / "etf_universe_tw.json"
 
 # Strategy Alignment Mapping
 STRATEGY_PREFERENCES = {
@@ -50,6 +51,32 @@ def safe_read_json(path: Path):
     except (json.JSONDecodeError, OSError, ValueError):
         return {}
 
+def load_etf_catalog():
+    catalog = {}
+    for path in (ETF_UNIVERSE_PATH, ETFS_DATA_PATH):
+        payload = safe_read_json(path)
+        etfs = payload.get("etfs", {})
+        if isinstance(etfs, dict):
+            catalog.update(etfs)
+    return {"etfs": catalog}
+
+def infer_strategy_category(etf_info):
+    category = etf_info.get("category")
+    if category:
+        return category
+    asset_class = etf_info.get("asset_class")
+    tags = set(etf_info.get("strategy_tags") or [])
+    text = " ".join(str(etf_info.get(k) or "") for k in ("symbol", "name", "index_name", "issuer"))
+    if asset_class == "bond" or "債" in text:
+        return "債券型"
+    if "income" in tags or "高息" in text or "股息" in text:
+        return "高股息"
+    if "tech" in tags or "科技" in text or "半導體" in text:
+        return "科技型"
+    if asset_class == "equity":
+        return "大盤型"
+    return "其他"
+
 def check_strategy_alignment(symbol, strategy_name, etfs_data):
     """檢查標的是否符合當前策略優先級 (Task 1)"""
     if not symbol or not strategy_name:
@@ -59,7 +86,7 @@ def check_strategy_alignment(symbol, strategy_name, etfs_data):
     if not etf_info:
         return True, f"查無標的 {symbol} 資料"
     
-    category = etf_info.get("category")
+    category = infer_strategy_category(etf_info)
     prefs = STRATEGY_PREFERENCES.get(strategy_name, [])
     
     if not prefs:
@@ -74,7 +101,7 @@ def arbitrate():
     rule_data = safe_read_json(RULE_STATE_PATH)
     ai_data = safe_read_json(AI_STATE_PATH)
     strategy_data = safe_read_json(STRATEGY_PATH)
-    etfs_data = safe_read_json(ETFS_DATA_PATH)
+    etfs_data = load_etf_catalog()
 
     rule_suggest = rule_data.get("last_preview_summary", "無建議")
     ai_suggest = ai_data.get("decision", "尚無建議")

@@ -99,6 +99,7 @@ def _make_fingerprint_payload(market_regime: str) -> dict:
             "intraday_tape_context": {"market_bias": "neutral"},
             "strategy": {"base_strategy": "核心累積", "scenario_overlay": "收益再投資"},
             "positions": {"positions": [{"symbol": "0050"}]},
+            "watchlist_context": {"items": [{"symbol": "0050"}]},
         }
     }
 
@@ -119,6 +120,14 @@ def test_compute_input_fingerprint_changes_with_input():
     assert fp_a != fp_b
 
 
+def test_compute_input_fingerprint_changes_with_watchlist_context():
+    payload_a = _make_fingerprint_payload("neutral")
+    payload_b = _make_fingerprint_payload("neutral")
+    payload_b["inputs"]["watchlist_context"] = {"items": [{"symbol": "00939"}]}
+
+    assert module._compute_input_fingerprint(payload_a) != module._compute_input_fingerprint(payload_b)
+
+
 def test_request_payload_includes_input_fingerprint():
     with tempfile.TemporaryDirectory() as td:
         state_dir = Path(td)
@@ -134,10 +143,19 @@ def test_request_payload_includes_input_fingerprint():
         (state_dir / "market_event_context.json").write_text(json.dumps({"global_risk_level": "normal"}), encoding="utf-8")
         (state_dir / "market_calendar_tw.json").write_text(json.dumps({"date": "2026-04-03", "is_open": True, "session": "trading_day"}), encoding="utf-8")
         (state_dir / "filled_reconciliation.json").write_text(json.dumps({"ok": True}), encoding="utf-8")
+        (state_dir / "watchlist.json").write_text(json.dumps({"items": [
+            {"symbol": "00939", "name": "統一台灣高息動能", "group": "income", "status": "watch"}
+        ]}), encoding="utf-8")
 
         payload = module.generate_request_payload_from_state_dir(state_dir)
         assert "input_fingerprint" in payload
         assert len(payload["input_fingerprint"]) == 12
+        watchlist_context = payload["inputs"]["watchlist_context"]
+        assert watchlist_context["count"] == 1
+        assert watchlist_context["items"][0]["symbol"] == "00939"
+        assert watchlist_context["items"][0]["name"] == "統一台灣高息動能"
+        assert watchlist_context["items"][0]["has_wiki_entity"] is False
 
         written = json.loads((state_dir / "ai_decision_request.json").read_text(encoding="utf-8"))
         assert payload["input_fingerprint"] in json.dumps(written)
+        assert written["inputs"]["watchlist_context"]["items"][0]["symbol"] == "00939"

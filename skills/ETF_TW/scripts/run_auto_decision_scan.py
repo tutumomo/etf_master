@@ -63,6 +63,10 @@ STRATEGY_WEIGHTS = {
     '防守保守': {
         'group_base': {'core': 1.5, 'income': 1.5, 'defensive': 3, 'growth': 0.5, 'smart_beta': 1.0},
         'dimension_weights': {'yield': 1.0, 'momentum': 0.5, 'track_record': 1.5}
+    },
+    '觀察模式': {
+        'group_base': {'core': 1, 'income': 1, 'defensive': 1, 'growth': 1, 'smart_beta': 1},
+        'dimension_weights': {'yield': 0.5, 'momentum': 0.5, 'track_record': 0.5}
     }
 }
 
@@ -73,7 +77,9 @@ STRATEGY_WEIGHTS = {
 OVERLAY_MODIFIERS = {
     '收益再投資': {'income': +1.0, 'core': +0.5, 'defensive': 0, 'growth': -0.5, 'smart_beta': 0},
     '收益優先':   {'income': +1.5, 'core': 0, 'defensive': +0.5, 'growth': -1.0, 'smart_beta': 0},
+    '逢低觀察':   {'core': +0.5, 'income': +0.5, 'defensive': +0.5, 'growth': +0.5, 'smart_beta': +0.5},
     '高波動防守': {'defensive': +2.0, 'core': +0.5, 'income': +0.5, 'growth': -2.0, 'smart_beta': -1.0},
+    '高波動警戒': {'defensive': +2.0, 'core': +0.5, 'income': +0.5, 'growth': -2.0, 'smart_beta': -1.0},
     '減碼保守':   {'defensive': +1.5, 'core': 0, 'income': +0.5, 'growth': -1.5, 'smart_beta': -1.0},
     '積極成長':   {'growth': +2.0, 'core': +0.5, 'smart_beta': +1.0, 'income': -0.5, 'defensive': -1.0},
     '無':         {},  # No overlay modifier
@@ -614,6 +620,14 @@ def decide_action(strategy: dict, watchlist: dict, market_cache: dict, portfolio
     candidates.sort(key=lambda x: x['score'], reverse=True)
     buy_threshold = BUY_THRESHOLD_BY_RISK.get(risk_temperature, BUY_THRESHOLD_BY_RISK['normal'])
     actionable = next((c for c in candidates if c['side'] == 'buy' and c['score'] >= buy_threshold), None)
+    aligned_candidates = [c for c in candidates if c.get('strategy_aligned')]
+    advisory_candidate = (aligned_candidates[0] if aligned_candidates else (candidates[0] if candidates else None))
+    best_buy_candidate = (
+        next((c for c in aligned_candidates if c['side'] == 'buy'), None)
+        or next((c for c in candidates if c['side'] == 'buy'), None)
+    )
+    if base_strategy == '觀察模式':
+        actionable = None
 
     if actionable:
         dims = actionable.get('dimension_scores', {})
@@ -623,6 +637,13 @@ def decide_action(strategy: dict, watchlist: dict, market_cache: dict, portfolio
         confidence = '中高'
     else:
         summary = '目前以觀望為主，暫無安全的新增 preview 候選。'
+        if base_strategy == '觀察模式':
+            summary = '觀察模式啟用中，僅更新候選排序與風險脈絡，不建立買進 preview。'
+        elif advisory_candidate:
+            summary = (
+                f"目前未達買進門檻，建議觀察 {advisory_candidate['symbol']} "
+                f"（{advisory_candidate['group']}，分數 {advisory_candidate['score']:.1f}）。"
+            )
         action = 'hold'
         confidence = '中'
 
@@ -633,6 +654,9 @@ def decide_action(strategy: dict, watchlist: dict, market_cache: dict, portfolio
         'action': action,
         'summary': summary,
         'candidate': actionable,
+        'advisory_candidate': advisory_candidate,
+        'best_buy_candidate': best_buy_candidate,
+        'buy_threshold': buy_threshold,
         'uncertainty': confidence,
         'base_strategy': base_strategy,
         'scenario_overlay': scenario_overlay,

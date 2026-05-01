@@ -1,4 +1,4 @@
-# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.10.0)
+# ETF_Master: 智慧型台灣 ETF 投資助理 (v1.10.1)
 
 `ETF_Master` 是一款專為台灣 ETF 投資者設計的 AI 輔助決策與資產管理系統。本專案秉持「**交易安全優先於功能完備**」的核心價值，透過「三層真相層級」治理與「雙鏈決策仲裁」機制，為投資者提供一個穩定、透明且具備深度洞察的投資工作台。
 
@@ -108,6 +108,13 @@ AGENT_ID=etf_master .venv/bin/python3 -m uvicorn dashboard.app:app --host 0.0.0.
 ---
 
 ## 📦 版本紀錄
+
+### v1.10.1 (2026-05-01)
+- feat(data): 重新同步台股 ETF universe 至 338 檔，補齊 TWSE / TPEx 多幣別代號拆分、主動式 ETF、issuer / asset_class / region / strategy_tags / risk_flags / yfinance ticker 等衍生欄位。
+- feat(ai): AI Bridge request 新增 `watchlist_context`，讓 18 檔 watchlist 候選都帶入完整 universe metadata、market metrics 與 `has_wiki_entity`，避免只偏向 16 個 wiki entity。
+- fix(consensus): 決策共識查詢改用 `etf_universe_tw.json + etfs.json` 合併 catalog，`00939`、`00720B` 等 universe-only 標的不再顯示「查無標的」。
+- fix(strategy): 規則引擎與 AI Bridge 分離 `buy-preview`、`watch_only` 與 advisory candidate；觀察模式不建立 preview，高波動警戒/逢低觀察 overlay 正確生效。
+- test: 新增 ETF metadata、AI request、decision consensus、strategy mode 回歸測試；全測 `776 passed`。
 
 ### v1.10.0 (2026-05-01)
 - feat(buy): 新增 **持倉相關性懲罰（E2）** — `correlation_engine` 計算 watchlist pairwise 相關，買進時擬買標的 vs 既有持倉平均相關 >0.7 即線性折扣倉位，floor 0.2，避免重複押注（實測 watchlist 多檔 ρ≥0.9）。

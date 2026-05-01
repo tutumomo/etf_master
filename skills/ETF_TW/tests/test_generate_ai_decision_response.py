@@ -60,3 +60,91 @@ def test_generate_response_payload_marks_preview_candidate_when_intelligence_exi
         payload = module.generate_response_payload_from_state_dir(state_dir)
         assert payload["candidate"]["symbol"] in {"0050", "00679B"}
         assert payload["decision"]["confidence"] in {"medium", "high"}
+
+
+def test_ai_bridge_uses_watchlist_context_strategy_weights():
+    request_payload = {
+        "request_id": "req-watchlist",
+        "inputs": {
+            "strategy": {"base_strategy": "防守保守", "scenario_overlay": "高波動警戒"},
+            "market_context_taiwan": {"risk_temperature": "elevated"},
+            "market_event_context": {"global_risk_level": "elevated"},
+            "watchlist_context": {
+                "items": [
+                    {
+                        "symbol": "00939",
+                        "name": "統一台灣高息動能",
+                        "watchlist_group": "smart_beta",
+                        "is_held": False,
+                        "market_metrics": {"rsi": 43, "momentum_20d": 10, "sharpe_30d": 2.3},
+                    },
+                    {
+                        "symbol": "00720B",
+                        "name": "元大投資級公司債",
+                        "watchlist_group": "defensive",
+                        "asset_class": "bond",
+                        "is_held": False,
+                        "market_metrics": {"rsi": 48, "momentum_20d": -1, "sharpe_30d": 0.4},
+                    },
+                ]
+            },
+        },
+    }
+
+    candidate, summary, action, confidence = module._pick_candidate(request_payload)
+
+    assert action == "preview_buy"
+    assert candidate["symbol"] == "00720B"
+    assert "防守保守" in candidate["risk_note"]
+    assert confidence in {"medium", "high"}
+
+
+def test_ai_bridge_income_strategy_does_not_default_to_defensive_etf():
+    request_payload = {
+        "request_id": "req-income",
+        "inputs": {
+            "strategy": {"base_strategy": "收益優先", "scenario_overlay": "收益再投資"},
+            "market_context_taiwan": {"risk_temperature": "elevated"},
+            "market_event_context": {"global_risk_level": "elevated"},
+            "watchlist_context": {
+                "items": [
+                    {
+                        "symbol": "00720B",
+                        "name": "元大投資級公司債",
+                        "watchlist_group": "defensive",
+                        "asset_class": "bond",
+                        "market_metrics": {"rsi": 43, "momentum_20d": 1, "sharpe_30d": 0.8},
+                    },
+                    {
+                        "symbol": "00713",
+                        "name": "元大台灣高息低波",
+                        "watchlist_group": "income",
+                        "market_metrics": {"rsi": 50, "momentum_20d": 2, "sharpe_30d": 1.2},
+                    },
+                ]
+            },
+        },
+    }
+
+    candidate, summary, action, confidence = module._pick_candidate(request_payload)
+
+    assert candidate["symbol"] == "00713"
+    assert candidate["group"] == "income"
+    assert candidate["side"] == "watch"
+    assert action == "watch_only"
+
+
+def test_ai_bridge_observation_mode_does_not_create_preview():
+    request_payload = {
+        "request_id": "req-observe",
+        "inputs": {
+            "strategy": {"base_strategy": "觀察模式", "scenario_overlay": "無"},
+            "watchlist_context": {"items": [{"symbol": "00939", "watchlist_group": "smart_beta"}]},
+        },
+    }
+
+    candidate, summary, action, confidence = module._pick_candidate(request_payload)
+
+    assert candidate == {}
+    assert action == "watch_only"
+    assert "觀察模式" in summary
