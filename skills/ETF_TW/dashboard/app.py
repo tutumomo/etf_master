@@ -37,6 +37,7 @@ from ai_auto_reflection import auto_reflect_if_ready
 from auto_quality_refresh import auto_refresh_quality_state
 from provenance_logger import provenance_summary as get_provenance_summary
 from strategy_audit import run_strategy_audit
+from generate_ai_decision_response import _score_watchlist_candidate
 from scripts.auto_trade import (
     ack_handler as auto_ack,
     pending_queue as auto_queue,
@@ -345,6 +346,29 @@ def _infer_ai_confidence_from_market_intelligence(state_dir: Path, symbol: str) 
     if score >= 2:
         return "medium", "ai_bridge_heuristic"
     return "low", "ai_bridge_heuristic"
+
+
+def _infer_ai_confidence_from_watchlist_context(state_dir: Path, symbol: str) -> tuple[str | None, str | None]:
+    request_payload = safe_load_json(state_dir / "ai_decision_request.json", default={})
+    inputs = request_payload.get("inputs") or {}
+    strategy = inputs.get("strategy") or {}
+    risk_temperature = (inputs.get("market_context_taiwan") or {}).get("risk_temperature", "unknown")
+    global_risk = (inputs.get("market_event_context") or {}).get("global_risk_level", "unknown")
+    watchlist_items = ((inputs.get("watchlist_context") or {}).get("items")) or []
+    symbol_upper = symbol.upper()
+
+    item = next((row for row in watchlist_items if str(row.get("symbol", "")).upper() == symbol_upper), None)
+    if not item:
+        return None, None
+
+    score_row = _score_watchlist_candidate(item, strategy, risk_temperature, global_risk)
+    score = float(score_row.get("score") or 0)
+    threshold = 5.0 if risk_temperature in {"elevated", "high"} else 4.0
+    if score >= threshold + 2:
+        return "high", "ai_bridge_watchlist_context"
+    if score >= threshold:
+        return "medium", "ai_bridge_watchlist_context"
+    return None, None
 
 def refresh_monitoring_state() -> dict:
     script = ROOT / "scripts" / "refresh_monitoring_state.py"
@@ -1673,6 +1697,8 @@ def trade_preview(payload: TradeRequest):
             ai_confidence = ai_decision.get("confidence")
             if ai_confidence:
                 ai_confidence_source = "ai_decision_response"
+    if not ai_confidence:
+        ai_confidence, ai_confidence_source = _infer_ai_confidence_from_watchlist_context(state_dir, symbol_upper)
     if not ai_confidence:
         ai_confidence, ai_confidence_source = _infer_ai_confidence_from_market_intelligence(state_dir, symbol_upper)
 
