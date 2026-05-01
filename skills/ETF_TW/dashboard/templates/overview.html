@@ -2300,22 +2300,21 @@ async function previewTrade(symbol, cleanId) {
             <div class="status-item"><span class="muted">委託價格</span><span class="mono">NT$ ${data.price}</span></div>
             <div class="status-item"><span class="muted">估計總額</span><span class="mono">NT$ ${data.estimated_total.toLocaleString()}</span></div>
             <div class="status-item"><span class="muted">風險檢查</span><span class="${data.pre_flight.ok ? 'good' : 'bad'}" style="font-weight:700; padding:2px 6px; border-radius:4px; background:rgba(${data.pre_flight.ok ? '53,212,154' : '255,107,129'}, 0.1);">${data.pre_flight.ok ? '通過 (PASSED)' : '攔截 (BLOCKED)'}</span></div>
-            ${data.pre_flight.investment_score != null ? (() => {
-                const sc = data.pre_flight.investment_score;
-                const pct = Math.round((sc + 10) / 20 * 100);
-                const barColor = sc >= 6 ? '#35d49a' : sc >= 3 ? '#ffd166' : '#ff6b81';
-                const label = sc >= 6 ? '優' : sc >= 3 ? '中' : '弱';
-                return `<div class="status-item"><span class="muted">投資評分</span><span style="display:flex;align-items:center;gap:8px;">
-                    <span style="font-weight:700;color:${barColor};">${sc > 0 ? '+' : ''}${sc} / 10（${label}）</span>
-                    <span style="display:inline-block;width:80px;height:6px;border-radius:3px;background:rgba(255,255,255,0.1);overflow:hidden;">
-                        <span style="display:block;height:100%;width:${pct}%;background:${barColor};border-radius:3px;"></span>
-                    </span>
-                </span></div>`;
-            })() : ''}
         `;
+        if (data.pre_flight.suitability_summary) {
+            const colorForLevel = (level) => level === 'good' ? '#35d49a' : (level === 'warn' ? '#ffd166' : 'var(--text)');
+            const formatComponent = (title, item) => {
+                if (!item) return '';
+                const reasons = Array.isArray(item.reasons) && item.reasons.length ? `（原因：${item.reasons.join('、')}）` : '';
+                return `<div class="status-item"><span class="muted">${title}</span><span style="font-weight:700;color:${colorForLevel(item.level)};">${item.label}${reasons}</span></div>`;
+            };
+            html += formatComponent('策略適配', data.pre_flight.suitability_summary.strategy);
+            html += formatComponent('市場條件', data.pre_flight.suitability_summary.market);
+            html += formatComponent('執行適切性', data.pre_flight.suitability_summary.execution);
+        }
         if (Array.isArray(data.pre_flight.score_breakdown) && data.pre_flight.score_breakdown.length > 0) {
             html += `<div style="margin-top:10px; color:var(--muted); font-size:12px; line-height:1.5;">
-                <strong>評分因子：</strong>${data.pre_flight.score_breakdown.join(' / ')}
+                <strong>原始因子：</strong>${data.pre_flight.score_breakdown.join(' / ')}
             </div>`;
         }
         if (data.pre_flight.ai_confidence) {

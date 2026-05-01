@@ -98,6 +98,12 @@ def compute_investment_score(order: Dict[str, Any], context: Dict[str, Any]) -> 
     """
     score = 0
     breakdown: list[str] = []
+    strategy_score = 0
+    market_score = 0
+    execution_score = 0
+    strategy_reasons: list[str] = []
+    market_reasons: list[str] = []
+    execution_reasons: list[str] = []
 
     # AI 信心
     ai_conf = order.get('ai_confidence')
@@ -105,18 +111,28 @@ def compute_investment_score(order: Dict[str, Any], context: Dict[str, Any]) -> 
         conf_label = str(ai_conf).lower()
         if conf_label == 'high':
             score += 3
+            market_score += 2
             breakdown.append('AI信心:high +3')
+            market_reasons.append('AI 信心 high')
         elif conf_label == 'medium':
             score += 1
+            market_score += 1
             breakdown.append('AI信心:medium +1')
+            market_reasons.append('AI 信心 medium')
         elif conf_label == 'low':
             score -= 2
+            market_score -= 2
             breakdown.append('AI信心:low -2')
+            market_reasons.append('AI 信心 low')
 
     # 策略對齊
     if context.get('strategy_aligned'):
         score += 2
+        strategy_score += 2
         breakdown.append('策略對齊 +2')
+        strategy_reasons.append('符合目前投資策略')
+    else:
+        strategy_reasons.append('非目前策略主要候選')
 
     # 規模比例
     cash = context.get('cash', 0.0)
@@ -127,17 +143,34 @@ def compute_investment_score(order: Dict[str, Any], context: Dict[str, Any]) -> 
         ratio = order_amount / cash
         if ratio < 0.15:
             score += 2
+            execution_score += 2
             breakdown.append(f'規模合理({ratio:.0%}<15%) +2')
+            execution_reasons.append('現金占比合理')
         elif ratio > 0.25:
             score -= 2
+            execution_score -= 2
             breakdown.append(f'規模偏高({ratio:.0%}>25%) -2')
+            execution_reasons.append('現金占比偏高')
+        else:
+            execution_reasons.append('現金占比中等')
+
+        total_equity = float(context.get('total_equity') or 0)
+        if total_equity > 0:
+            equity_ratio = order_amount / total_equity
+            if equity_ratio <= 0.03:
+                execution_reasons.append(f'總資產占比 {equity_ratio:.1%} 偏小')
+            elif equity_ratio > 0.10:
+                execution_score -= 1
+                execution_reasons.append(f'總資產占比 {equity_ratio:.1%} 偏高')
 
     # 交易時段
     try:
         hours_info = get_trading_hours_info()
         if hours_info.get('is_trading_hours'):
             score += 1
+            execution_score += 1
             breakdown.append('正常交易時段 +1')
+            execution_reasons.append('目前為交易時段')
     except Exception:
         pass
 
@@ -145,13 +178,44 @@ def compute_investment_score(order: Dict[str, Any], context: Dict[str, Any]) -> 
     market_regime = str(context.get('market_regime', '')).lower()
     if 'cautious' in market_regime:
         score -= 2
+        market_score -= 1
         breakdown.append('市場cautious -2')
+        market_reasons.append('市場偏謹慎')
     elif 'bullish' in market_regime:
         score += 1
+        market_score += 1
         breakdown.append('市場bullish +1')
+        market_reasons.append('市場偏多')
 
     score = max(-10, min(10, score))
-    return {'investment_score': score, 'score_breakdown': breakdown}
+    suitability = {
+        'strategy': _component_rating(strategy_score, strategy_reasons),
+        'market': _component_rating(market_score, market_reasons, good_threshold=3),
+        'execution': _component_rating(execution_score, execution_reasons),
+    }
+    return {
+        'investment_score': score,
+        'score_breakdown': breakdown,
+        'suitability_summary': suitability,
+    }
+
+
+def _component_rating(score: int, reasons: list[str], good_threshold: int = 2) -> Dict[str, Any]:
+    if score >= good_threshold:
+        label = '中高'
+        level = 'good'
+    elif score >= 0:
+        label = '中'
+        level = 'neutral'
+    else:
+        label = '偏低'
+        level = 'warn'
+    return {
+        'score': score,
+        'label': label,
+        'level': level,
+        'reasons': reasons,
+    }
 
 
 def check_order(order: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
@@ -253,6 +317,7 @@ def check_order(order: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any
         result = _pass()
         result['investment_score'] = score_result['investment_score']
         result['score_breakdown'] = score_result['score_breakdown']
+        result['suitability_summary'] = score_result['suitability_summary']
         return result
 
     try:
@@ -323,4 +388,5 @@ def check_order(order: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any
     result = _pass()
     result['investment_score'] = score_result['investment_score']
     result['score_breakdown'] = score_result['score_breakdown']
+    result['suitability_summary'] = score_result['suitability_summary']
     return result

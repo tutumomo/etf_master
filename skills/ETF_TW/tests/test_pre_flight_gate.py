@@ -102,6 +102,24 @@ def test_score_market_bullish_adds_one():
     assert any("bullish" in b for b in result["score_breakdown"])
 
 
+def test_score_returns_component_suitability_summary():
+    result = compute_investment_score(
+        _base_order(ai_confidence="medium", quantity=100, price=32.73),
+        _base_ctx(
+            cash=8_937.0,
+            total_equity=169_927.5,
+            strategy_aligned=True,
+            market_regime="balanced_bullish",
+        )
+    )
+
+    summary = result["suitability_summary"]
+    assert summary["strategy"]["label"] == "中高"
+    assert summary["market"]["label"] == "中"
+    assert summary["execution"]["label"] == "偏低"
+    assert "現金占比偏高" in summary["execution"]["reasons"]
+
+
 def test_score_clamped_to_minus_ten():
     # low confidence + cautious + large order = -2 -2 -2 = -6, well within range
     result = compute_investment_score(
@@ -145,6 +163,7 @@ def test_check_order_pass_includes_investment_score():
     assert isinstance(result["investment_score"], int)
     assert "score_breakdown" in result
     assert isinstance(result["score_breakdown"], list)
+    assert "suitability_summary" in result
 
 
 def test_check_order_blocks_buy_when_portfolio_risk_report_blocks():

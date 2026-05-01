@@ -1710,6 +1710,7 @@ def trade_preview(payload: TradeRequest):
 
     context_data = {
         "cash": account.get("cash", 0.0),
+        "total_equity": account.get("total_equity"),
         # 可交割金額：扣除 T+1/T+2 淨額後的安全金額，用於 sizing limit 計算
         "settlement_safe_cash": account.get("settlement_safe_cash"),
         "inventory": inventory,
@@ -1748,6 +1749,7 @@ def trade_preview(payload: TradeRequest):
             "details": check_res.get("details", {}),
             "investment_score": check_res.get("investment_score"),
             "score_breakdown": check_res.get("score_breakdown", []),
+            "suitability_summary": check_res.get("suitability_summary"),
             "ai_confidence": ai_confidence,
             "ai_confidence_source": ai_confidence_source,
         }
